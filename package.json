@@ -1,0 +1,11 @@
+{
+  "name": "narF-bot",
+  "version": "0.0.1",
+  "description": "Some test bot",
+  "main": "bot.js",
+  "author": "narF",
+  "dependencies": {
+    "discord.io": "github:Woor/discord.io#gateway_v6",
+    "winston": "^2.4.0"
+  }
+}
