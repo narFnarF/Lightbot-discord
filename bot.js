@@ -1,6 +1,13 @@
 var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
+
+//Required to launch an app (exec)
+//var sys = require('sys')
+var exec = require('child_process').exec; // http://nodejs.org/api.html#_child_processes
+var child;
+
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(logger.transports.Console, {
@@ -12,11 +19,25 @@ var bot = new Discord.Client({
    token: auth.token,
    autorun: true
 });
+
+//bot is online. Display in console.
 bot.on('ready', function (evt) {
     logger.info('Connected');
     logger.info('Logged in as: ');
     logger.info(bot.username + ' - (' + bot.id + ')');
+    logger.info(''); //blank line return
 });
+
+//Disconnected for some reasons
+bot.on("disconnected", function () {
+
+	console.log("Disconnected for some reasons...");
+	process.exit(1); //exit node with an error
+
+});
+
+
+//
 bot.on('message', function (user, userID, channelID, message, evt) {
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
@@ -30,10 +51,45 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'ping':
                 bot.sendMessage({
                     to: channelID,
-                    message: 'Pet!'
+                    message: 'Pong!'
                 });
+                logger.info('Ping pong!');
             break;
-            // Just add any case commands if you want to..
+            
+            case 'prout':
+                bot.sendMessage({
+                    to: channelID,
+                    message: 'Pet! 💩 '
+                });
+                logger.info('Pet! 💩 ');
+            break;
+            
+            case 'img':
+                logger.info('posting an image');
+                bot.sendMessage({to: channelID, message: "Incoming image..."});
+                bot.uploadFile({
+                    to: channelID,
+                    file: "/Users/narF/Downloads/Om nom nom - Imgur.gif",
+                    message: 'Here\'s your image!'
+                }), (err, res) => { console.log(err, res) };
+            break;
+            
+            case 'app':
+            	launchGame();
+            break;
          }
      }
 });
+
+
+function launchGame() {
+	logger.info("launching an app");
+	// executes `pwd`
+	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'", function (error, stdout, stderr) {
+		console.log('stdout: ' + stdout);
+		console.log('stderr: ' + stderr);
+		if (error !== null) {
+			console.log('exec error: ' + error);
+		}
+	});
+}
