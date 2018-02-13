@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2eventsheet>
+    <!--All the 'name' attributes are ignored by Construct 2 - they are there for readability only.-->
+    <name>eSaveCheck</name>
+    <events>
+        <variable comment="prefix of local storage variable names" constant="0" name="saveName" sid="854790188373748" static="0" type="text">narF_lightgame_</variable>
+        <event-block sid="533359218595878">
+            <conditions>
+                <condition id="-2" name="On start of layout" sid="563529625697962" type="System" />
+            </conditions>
+            <actions>
+                <action id="-16" name="Wait" sid="133330023664472" type="System">
+                    <param id="0" name="Seconds">1.5</param>
+                </action>
+                <action id="14" name="Log" sid="809285691767505" type="Browser">
+                    <param id="0" name="Type">0</param>
+                    <param id="1" name="Message">&quot;checking for savefile...&quot;</param>
+                </action>
+                <action id="5" name="Check item exists" sid="937975014233608" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;has savefile&quot;</param>
+                </action>
+            </actions>
+        </event-block>
+        <comment>savefile exists</comment>
+        <event-block sid="976655656947714">
+            <conditions>
+                <condition id="9" name="On item exists" sid="179311770356772" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;has savefile&quot;</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="14" name="Log" sid="437413917253510" type="Browser">
+                    <param id="0" name="Type">0</param>
+                    <param id="1" name="Message">&quot;Savefile exists. Getting data...&quot;</param>
+                </action>
+                <action id="1" name="Get item" sid="246167249708517" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;level&quot;</param>
+                </action>
+                <action id="1" name="Get item" sid="326340505344541" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;lights&quot;</param>
+                </action>
+            </actions>
+        </event-block>
+        <comment>no savefile</comment>
+        <event-block sid="894700823694868">
+            <conditions>
+                <condition id="10" name="On item missing" sid="713006055298151" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;has savefile&quot;</param>
+                </condition>
+            </conditions>
+            <actions>
+                <action id="14" name="Log" sid="876501579412681" type="Browser">
+                    <param id="0" name="Type">0</param>
+                    <param id="1" name="Message">&quot;No savefile found&quot;</param>
+                </action>
+                <action id="-9" name="Set value" sid="260017952178673" type="System">
+                    <param id="0" name="Variable">level</param>
+                    <param id="1" name="Value">1</param>
+                </action>
+                <action id="-9" name="Set value" sid="991407694746648" type="System">
+                    <param id="0" name="Variable">nbLights</param>
+                    <param id="1" name="Value">1</param>
+                </action>
+                <action id="-2" name="Go to layout" sid="432576364815866" type="System">
+                    <param id="0" name="Layout">game</param>
+                </action>
+            </actions>
+        </event-block>
+        <event-block sid="301947924091145">
+            <conditions>
+                <condition id="1" name="On item get" sid="485452756720464" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;lights&quot;</param>
+                </condition>
+            </conditions>
+            <actions />
+            <sub-events>
+                <event-block sid="488861994106809">
+                    <conditions>
+                        <condition disabled="1" id="12" name="Compare value" sid="897063942521160" type="LocalStorage">
+                            <param id="0" name="Comparison">0</param>
+                            <param id="1" name="Value">&quot;NaN&quot;</param>
+                        </condition>
+                        <condition id="-37" name="Is number NaN" sid="251085687304105" type="System">
+                            <param id="0" name="Number">LocalStorage.ItemValue</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="474784838328558" type="System">
+                            <param id="0" name="Variable">nbLights</param>
+                            <param id="1" name="Value">1</param>
+                        </action>
+                        <action id="14" name="Log" sid="321723113557547" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;Local storage: lights was NaN. Set to 1.&quot;</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="566874195852472">
+                    <conditions>
+                        <condition id="-22" name="Else" sid="162671282529712" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="643959346279036" type="System">
+                            <param id="0" name="Variable">nbLights</param>
+                            <param id="1" name="Value">LocalStorage.ItemValue</param>
+                        </action>
+                        <action id="14" name="Log" sid="807490713199124" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;Local storage: &quot; &amp; LocalStorage.ItemValue &amp; &quot; lights&quot;</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
+        <event-block sid="720340554728510">
+            <conditions>
+                <condition id="1" name="On item get" sid="250944092933061" type="LocalStorage">
+                    <param id="0" name="Key">saveName &amp; &quot;level&quot;</param>
+                </condition>
+            </conditions>
+            <actions />
+            <sub-events>
+                <event-block sid="972210855251209">
+                    <conditions>
+                        <condition disabled="1" id="12" name="Compare value" sid="417439525972178" type="LocalStorage">
+                            <param id="0" name="Comparison">0</param>
+                            <param id="1" name="Value">&quot;NaN&quot;</param>
+                        </condition>
+                        <condition id="-37" name="Is number NaN" sid="637756448884611" type="System">
+                            <param id="0" name="Number">LocalStorage.ItemValue</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="841647086071427" type="System">
+                            <param id="0" name="Variable">level</param>
+                            <param id="1" name="Value">1</param>
+                        </action>
+                        <action id="14" name="Log" sid="842692992814640" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;Local storage: level was NaN. Set to 1&quot;</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="630773754939014">
+                    <conditions>
+                        <condition id="-22" name="Else" sid="191454254186857" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="725998140946888" type="System">
+                            <param id="0" name="Variable">level</param>
+                            <param id="1" name="Value">LocalStorage.ItemValue</param>
+                        </action>
+                        <action id="14" name="Log" sid="575787685744253" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;Local storage: level &quot; &amp; LocalStorage.ItemValue</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
+        <event-block sid="923653237808222">
+            <conditions>
+                <condition id="16" name="On all gets complete" sid="163477488943469" type="LocalStorage" />
+            </conditions>
+            <actions>
+                <action id="14" name="Log" sid="349972298986395" type="Browser">
+                    <param id="0" name="Type">0</param>
+                    <param id="1" name="Message">&quot;Local storage: all gets complete&quot;</param>
+                </action>
+                <action id="-2" name="Go to layout" sid="904161405250529" type="System">
+                    <param id="0" name="Layout">game</param>
+                </action>
+            </actions>
+        </event-block>
+        <event-block sid="941419300979322">
+            <conditions>
+                <condition id="5" name="On error" sid="162951518124261" type="LocalStorage" />
+            </conditions>
+            <actions>
+                <action id="14" name="Log" sid="681210534231121" type="Browser">
+                    <param id="0" name="Type">0</param>
+                    <param id="1" name="Message">&quot;Local storage: error. &quot; &amp; LocalStorage.ErrorMessage</param>
+                </action>
+            </actions>
+        </event-block>
+        <comment>Display version number</comment>
+        <event-block sid="475597046385930">
+            <conditions>
+                <condition id="-2" name="On start of layout" sid="970269882959576" type="System" />
+            </conditions>
+            <actions>
+                <action id="0" name="Set text" sid="617017561147198" type="tLevel">
+                    <param id="0" name="Text">&quot;v&quot; &amp; projectversion</param>
+                </action>
+            </actions>
+        </event-block>
+    </events>
+</c2eventsheet>
