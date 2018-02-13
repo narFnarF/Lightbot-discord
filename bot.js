@@ -59,9 +59,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case 'prout':
                 bot.sendMessage({
                     to: channelID,
-                    message: 'Pet! 💩 '
+                    message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
                 });
-                logger.info('Pet! 💩 ');
+                logger.info('Attention tout le monde! '+user+' ('+userID+') a pété! 💩 ');
             break;
             
             case 'img':
@@ -85,11 +85,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 function launchGame() {
 	logger.info("launching an app");
 	// executes `pwd`
-	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'", function (error, stdout, stderr) {
-		console.log('stdout: ' + stdout);
-		console.log('stderr: ' + stderr);
-		if (error !== null) {
-			console.log('exec error: ' + error);
+	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'", 
+		function (error, stdout, stderr) {
+			console.log('stdout: ' + stdout);
+			console.log('stderr: ' + stderr);
+			if (error !== null) {
+				console.log('exec error: ' + error);
+			}
 		}
-	});
+	);
 }
