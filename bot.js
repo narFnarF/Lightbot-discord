@@ -69,7 +69,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 bot.sendMessage({to: channelID, message: "Incoming image..."});
                 bot.uploadFile({
                     to: channelID,
-                    file: "/Users/narF/Downloads/Om nom nom - Imgur.gif",
+                    file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
                     message: 'Here\'s your image!'
                 }), (err, res) => { console.log(err, res) };
             break;
