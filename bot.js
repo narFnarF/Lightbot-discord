@@ -44,7 +44,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     if (message.substring(0, 1) == '!') {
         var args = message.substring(1).split(' ');
         var cmd = args[0];
-       
+
         args = args.splice(1);
         switch(cmd) {
             // !ping
@@ -55,15 +55,15 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 });
                 logger.info('Ping pong!');
             break;
-            
+
             case 'prout':
                 bot.sendMessage({
                     to: channelID,
                     message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
                 });
-                logger.info('Attention tout le monde! '+user+' ('+userID+') a pété! 💩 ');
+                logger.info(user+' ('+userID+') a pété! 💩 ');
             break;
-            
+
             case 'img':
                 logger.info('posting an image');
                 bot.sendMessage({to: channelID, message: "Incoming image..."});
@@ -73,7 +73,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     message: 'Here\'s your image!'
                 }), (err, res) => { console.log(err, res) };
             break;
-            
+
             case 'app':
             	launchGame();
             break;
@@ -85,7 +85,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 function launchGame() {
 	logger.info("launching an app");
 	// executes `pwd`
-	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'", 
+	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'",
 		function (error, stdout, stderr) {
 			console.log('stdout: ' + stdout);
 			console.log('stderr: ' + stderr);
