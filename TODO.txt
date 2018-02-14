@@ -1,0 +1,7 @@
+Construct:
+- Win state update JSON
+
+Node.js:
+- Lire le JSON pour si ça a gagné et level up
+- Maintenir la liste des joueurs
+- Vérifier si le joueur a le droit (si ça fait plus que 5 minutes)
