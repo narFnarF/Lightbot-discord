@@ -7,8 +7,52 @@
         <variable constant="0" name="nbLights" sid="551270629813574" static="0" type="number">0</variable>
         <variable constant="0" name="winState" sid="983866056576056" static="0" type="text">false</variable>
         <variable comment="in seconds" constant="0" name="delay" sid="233878733708793" static="0" type="number">300</variable>
-        <variable constant="1" name="WORKFOLDER" sid="372749836834010" static="0" type="text">desktop</variable>
+        <variable constant="0" name="workfolder" sid="372749836834010" static="0" type="text"></variable>
         <variable constant="1" name="json_filename" sid="439621911725426" static="0" type="text">data.json</variable>
+        <variable constant="1" name="png_filename" sid="327046001471604" static="0" type="text">screenshot.png</variable>
+        <event-block sid="397831868162303">
+            <conditions>
+                <condition id="-2" name="On start of layout" sid="143127422393697" type="System" />
+            </conditions>
+            <actions />
+            <sub-events>
+                <event-block sid="391372763882195">
+                    <conditions>
+                        <condition id="-18" name="Is in preview" sid="874713942747914" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="426297559136655" type="System">
+                            <param id="0" name="Variable">workfolder</param>
+                            <param id="1" name="Value">&quot;C:\Users\narF\Documents\github\bot-discord\&quot;</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="153425098908382">
+                    <conditions>
+                        <condition id="-22" name="Else" sid="173496804694693" type="System" />
+                    </conditions>
+                    <actions>
+                        <action id="-9" name="Set value" sid="235733692688649" type="System">
+                            <param id="0" name="Variable">workfolder</param>
+                            <param id="1" name="Value">NWjs.AppFolder</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="791964431116232">
+                    <conditions />
+                    <actions>
+                        <action id="14" name="Log" sid="899565463064645" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;appfolder:  &quot; &amp; NWjs.AppFolder</param>
+                        </action>
+                        <action id="14" name="Log" sid="542004059843339" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;workfolder: &quot; &amp; workfolder</param>
+                        </action>
+                    </actions>
+                </event-block>
+            </sub-events>
+        </event-block>
         <event-group description="" sid="585566149608349" title="main script">
             <sub-events>
                 <event-block sid="428664085259921">
@@ -31,26 +75,11 @@
                         <action disabled="1" id="-16" name="Wait" sid="182740710206965" type="System">
                             <param id="0" name="Seconds">1</param>
                         </action>
+                        <action id="0" name="Call function" sid="626425976055284" type="Function">
+                            <param id="0" name="Name">&quot;screenshot&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
                     </actions>
-                    <sub-events>
-                        <event-block sid="693026392541251">
-                            <conditions>
-                                <condition id="-18" name="Is in preview" sid="536689494677183" type="System" />
-                            </conditions>
-                            <actions />
-                        </event-block>
-                        <event-block sid="334205155201167">
-                            <conditions>
-                                <condition id="-22" name="Else" sid="413530978081367" type="System" />
-                            </conditions>
-                            <actions>
-                                <action id="0" name="Call function" sid="626425976055284" type="Function">
-                                    <param id="0" name="Name">&quot;screenshot&quot;</param>
-                                    <param id="1" name="Parameter {n}"></param>
-                                </action>
-                            </actions>
-                        </event-block>
-                    </sub-events>
                 </event-block>
             </sub-events>
         </event-group>
@@ -64,7 +93,7 @@
                     </conditions>
                     <actions>
                         <action id="60" name="LoadJSON" sid="497275153891927" type="data">
-                            <param id="0" name="JSON">NWjs.ReadFile(NWjs.UserFolder&amp;WORKFOLDER &amp; &quot;/&quot; &amp; JSON_FILENAME)</param>
+                            <param id="0" name="JSON">NWjs.ReadFile(workfolder &amp; JSON_FILENAME)</param>
                             <param id="1" name="Reference point">0</param>
                             <param id="2" name="Key {n}"></param>
                         </action>
@@ -89,6 +118,13 @@
                             <param id="0" name="Value">data.Value(0, &quot;level&quot;)</param>
                         </action>
                     </actions>
+                </event-block>
+                <comment>TODO</comment>
+                <comment>Function ou event ou message</comment>
+                <comment>Win state --&gt; update the level in the JSON</comment>
+                <event-block sid="148861231589872">
+                    <conditions />
+                    <actions />
                 </event-block>
             </sub-events>
         </event-group>
@@ -522,10 +558,6 @@
                         <condition id="-26" name="On canvas snapshot" sid="815919344209193" type="System" />
                     </conditions>
                     <actions>
-                        <action id="14" name="Log" sid="747601916355966" type="Browser">
-                            <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">NWjs.UserFolder &amp; &quot;Desktop&quot;</param>
-                        </action>
                         <action disabled="1" id="13" name="Invoke download" sid="164494049807256" type="Browser">
                             <param id="0" name="URL">CanvasSnapshot</param>
                             <param id="1" name="Filename">&quot;light game snapshot &quot; &amp; Date.Year &amp; &quot;-&quot; &amp; Date.Month &amp; &quot;-&quot; &amp; Date.Date &amp; &quot; &quot; &amp; Date.Hours &amp; &quot;_&quot; &amp; Date.Minutes &amp; &quot;_&quot; &amp; Date.Seconds</param>
@@ -535,7 +567,11 @@
                             <param id="1" name="Contents">Browser.ExecJS(&quot;atob(&quot;&quot;&quot; &amp; tokenat(CanvasSnapshot, 1, &quot;,&quot;) &amp; &quot;&quot;&quot;)&quot;)</param>
                         </action>
                         <action id="17" name="Execute Javascript" sid="984983615080600" type="Browser">
-                            <param id="0" name="Javascript">&quot;var fs = require(&apos;fs&apos;);fs[&apos;writeFileSync&apos;](&apos;&quot; &amp;replace(NWjs.UserFolder &amp; &quot;\Desktop\screenshot&quot; &amp; &quot;.png&quot;,&quot;\&quot;,&quot;\\&quot;)&amp; &quot;&apos;,&apos;&quot; &amp;CanvasSnapshot&amp; &quot;&apos;.split(&apos;,&apos;)[1], {&apos;encoding&apos;: &apos;base64&apos;});&quot;</param>
+                            <param id="0" name="Javascript">&quot;var fs = require(&apos;fs&apos;);fs[&apos;writeFileSync&apos;](&apos;&quot; &amp;replace(workfolder &amp; PNG_FILENAME,&quot;\&quot;,&quot;\\&quot;)&amp; &quot;&apos;,&apos;&quot; &amp;CanvasSnapshot&amp; &quot;&apos;.split(&apos;,&apos;)[1], {&apos;encoding&apos;: &apos;base64&apos;});&quot;</param>
+                        </action>
+                        <action id="14" name="Log" sid="124434599215462" type="Browser">
+                            <param id="0" name="Type">0</param>
+                            <param id="1" name="Message">&quot;Export screenshot: &quot; &amp; workfolder &amp; PNG_FILENAME</param>
                         </action>
                         <action disabled="1" id="-16" name="Wait" sid="484841093213604" type="System">
                             <param id="0" name="Seconds">2</param>
@@ -544,12 +580,21 @@
                             <param id="0" name="Variable">done</param>
                             <param id="1" name="Value">1</param>
                         </action>
-                        <action id="14" name="Log" sid="454663691644519" type="Browser">
-                            <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">&quot;close&quot;</param>
-                        </action>
-                        <action id="1" name="Close" sid="962495633000094" type="Browser" />
                     </actions>
+                    <sub-events>
+                        <event-block sid="782931454306573">
+                            <conditions>
+                                <condition id="-18" inverted="1" name="Is in preview" sid="692381160920556" type="System" />
+                            </conditions>
+                            <actions>
+                                <action id="14" name="Log" sid="454663691644519" type="Browser">
+                                    <param id="0" name="Type">0</param>
+                                    <param id="1" name="Message">&quot;close&quot;</param>
+                                </action>
+                                <action id="1" name="Close" sid="962495633000094" type="Browser" />
+                            </actions>
+                        </event-block>
+                    </sub-events>
                 </event-block>
                 <event-block sid="778138974122497">
                     <conditions>
