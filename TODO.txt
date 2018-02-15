@@ -1,4 +1,6 @@
 Construct:
+- Send bug report: nwjs.appfolder is hidden deep inside the app instead of being the app's parent folder
+- Fix Mac build
 - Win state update JSON
 
 Node.js:
