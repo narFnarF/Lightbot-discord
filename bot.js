@@ -87,8 +87,12 @@ function launchGame() {
 	// executes `pwd`
 	child = exec("open '/Users/narF/Library/Application\ Support/itch/apps/light\ game/lightgame.app'",
 		function (error, stdout, stderr) {
-			console.log('stdout: ' + stdout);
-			console.log('stderr: ' + stderr);
+			if (stdout !== null && stdout !== ""){
+				console.log('stdout: ' + stdout);
+			}
+			if (stderr !== null && stderr !== ""){
+				console.log('stderr: ' + stderr);
+			}
 			if (error !== null) {
 				console.log('exec error: ' + error);
 			}
