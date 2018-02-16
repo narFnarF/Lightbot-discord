@@ -106,6 +106,21 @@
                             <param id="1" name="Message">&quot;level: &quot; &amp; level</param>
                         </action>
                     </actions>
+                    <sub-events>
+                        <event-block sid="156938040380973">
+                            <conditions>
+                                <condition id="-37" name="Is number NaN" sid="147674284781233" type="System">
+                                    <param id="0" name="Number">level</param>
+                                </condition>
+                            </conditions>
+                            <actions>
+                                <action id="-9" name="Set value" sid="319820797112388" type="System">
+                                    <param id="0" name="Variable">level</param>
+                                    <param id="1" name="Value">1</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
                 </event-block>
                 <event-block sid="487340268699013">
                     <conditions>
