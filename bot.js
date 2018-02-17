@@ -23,27 +23,32 @@ logger.level = 'debug';
 
 
 // Initialize Discord Bot
-var testingMode = true;
-if (!testingMode){
-	var bot = new Discord.Client({
-		token: auth.token,
-		autorun: true
-	});
-}else {
-	logger.warn ("We're running in debug mode.")
-	var id = "fake4";
+var bot = new Discord.Client({
+	token: auth.token,
+	autorun: true
+});
 
-	//registerPlayerInDB(id);
-	preparePlayerData(id);
-	//savePlayersDB();
+//testing ground
+if (testingMode = false){
+	logger.warn ("We're running in debug mode.")
+	var id = "000000000fake00000";
+	var username = "fake";
+	// id = 214590808727355393;
+	// username = "narF"
+
+	logger.debug(canPlay(id));
+	preparePlayerData(id, username);
+	logger.debug(canPlay(id));
+	afterLaunching(id, "channelID", username);
+	logger.debug(canPlay(id));
 }
 
-/*
+
 //bot is online. Display in console.
 bot.on('ready', function (evt) {
 	logger.info('Connected');
 	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
-	logger.info(''); //blank line return
+	console.log(); //blank line return
 });
 
 //Disconnected for some reasons
@@ -55,7 +60,7 @@ bot.on("disconnected", function () {
 
 
 // When a message is received
-bot.on('message', function (user, userID, channelID, message, evt) {
+bot.on('message', function (username, userID, channelID, message, evt) {
 	// Our bot needs to know if it will execute a command
 	// It will listen for messages that will start with `!`
 	if (message.substring(0, 1) == '!') {
@@ -78,33 +83,63 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 					to: channelID,
 					message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
 				});
-				logger.info(user+' ('+userID+') a pété! 💩 ');
+				logger.info(username+' ('+userID+') a pété! 💩 ');
 			break;
 
-			case 'img':
-				logger.info('posting an image');
-				bot.sendMessage({to: channelID, message: "Incoming image..."});
-				bot.uploadFile({
+			// case 'img':
+			// 	logger.info('posting an image');
+			// 	bot.sendMessage({to: channelID, message: "Incoming image..."});
+			// 	bot.uploadFile({
+			// 		to: channelID,
+			// 		file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
+			// 		message: "Here's your image!"
+			// 	}), (err, res) => { console.log(err, res) };
+			// break;
+
+			case "help":
+				bot.sendMessage({
 					to: channelID,
-					file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
-					message: "Here's your image!"
-				}), (err, res) => { console.log(err, res) };
+					message: "Hello. Je suis un bot. narF n'a pas encore codé ma fonction Help. :("
+				});
+				logger.info("Help requested.")
 			break;
 
-			case 'app':
-				registerPlayerInDB(userID);
-				preparePlayerData(userID);
-				launchGame();
-				//TODO wait some seconds, or wait for a callback?
-				//TODO read data.json and put that back inside playersDB.json
+			case 'light':
+
+				if (canPlay(userID)) {
+					try {
+						preparePlayerData(userID, username);
+						bot.sendMessage({
+							to: channelID,
+							message: "<@"+userID+"> Your image is comming (in about 5 seconds)"})
+						launchGame();
+						setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
+					} catch (e) {
+						bot.sendMessage({
+							to: channelID,
+							message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
+						logger.error(e);
+						bot.sendMessage({
+							to: channelID,
+							message: e
+						})
+					}
+				} else {
+					logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
+					bot.sendMessage({
+						to: channelID,
+						message: "<@"+userID+"> Aren't you a little impatient? Your image evolves only every 5 minutes. Use that time to meditate, then try again."})
+				}
+
+
 			break;
 		}
 	}
 });
-*/
+
 
 function launchGame() {
-	logger.info("launching an app");
+	logger.info("Launching the Construct app");
 	// executes `pwd`
 	child = exec("open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'",
 		function (error, stdout, stderr) {
@@ -123,7 +158,8 @@ function launchGame() {
 
 function readPlayerDBJson(){
 	//returns an object: the entire playersDB!
-	var json = {};
+	logger.info("Let's read the DB file!");
+	var json;
 	if (fs.existsSync("playersDB.json")) { //if the file exists on disk
 		//logger.info("The file playersDB.json exists!");
 
@@ -138,58 +174,62 @@ function readPlayerDBJson(){
 		}
 
 		//parse JSON
-		try {
-			json = JSON.parse(data);
-		} catch (e) {
-			logger.warn("playersDB.json had error and will be recreated.");
-			logger.warn(e);
-			throw "playersDB.json is not a proper JSON."
-			//json = {players:{}};
+		json = JSON.parse(data);
+		// try {
+		// 	json = JSON.parse(data);
+		// } catch (e) {
+		// 	logger.warn(e);
+		// 	throw "playersDB.json is not a proper JSON."
+		// 	//json = {players:{}};
+		// }
+
+		//check if DB is empty
+		if (!json.hasOwnProperty("players")) {
+			json.players = {};
+			logger.warn("The DB was missing it's player node, but we recreated it.");
 		}
 	}else{
 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
 		json = {players:{}};
 	}
+	// console.log(json);
 	return json;
 }
 
-function registerPlayerInDB(userID) {
-	logger.info("We're registering player "+userID);
+function preparePlayerData(userID, username){
+	registerPlayerInDB(userID, username);
+	saveDataJson(userID, username);
+}
+
+function registerPlayerInDB(userID, username) {
+	logger.info("We're registering player "+username+" "+userID);
 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
-		logger.info("Found player "+userID);
+		logger.info("Found player "+username+" "+userID);
 
 		//check if it's missing any values:
 		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
 			playersDB.players[userID].level = 1; //set level to 1
-			logger.warn(userID+" was missing it's level.")
+			logger.warn(userID+" was missing it's level so it was set to 1.");
 		}
 		if (!playersDB.players[userID].hasOwnProperty("win")) { //missing win
 			playersDB.players[userID].win = false; //set level to 1
-			logger.warn(userID+" was missing it's win state.")
+			logger.warn(userID+" was missing it's win state so it was set to false.");
 		}
 		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
 			playersDB.players[userID].lastPlayed = 0; //set level to 1
-			logger.warn(userID+" was missing it's lastPlayed timestamp.")
+			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
 		}
 	}else{
-		logger.warn(userID+" was not in there. But we're going to add it!")
+		logger.warn(username+" "+userID+" was not in there. But we're going to add it!")
 		playersDB.players[userID] = {
+			"username": username,
 			"level": 1,
 			"win": false,
 			"lastPlayed": 0
 		};
-		//console.log(playersDB);
+		// console.log(playersDB);
 	}
-	logger.info("Finished registering player "+userID+" data "+JSON.stringify(playersDB.players[userID]));
-	savePlayersDB();
-}
-
-
-function preparePlayerData(userID){
-	//logger.info("We're looking for player "+userID);
-	//console.log(playersDB);
-	registerPlayerInDB(userID);
-	saveDataJson(userID); //TODO qu'est-ce qu'on fait si ça n'a pas écrit?
+	logger.info("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
 	savePlayersDB();
 }
 
@@ -204,6 +244,7 @@ function saveDataJson(userID) {
 	//make it pretty and write in file on disk
 	var beautifulPlayerData = JSON.stringify(playerData, null, 4);
 	fs.writeFileSync("data.json", beautifulPlayerData);
+	logger.info("Saved data.json to disk.");
 }
 
 function savePlayersDB() {
@@ -218,40 +259,59 @@ function savePlayersDB() {
 	}
 }
 
-function afterLaunching(userID) {
-	// read data.json
-	var data = fs.readFileSync("data.json")
-	playerData = JSON.parse(data);
-
-	// get player's level
-	//var level = playerData.level;
-	//var win = playerData.win;
-	// logger.info("avant!")
-	// console.log(playerData);
-	// console.log(playersDB);
-	// console.log(userID);
-
-	// merge data.json in playersDB
-	if (!playersDB.players.hasOwnProperty(userID)) { //if the player is missing for some reason
-		playersDB.players[userID] = {}; //create an empty player
-	}
-	playersDB.players[userID].level = playerData.level;
-	playersDB.players[userID].win = playerData.win;
-
-	// write playersDB to file playersDB.json
-	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
-	fs.writeFileSync("playersDB.JSON", beautifulPlayersDB);
+function afterLaunching(userID, channelID) {
+	mergeDataToDB(userID);
+	sendImage(userID, channelID);
 }
 
-function canPlay(userID) {
-	//Boolean. Returns if the player userID is allowed to play (true if it's been more than 5 minutes)
-	var lastTime = playersDB.players[userID].lastPlayed;
-	if(lastTime===undefined){
-		logger.warn("It seems that player "+userID+" has never played before.")
-		//return true;
-		lastTime = 0;
-		playersDB.players[userID].lastPlayed = 0;
+function mergeDataToDB(userID) {
+	// read data.json
+	var data = fs.readFileSync("data.json")
+	var playerData = JSON.parse(data);
+	delete playerData.userID; //remove "userID": 123455666 node beforme merging in DB
+	playerData.lastPlayed = Date.now(); //set lastPlayed timestamp
+
+	// merge data.json in playersDB
+	playersDB.players[userID] = playerData;
+
+	logger.info("Merged data.json into playersDB.json.")
+	savePlayersDB(); // write playersDB to file playersDB.json
+}
+
+function sendImage(userID, channelID) {
+	try{
+		bot.uploadFile({
+			to: channelID,
+			file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
+			message: "<@"+userID+"> Here's your image!"
+		}), (err, res) => { console.log(err, res) };
+	}catch(e){
+		logger.error("Could not send the image.")
+		logger.error(e);
 	}
-	logger.info("lastTime: "+lastTime);
-	return Date.now() > lastTime + (5*60*1000); //5 minutes, in ms
+}
+
+
+function canPlay(userID) {
+	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
+
+	// logger.debug("Can "+userID+" play?");
+	if (userID !== undefined){
+		if (playersDB.players.hasOwnProperty(userID)){ //if player exists in DB
+			if (playersDB.players[userID].lastPlayed !== undefined){
+				lastPlayed = playersDB.players[userID].lastPlayed;
+				logger.info("lastPlayed: "+lastPlayed);
+				return Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
+			}else {
+				logger.warn("lastPlayer is undefined for player "+userID);
+				return true;
+			}
+		}else {
+			logger.info("It seems that player "+userID+" has never played before.")
+			return true;
+		}
+	}else{
+		logger.error("Missing parameter function canPlay()");
+		return false;
+	}
 }
