@@ -4,14 +4,12 @@ var fs = require('fs');
 test();
 
 function test(){
-	try {
-		testError();
-	} catch (e) {
-		logger.info(JSON.stringify(e, null, 4));
-	}
+	logger.info("Hello! This is test.");
+	testError();
+
 }
 
 
 function testError() {
-	throw {"asdf":123, "info":"rien"}
+	throw "error";
 }

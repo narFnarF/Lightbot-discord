@@ -28,6 +28,7 @@ var bot = new Discord.Client({
 	autorun: true
 });
 
+
 //testing ground
 if (testingMode = false){
 	logger.warn ("We're running in debug mode.")
@@ -49,6 +50,8 @@ bot.on('ready', function (evt) {
 	logger.info('Connected');
 	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
 	console.log(); //blank line return
+
+	bot.setPresence({game:{ name: "type !help for infos"}});
 });
 
 //Disconnected for some reasons
@@ -99,9 +102,18 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case "help":
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello. Je suis un bot. narF n'a pas encore codé ma fonction Help. :("
+					message: "Hello. I'm a bot. Request a picture by typing \"!light\" in the chat. Your progression is saved and your image evolves over time."
 				});
 				logger.info("Help requested.")
+			break;
+
+			case "register":
+				registerPlayerInDB(userID,username);
+				logger.info("Registered user"+userID+" "+username);
+				bot.sendMessage({
+					to: channelID,
+					message: "You're registered!\n"+JSON.stringify(playersDB.players[userID], null, 4)
+				});
 			break;
 
 			case 'light':
@@ -137,6 +149,22 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 	}
 });
 
+
+// Control+C signal received: disconnect the bot before exit
+process.on("SIGINT", function () {
+	console.log("");
+	logger.info("Disconnecting bot...")
+	bot.sendMessage({
+		to: playersDB.admin["narF"],
+		message: "Bot is shutting down. Bye bye!"
+	})
+
+	setTimeout(function(){
+		logger.info("Bye bye!  "+playersDB.admin["narF"])
+		bot.disconnect();
+		process.exit();
+	}, 1000);
+});
 
 function launchGame() {
 	logger.info("Launching the Construct app");
