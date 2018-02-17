@@ -11,6 +11,8 @@ var child;
 var fs = require('fs');
 
 
+var playersDB = readPlayerDBJson(); //Initialize the playersDB
+
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -28,7 +30,12 @@ if (!testingMode){
 		autorun: true
 	});
 }else {
-	test("fake123");
+	logger.warn ("We're running in debug mode.")
+	var id = "fake4";
+
+	//registerPlayerInDB(id);
+	preparePlayerData(id);
+	//savePlayersDB();
 }
 
 /*
@@ -85,7 +92,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 			break;
 
 			case 'app':
-				test(userID);
+				registerPlayerInDB(userID);
+				preparePlayerData(userID);
 				launchGame();
 				//TODO wait some seconds, or wait for a callback?
 				//TODO read data.json and put that back inside playersDB.json
@@ -113,73 +121,137 @@ function launchGame() {
 	);
 }
 
-
-function test(userID) {
-	if (fs.existsSync("playersDB.json")) {
-		//logger.info("playersDB.json exists!");
+function readPlayerDBJson(){
+	//returns an object: the entire playersDB!
+	var json = {};
+	if (fs.existsSync("playersDB.json")) { //if the file exists on disk
+		//logger.info("The file playersDB.json exists!");
 
 		//read playersDB.json
 		var data;
 		try {
 			data = fs.readFileSync("playersDB.json", "utf8");
 		} catch (e) {
-			logger.warn("Could not read playersDB.json for some reasons.");
+			logger.warn("The playersDB exists but cannot be read.");
 			logger.warn(e);
+			throw "playersDB exists but cannot be read";
 		}
 
 		//parse JSON
 		try {
-			playersDB = JSON.parse(data);
+			json = JSON.parse(data);
 		} catch (e) {
 			logger.warn("playersDB.json had error and will be recreated.");
 			logger.warn(e);
-			playersDB = {players:{}};
+			throw "playersDB.json is not a proper JSON."
+			//json = {players:{}};
 		}
 	}else{
 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
-		playersDB = {players:{}};
+		json = {players:{}};
 	}
-	preparePlayerData(userID, playersDB);
-};
+	return json;
+}
 
-
-
-function preparePlayerData(userID, playersDB){
-	//logger.info("We're looking for player "+userID);
-	//console.log(playersDB);
-	if (userID in playersDB.players){
+function registerPlayerInDB(userID) {
+	logger.info("We're registering player "+userID);
+	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
 		logger.info("Found player "+userID);
-		playerData = playersDB.players[userID];
+
+		//check if it's missing any values:
+		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
+			playersDB.players[userID].level = 1; //set level to 1
+			logger.warn(userID+" was missing it's level.")
+		}
+		if (!playersDB.players[userID].hasOwnProperty("win")) { //missing win
+			playersDB.players[userID].win = false; //set level to 1
+			logger.warn(userID+" was missing it's win state.")
+		}
+		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
+			playersDB.players[userID].lastPlayed = 0; //set level to 1
+			logger.warn(userID+" was missing it's lastPlayed timestamp.")
+		}
 	}else{
 		logger.warn(userID+" was not in there. But we're going to add it!")
-		playerData = {
+		playersDB.players[userID] = {
 			"level": 1,
-			"win": false
+			"win": false,
+			"lastPlayed": 0
 		};
-		playersDB.players[userID] = playerData;
 		//console.log(playersDB);
 	}
-	logger.info("Player "+userID+" data "+JSON.stringify(playerData));
+	logger.info("Finished registering player "+userID+" data "+JSON.stringify(playersDB.players[userID]));
+	savePlayersDB();
+}
+
+
+function preparePlayerData(userID){
+	//logger.info("We're looking for player "+userID);
+	//console.log(playersDB);
+	registerPlayerInDB(userID);
+	saveDataJson(userID); //TODO qu'est-ce qu'on fait si ça n'a pas écrit?
+	savePlayersDB();
+}
+
+
+function saveDataJson(userID) {
+	//Write data.json to disk
+
+	//get the data from the DB
+	playerData = JSON.parse(JSON.stringify(playersDB.players[userID])); //make a copy
+	playerData.userID = userID;
+
+	//make it pretty and write in file on disk
 	var beautifulPlayerData = JSON.stringify(playerData, null, 4);
-	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
+	fs.writeFileSync("data.json", beautifulPlayerData);
+}
 
-	//write data.json
-	try{
-		fs.writeFileSync("data.json", beautifulPlayerData);
-	}catch(e){
-		logger.warn("Could not write data.json on disk.");
-		logger.warn(e);
-	}
-
+function savePlayersDB() {
 	//write playersDB.json
+	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
 	try{
 		fs.writeFileSync("playersDB.json", beautifulPlayersDB);
+		logger.info("Saved the DB");
 	}catch(e){
 		logger.warn("Could not write playersDB.json on disk.");
 		logger.warn(e);
 	}
 }
 
-function recollectPlayerData() {
+function afterLaunching(userID) {
+	// read data.json
+	var data = fs.readFileSync("data.json")
+	playerData = JSON.parse(data);
 
+	// get player's level
+	//var level = playerData.level;
+	//var win = playerData.win;
+	// logger.info("avant!")
+	// console.log(playerData);
+	// console.log(playersDB);
+	// console.log(userID);
+
+	// merge data.json in playersDB
+	if (!playersDB.players.hasOwnProperty(userID)) { //if the player is missing for some reason
+		playersDB.players[userID] = {}; //create an empty player
+	}
+	playersDB.players[userID].level = playerData.level;
+	playersDB.players[userID].win = playerData.win;
+
+	// write playersDB to file playersDB.json
+	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
+	fs.writeFileSync("playersDB.JSON", beautifulPlayersDB);
+}
+
+function canPlay(userID) {
+	//Boolean. Returns if the player userID is allowed to play (true if it's been more than 5 minutes)
+	var lastTime = playersDB.players[userID].lastPlayed;
+	if(lastTime===undefined){
+		logger.warn("It seems that player "+userID+" has never played before.")
+		//return true;
+		lastTime = 0;
+		playersDB.players[userID].lastPlayed = 0;
+	}
+	logger.info("lastTime: "+lastTime);
+	return Date.now() > lastTime + (5*60*1000); //5 minutes, in ms
 }
