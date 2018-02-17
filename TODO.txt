@@ -4,9 +4,8 @@ Construct:
 - Win state update JSON
 
 Node.js:
-- rename test() function
-- Lire le JSON pour si ça a gagné et level up
-- Maintenir la liste des joueurs
-- Vérifier si le joueur a le droit (si ça fait plus que 5 minutes)
-- sauvegarder le timestamp du joueur (seulement après avoir envoyé l'image)
-- Bug: If playersDB.json exists but is empty, an error is thrown
+- Si y'a pas d'image, renvoie un msg d'erreur
+- Deleter l'image quand il a fini
+- Dire au joueur à quel niveau il est
+- Dire au joueur quand il level up
+- Si y'a pas de fichier data, renvoie une erreur
