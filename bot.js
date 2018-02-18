@@ -312,7 +312,7 @@ function sendImage(userID, channelID) {
 	try{
 		bot.uploadFile({
 			to: channelID,
-			file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
+			file: screenshotPath,
 			message: "<@"+userID+"> Here's your image!"
 		}), (err, res) => { console.log(err, res) };
 	}catch(e){
