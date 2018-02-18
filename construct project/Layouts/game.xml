@@ -437,6 +437,7 @@
     <nonworld-instances>
         <instance type="Date" uid="26" />
         <instance type="data" uid="5" />
+        <instance type="config" uid="21" />
     </nonworld-instances>
     <effects />
 </c2layout>

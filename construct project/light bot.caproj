@@ -10,6 +10,7 @@
     <unique-id>22sbj03s5zl2y</unique-id>
     <saved-with-version>25200</saved-with-version>
     <used-plugins>
+        <plugin author="Scirra" id="AJAX" version="1">AJAX</plugin>
         <plugin author="Scirra" id="Browser" version="1">Browser</plugin>
         <plugin author="Scirra" id="Function" version="1">Function</plugin>
         <plugin author="Yann Granjon" id="JSON" version="1">JSON</plugin>
@@ -76,6 +77,9 @@
             <object-type name="NWjs" sid="746192085008521">
                 <plugin id="NodeWebkit" />
             </object-type>
+            <object-type name="AJAX" sid="994813789007058">
+                <plugin id="AJAX" />
+            </object-type>
         </object-folder>
         <object-folder name="HUD">
             <object-type name="tLevel" sid="759820171986187">
@@ -119,6 +123,9 @@
         <object-type global="1" name="data" sid="301771041259861">
             <plugin id="JSON" />
         </object-type>
+        <object-type global="1" name="config" sid="685897595534441">
+            <plugin id="JSON" />
+        </object-type>
     </object-folder>
     <families>
         <family name="f_BarlowFont" plugin-id="Text" sid="688567955848068">
@@ -145,6 +152,7 @@
         <global-instance type="Function" uid="4" />
         <global-instance type="LocalStorage" uid="24" />
         <global-instance type="NWjs" uid="28" />
+        <global-instance type="AJAX" uid="20" />
     </global-instances>
     <sounds-folder />
     <music-folder />
@@ -157,5 +165,6 @@
             <file name="icon-256.png" />
             <file name="loading-logo.png" />
         </file-folder>
+        <file name="config.json" />
     </files-folder>
 </c2project>
