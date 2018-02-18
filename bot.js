@@ -10,7 +10,9 @@ var child;
 //to write files
 var fs = require('fs');
 
-
+var dataJsonPath = "bin/data.json";
+var playersDBPath = "playersDB.json";
+var screenshotPath = "bin/screenshot.png";
 var playersDB = readPlayerDBJson(); //Initialize the playersDB
 
 
@@ -37,11 +39,11 @@ if (testingMode = false){
 	// id = 214590808727355393;
 	// username = "narF"
 
-	logger.debug(canPlay(id));
+	// logger.debug(canPlay(id));
 	preparePlayerData(id, username);
-	logger.debug(canPlay(id));
-	afterLaunching(id, "channelID", username);
-	logger.debug(canPlay(id));
+	// logger.debug(canPlay(id));
+	// afterLaunching(id, "channelID", username);
+	// logger.debug(canPlay(id));
 }
 
 
@@ -188,13 +190,13 @@ function readPlayerDBJson(){
 	//returns an object: the entire playersDB!
 	logger.info("Let's read the DB file!");
 	var json;
-	if (fs.existsSync("playersDB.json")) { //if the file exists on disk
+	if (fs.existsSync(playersDBPath)) { //if the file exists on disk
 		//logger.info("The file playersDB.json exists!");
 
 		//read playersDB.json
 		var data;
 		try {
-			data = fs.readFileSync("playersDB.json", "utf8");
+			data = fs.readFileSync(playersDBPath, "utf8");
 		} catch (e) {
 			logger.warn("The playersDB exists but cannot be read.");
 			logger.warn(e);
@@ -271,7 +273,7 @@ function saveDataJson(userID) {
 
 	//make it pretty and write in file on disk
 	var beautifulPlayerData = JSON.stringify(playerData, null, 4);
-	fs.writeFileSync("data.json", beautifulPlayerData);
+	fs.writeFileSync(dataJsonPath, beautifulPlayerData);
 	logger.info("Saved data.json to disk.");
 }
 
@@ -279,7 +281,7 @@ function savePlayersDB() {
 	//write playersDB.json
 	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
 	try{
-		fs.writeFileSync("playersDB.json", beautifulPlayersDB);
+		fs.writeFileSync(playersDBPath, beautifulPlayersDB);
 		logger.info("Saved the DB");
 	}catch(e){
 		logger.warn("Could not write playersDB.json on disk.");
@@ -294,7 +296,7 @@ function afterLaunching(userID, channelID) {
 
 function mergeDataToDB(userID) {
 	// read data.json
-	var data = fs.readFileSync("data.json")
+	var data = fs.readFileSync(dataJsonPath)
 	var playerData = JSON.parse(data);
 	delete playerData.userID; //remove "userID": 123455666 node beforme merging in DB
 	playerData.lastPlayed = Date.now(); //set lastPlayed timestamp
