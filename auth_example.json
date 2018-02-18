@@ -1,3 +1,4 @@
 {
-   "token": "write token here"
+   "token": "write token here",
+   "_comment": "Get the bot token here: https://discordapp.com/developers/applications/me/411618329673990157 Don't confuse it with the client secret"
 }
