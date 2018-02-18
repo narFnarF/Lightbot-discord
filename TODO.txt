@@ -1,11 +1,8 @@
 Construct:
-- Send bug report: nwjs.appfolder is hidden deep inside the app instead of being the app's parent folder
-- Fix Mac build
 - Win state update JSON
 
 Node.js:
-- Si y'a pas d'image, renvoie un msg d'erreur
-- Deleter l'image quand il a fini
+- Gérer les level ups
 - Dire au joueur à quel niveau il est
 - Dire au joueur quand il level up
-- Si y'a pas de fichier data, renvoie une erreur
+- Si y'a pas d'image, renvoie un msg d'erreur
