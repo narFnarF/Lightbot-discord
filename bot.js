@@ -54,6 +54,7 @@ bot.on('ready', function (evt) {
 	console.log(); //blank line return
 
 	bot.setPresence({game:{ name: "type !help for infos"}});
+
 });
 
 //Disconnected for some reasons
@@ -71,8 +72,8 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 	if (message.substring(0, 1) == '!') {
 		var args = message.substring(1).split(' ');
 		var cmd = args[0];
+		args = args.splice(1); //removes the first parameter from the list of parameters
 
-		args = args.splice(1);
 		switch(cmd) {
 			// !ping
 			case 'ping':
@@ -101,6 +102,35 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			// 	}), (err, res) => { console.log(err, res) };
 			// break;
 
+			case "rename":
+				if (userID == playersDB.admin.narF) {
+					var name = args.join(" ");
+					logger.info("Renaming the bot to: "+name);
+					bot.editUserInfo({"username": name}, function(error, response){
+						if (error) {
+							logger.warn(error);
+							bot.sendMessage({
+								to: channelID,
+								message: "<@"+userID+"> Rename unsuccessful for some reasons..."
+							});
+						}else{
+							//TODO send success
+							bot.sendMessage({
+								to: channelID,
+								message: "<@"+userID+"> Rename successful to "+name
+							});
+							logger.info("Success.")
+						}
+					});
+				}else {
+					logger.info(username+" tried to change the bot name, but I stopped them.");
+					bot.sendMessage({
+						to: channelID,
+						message: "<@"+userID+"> You're not my admin. You cannot change my name."
+					});
+				}
+			break;
+
 			case "help":
 				bot.sendMessage({
 					to: channelID,
@@ -119,7 +149,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			break;
 
 			case 'light':
-
 				if (canPlay(userID)) {
 					try {
 						preparePlayerData(userID, username);
@@ -144,8 +173,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 						to: channelID,
 						message: "<@"+userID+"> Aren't you a little impatient? Your image evolves only every 5 minutes. Use that time to meditate, then try again."})
 				}
-
-
 			break;
 		}
 	}
@@ -290,6 +317,7 @@ function savePlayersDB() {
 }
 
 function afterLaunching(userID, channelID) {
+	logger.info("afterLaunching()")
 	mergeDataToDB(userID);
 	sendImage(userID, channelID);
 }
@@ -309,12 +337,15 @@ function mergeDataToDB(userID) {
 }
 
 function sendImage(userID, channelID) {
+	logger.info("sendImage")
 	try{
+		logger.info("inside try");
 		bot.uploadFile({
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your image!"
 		}), (err, res) => { console.log(err, res) };
+		logger.info("after upload");
 	}catch(e){
 		logger.error("Could not send the image.")
 		logger.error(e);
