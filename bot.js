@@ -53,7 +53,7 @@ bot.on('ready', function (evt) {
 	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
 	console.log(); //blank line return
 
-	bot.setPresence({game:{ name: "type !help for infos"}});
+	bot.setPresence({game:{ name: "type !light or !help"}});
 
 });
 
@@ -92,15 +92,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				logger.info(username+' ('+userID+') a pété! 💩 ');
 			break;
 
-			// case 'img':
-			// 	logger.info('posting an image');
-			// 	bot.sendMessage({to: channelID, message: "Incoming image..."});
-			// 	bot.uploadFile({
-			// 		to: channelID,
-			// 		file: "/Users/narF/Downloads/SpaceteamAdmiralsClub_DigitalPackage_Part2/patch/Patch_small.png",
-			// 		message: "Here's your image!"
-			// 	}), (err, res) => { console.log(err, res) };
-			// break;
 
 			case "rename":
 				if (userID == playersDB.admin.narF) {
