@@ -104,7 +104,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case "help":
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello. I'm a bot. Request a picture by typing \"!light\" in the chat. Your progression is saved and your image evolves over time."
+					message: "Hello. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time."
 				});
 				logger.info("Help requested.")
 			break;
