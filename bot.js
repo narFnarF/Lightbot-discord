@@ -53,7 +53,7 @@ bot.on('ready', function (evt) {
 	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
 	console.log(); //blank line return
 
-	bot.setPresence({game:{ name: "type !help for infos"}});
+	bot.setPresence({game:{ name: "type !light or !help"}});
 
 });
 
