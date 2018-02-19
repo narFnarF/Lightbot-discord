@@ -125,7 +125,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 						preparePlayerData(userID, username);
 						bot.sendMessage({
 							to: channelID,
-							message: "<@"+userID+"> Your image is comming (in about 5 seconds)"})
+							message: "<@"+userID+"> Your image is coming (in about 5 seconds)"})
 						launchGame();
 						setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
 					} catch (e) {
