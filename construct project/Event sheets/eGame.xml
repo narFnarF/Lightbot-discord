@@ -706,33 +706,11 @@
                             <param id="0" name="Variable">done</param>
                             <param id="1" name="Value">1</param>
                         </action>
+                        <action id="0" name="Call function" sid="527172927087543" type="Function">
+                            <param id="0" name="Name">&quot;exit&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
                     </actions>
-                    <sub-events>
-                        <event-block sid="782931454306573">
-                            <conditions>
-                                <condition id="-18" inverted="1" name="Is in preview" sid="692381160920556" type="System" />
-                            </conditions>
-                            <actions>
-                                <action id="0" name="Call function" sid="527172927087543" type="Function">
-                                    <param id="0" name="Name">&quot;exit&quot;</param>
-                                    <param id="1" name="Parameter {n}"></param>
-                                </action>
-                            </actions>
-                        </event-block>
-                    </sub-events>
-                </event-block>
-                <event-block sid="778138974122497">
-                    <conditions>
-                        <condition id="-14" name="Compare variable" sid="473970321607699" type="System">
-                            <param id="0" name="Variable">done</param>
-                            <param id="1" name="Comparison">0</param>
-                            <param id="2" name="Value">1</param>
-                        </condition>
-                        <condition id="-6" name="Every X seconds" sid="290861646289463" type="System">
-                            <param id="0" name="Interval (seconds)">2</param>
-                        </condition>
-                    </conditions>
-                    <actions />
                 </event-block>
             </sub-events>
         </event-group>
