@@ -197,7 +197,7 @@ process.on("SIGINT", function () {
 
 function launchGame() {
 	logger.info("Launching the Construct app");
-	// executes `pwd`
+	// TODO make this line multiplatform for my own sake. Also configurable.
 	child = exec("open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'",
 		function (error, stdout, stderr) {
 			if (stdout !== null && stdout !== ""){
@@ -317,7 +317,7 @@ function savePlayersDB() {
 }
 
 function afterLaunching(userID, channelID) {
-	logger.info("afterLaunching()")
+	// logger.info("afterLaunching()")
 	mergeDataToDB(userID);
 	sendImage(userID, channelID);
 }
@@ -337,15 +337,13 @@ function mergeDataToDB(userID) {
 }
 
 function sendImage(userID, channelID) {
-	logger.info("sendImage")
+	// logger.info("sendImage")
 	try{
-		logger.info("inside try");
 		bot.uploadFile({
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your image!"
 		}), (err, res) => { console.log(err, res) };
-		logger.info("after upload");
 	}catch(e){
 		logger.error("Could not send the image.")
 		logger.error(e);
