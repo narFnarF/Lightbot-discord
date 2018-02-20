@@ -67,6 +67,11 @@ bot.on("disconnected", function () {
 	//TODO reconnect instead?
 });
 
+// // Reconnects if bot loses connection / connection is closed
+// bot.on("disconnect", (err) => {
+//     console.log("Disconnected with error "+err);
+//     setTimeout(function(){ bot.connect(); }, 5000);
+// });
 
 // When a message is received
 bot.on('message', function (username, userID, channelID, message, evt) {
