@@ -331,6 +331,29 @@ function afterLaunching(userID, channelID) {
 	// logger.info("afterLaunching()")
 	sendImage(userID, channelID);
 	mergeDataToDB(userID);
+	announceResult(userID, channelID);
+}
+
+function announceResult(userID, channelID){
+	var msg;
+	var level = playersDB.players[userID].level;
+	var win = playersDB.players[userID].win;
+	if (win) {
+		levelUp(userID);
+		msg = "Enlighted! You've reached level "+level+". I wonder what will your next image look like?";
+	}else {
+		msg = "Delightful! You are level "+level+".";
+	}
+	bot.sendMessage({
+		to: channelID,
+		message: "<@"+userID+"> "+msg
+	});
+}
+
+function levelUp(userID) {
+	// Do the level up data modifications inside playersDB
+	playersDB.players[userID].level++;
+	playersDB.players[userID].win = false;
 }
 
 function mergeDataToDB(userID) {
