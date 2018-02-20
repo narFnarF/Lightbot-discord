@@ -1,10 +1,2 @@
-Construct:
-- Win state update JSON
-
-Node.js:
-- Gérer les level ups
-- Dire au joueur à quel niveau il est
-- Dire au joueur quand il level up
-- Si y'a pas d'image, renvoie un msg d'erreur
-- peux config pour mac ou windows
-- When it creates the empty playersDB.json, it doesn't have the admin node (to send turnoff messages)
+Moved to:
+https://trello.com/b/sZ2PRAlP/light-bot
