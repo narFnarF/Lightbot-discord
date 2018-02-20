@@ -2,12 +2,12 @@ var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
 
-//Required to launch an app (exec)
-//var sys = require('sys')
+// Required to launch an app (exec)
+// var sys = require('sys')
 var exec = require('child_process').exec; // http://nodejs.org/api.html#_child_processes
 var child;
 
-//to write files
+// to write files
 var fs = require('fs');
 
 // configurations
@@ -17,7 +17,7 @@ var screenshotPath = "bin/screenshot.png";
 var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
-var playersDB = readPlayerDBJson(); //Initialize the playersDB
+var playersDB = readPlayerDBJson(); // Initialize the playersDB
 
 
 // Configure logger settings
@@ -35,11 +35,11 @@ var bot = new Discord.Client({
 });
 
 
-//testing ground
-if (testingMode = false){
-	logger.warn ("We're running in debug mode.")
-	var id = "000000000fake00000";
-	var username = "fake";
+// testing ground
+if (testingMode = false) {
+	logger.warn('We\'re running in debug mode.');
+	var id = '000000000fake00000';
+	var username = 'fake';
 	// id = 214590808727355393;
 	// username = "narF"
 
@@ -51,16 +51,16 @@ if (testingMode = false){
 }
 
 
-//bot is online. Display in console.
+// bot is online. Display in console.
 bot.on('ready', function (evt) {
 	logger.info('Connected');
 	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
-	console.log(); //blank line return
+	console.log(); // blank line return
 
-	bot.setPresence({game:{ name: "type !light or !help"}});
+	bot.setPresence({game: {name: "type !light or !help"}});
 });
 
-//Disconnected for some reasons
+// Disconnected for some reasons
 bot.on("disconnected", function () {
 	console.log("Disconnected for some reasons...");
 	process.exit(1); //exit node with an error
@@ -349,7 +349,7 @@ function sendImage(userID, channelID) {
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your image!"
-		}), (err, res) => { console.log(err, res) };
+		}), function (err, res) { console.log(err, res) };
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
