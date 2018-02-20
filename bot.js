@@ -329,15 +329,18 @@ function mergeDataToDB(userID) {
 
 function sendImage(userID, channelID) {
 	// logger.info("sendImage")
-	try{
+	if (fs.existsSync(screenshotPath)) { //if the file exists on disk
 		bot.uploadFile({
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your image!"
 		}), (err, res) => { console.log(err, res) };
-	}catch(e){
-		logger.error("Could not send the image.")
-		logger.error(e);
+	}else{
+		logger.error("The screenshot isn't there?!");
+		bot.sendMessage({
+			to: userID,
+			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
+		});
 	}
 }
 
