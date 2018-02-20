@@ -324,8 +324,8 @@ function savePlayersDB() {
 
 function afterLaunching(userID, channelID) {
 	// logger.info("afterLaunching()")
-	mergeDataToDB(userID);
 	sendImage(userID, channelID);
+	mergeDataToDB(userID);
 }
 
 function mergeDataToDB(userID) {
@@ -356,6 +356,7 @@ function sendImage(userID, channelID) {
 			to: userID,
 			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
 		});
+		// throw "Screenshot is missing";
 	}
 }
 
