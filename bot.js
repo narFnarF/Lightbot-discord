@@ -10,9 +10,13 @@ var child;
 //to write files
 var fs = require('fs');
 
+// configurations
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
+var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
+var windowsCommand = "bin\\nw.exe";
+
 var playersDB = readPlayerDBJson(); //Initialize the playersDB
 
 
@@ -54,7 +58,6 @@ bot.on('ready', function (evt) {
 	console.log(); //blank line return
 
 	bot.setPresence({game:{ name: "type !light or !help"}});
-
 });
 
 //Disconnected for some reasons
@@ -189,7 +192,19 @@ process.on("SIGINT", function () {
 function launchGame() {
 	logger.info("Launching the Construct app");
 	// TODO make this line multiplatform for my own sake. Also configurable.
-	child = exec("open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'",
+	var windows = "win32";
+	var mac = "darwin";
+	var runThis;
+	if (process.platform == windows) {
+		runThis = windowsCommand
+	}else if (process.platform == mac) {
+		runThis = macCommand
+	}else {
+		logger.error("Seriously, which platform am I running on???");
+		return;
+	}
+
+	child = exec(runThis,
 		function (error, stdout, stderr) {
 			if (stdout !== null && stdout !== ""){
 				console.log('stdout: ' + stdout);
