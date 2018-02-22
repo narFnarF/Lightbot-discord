@@ -354,6 +354,7 @@ function levelUp(userID) {
 	// Do the level up data modifications inside playersDB
 	playersDB.players[userID].level++;
 	playersDB.players[userID].win = false;
+	savePlayersDB(); // write playersDB to file playersDB.json
 }
 
 function mergeDataToDB(userID) {
