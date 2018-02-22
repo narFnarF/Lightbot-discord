@@ -15,16 +15,10 @@
         <plugin author="Scirra" id="Function" version="1">Function</plugin>
         <plugin author="Yann Granjon" id="JSON" version="1">JSON</plugin>
         <plugin author="Scirra" id="Keyboard" version="1">Keyboard</plugin>
-        <plugin author="Scirra" id="LocalStorage" version="1">Local storage</plugin>
-        <plugin author="Scirra" id="Mouse" version="1">Mouse</plugin>
         <plugin author="Scirra" id="NodeWebkit" version="1">NW.js</plugin>
-        <plugin author="Rex.Rainbow" id="Rex_Date" version="1">Date</plugin>
         <plugin author="Scirra" id="Sprite" version="1">Sprite</plugin>
-        <plugin author="Scirra" id="Text" version="1">Text</plugin>
     </used-plugins>
-    <used-behaviors>
-        <behavior author="Scirra" id="Fade" version="1">Fade</behavior>
-    </used-behaviors>
+    <used-behaviors />
     <used-effects>
         <effect author="Scirra" id="hsladjust">Adjust HSL</effect>
     </used-effects>
@@ -65,39 +59,11 @@
             <object-type name="Keyboard" sid="130072719057350">
                 <plugin id="Keyboard" />
             </object-type>
-            <object-type name="LocalStorage" sid="398865241249025">
-                <plugin id="LocalStorage" />
-            </object-type>
-            <object-type name="Mouse" sid="868585411204233">
-                <plugin id="Mouse" />
-            </object-type>
-            <object-type global="1" name="Date" sid="312484704802151">
-                <plugin id="Rex_Date" />
-            </object-type>
             <object-type name="NWjs" sid="746192085008521">
                 <plugin id="NodeWebkit" />
             </object-type>
             <object-type name="AJAX" sid="994813789007058">
                 <plugin id="AJAX" />
-            </object-type>
-        </object-folder>
-        <object-folder name="HUD">
-            <object-type name="tLevel" sid="759820171986187">
-                <plugin id="Text" />
-            </object-type>
-            <object-type name="tWarning" sid="758134881993616">
-                <plugin id="Text" />
-                <behaviors>
-                    <behavior-type name="Fade" sid="178135256369798">
-                        <behavior id="Fade" />
-                    </behavior-type>
-                </behaviors>
-            </object-type>
-            <object-type name="tInstructions" sid="420157277066665">
-                <plugin id="Text" />
-            </object-type>
-            <object-type name="tGridSize" sid="220158514473183">
-                <plugin id="Text" />
             </object-type>
         </object-folder>
         <object-type name="light" sid="947611666461854">
@@ -112,14 +78,6 @@
                 </animation>
             </animation-folder>
         </object-type>
-        <object-type name="mouseDetector" sid="767424721209121">
-            <plugin id="Sprite" />
-            <animation-folder>
-                <animation framecount="1" loop="0" name="Default" pingpong="0" repeatcount="1" repeatto="0" sid="294075131456189" speed="5">
-                    <frame duration="1" hotspotX="0.5" hotspotY="0.5" />
-                </animation>
-            </animation-folder>
-        </object-type>
         <object-type global="1" name="data" sid="301771041259861">
             <plugin id="JSON" />
         </object-type>
@@ -127,30 +85,17 @@
             <plugin id="JSON" />
         </object-type>
     </object-folder>
-    <families>
-        <family name="f_BarlowFont" plugin-id="Text" sid="688567955848068">
-            <members>
-                <member>tGridSize</member>
-                <member>tInstructions</member>
-                <member>tLevel</member>
-                <member>tWarning</member>
-            </members>
-        </family>
-    </families>
+    <families />
     <layout-folder>
         <layout>game.xml</layout>
-        <layout>SaveCheck.xml</layout>
     </layout-folder>
     <event-folder>
         <event-sheet>eGame.xml</event-sheet>
-        <event-sheet>eSaveCheck.xml</event-sheet>
     </event-folder>
     <global-instances>
         <global-instance type="Browser" uid="1" />
         <global-instance type="Keyboard" uid="2" />
-        <global-instance type="Mouse" uid="3" />
         <global-instance type="Function" uid="4" />
-        <global-instance type="LocalStorage" uid="24" />
         <global-instance type="NWjs" uid="28" />
         <global-instance type="AJAX" uid="20" />
     </global-instances>

@@ -736,10 +736,6 @@
                         <condition id="-26" name="On canvas snapshot" sid="815919344209193" type="System" />
                     </conditions>
                     <actions>
-                        <action disabled="1" id="13" name="Invoke download" sid="164494049807256" type="Browser">
-                            <param id="0" name="URL">CanvasSnapshot</param>
-                            <param id="1" name="Filename">&quot;light game snapshot &quot; &amp; Date.Year &amp; &quot;-&quot; &amp; Date.Month &amp; &quot;-&quot; &amp; Date.Date &amp; &quot; &quot; &amp; Date.Hours &amp; &quot;_&quot; &amp; Date.Minutes &amp; &quot;_&quot; &amp; Date.Seconds</param>
-                        </action>
                         <action disabled="1" id="0" name="Write file" sid="209817338206823" type="NWjs">
                             <param id="0" name="Path">NWjs.UserFolder &amp; &quot;Desktop\img.png&quot;</param>
                             <param id="1" name="Contents">Browser.ExecJS(&quot;atob(&quot;&quot;&quot; &amp; tokenat(CanvasSnapshot, 1, &quot;,&quot;) &amp; &quot;&quot;&quot;)&quot;)</param>
