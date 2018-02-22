@@ -352,6 +352,7 @@ function announceResult(userID, channelID){
 	var win = playersDB.players[userID].win;
 	if (win) {
 		doLevelUp(userID);
+		level = playersDB.players[userID].level; //necessary to get the updated level
 		msg = "Enlighted! You've reached level "+level+". I wonder what will your next image look like?";
 	}else {
 		msg = "You are level "+level+". Delightful!";
