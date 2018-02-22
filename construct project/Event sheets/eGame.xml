@@ -9,6 +9,7 @@
         <variable comment="in seconds" constant="0" name="delay" sid="233878733708793" static="0" type="number">300</variable>
         <variable constant="0" name="workfolder" sid="372749836834010" static="0" type="text"></variable>
         <variable constant="1" name="json_filename" sid="439621911725426" static="0" type="text">data.json</variable>
+        <variable constant="1" name="LOG_FILENAME" sid="217482923794249" static="0" type="text">log.txt</variable>
         <variable constant="1" name="png_filename" sid="327046001471604" static="0" type="text">screenshot.png</variable>
         <event-group description="" sid="940768003895520" title="Load config.json">
             <sub-events>
@@ -17,11 +18,67 @@
                         <condition id="-2" name="On start of layout" sid="143127422393697" type="System" />
                     </conditions>
                     <actions>
-                        <action id="1" name="Request project file" sid="358264459284756" type="AJAX">
-                            <param id="0" name="Tag">&quot;config.json&quot;</param>
-                            <param id="1" name="File">config.json</param>
+                        <action id="0" name="Call function" sid="501687986175162" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;Platform: &quot; &amp; Browser.Platform</param>
                         </action>
                     </actions>
+                    <sub-events>
+                        <event-block sid="391372763882195">
+                            <conditions>
+                                <condition id="-18" name="Is in preview" sid="874713942747914" type="System" />
+                            </conditions>
+                            <actions>
+                                <action id="-9" name="Set value" sid="426297559136655" type="System">
+                                    <param id="0" name="Variable">workfolder</param>
+                                    <param id="1" name="Value">&quot;C:\Users\narF\Documents\github\bot-discord\bin\&quot;</param>
+                                </action>
+                                <action id="0" name="Call function" sid="683412461303481" type="Function">
+                                    <param id="0" name="Name">&quot;mainScript&quot;</param>
+                                    <param id="1" name="Parameter {n}"></param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="153425098908382">
+                            <conditions>
+                                <condition id="-22" name="Else" sid="173496804694693" type="System" />
+                            </conditions>
+                            <actions />
+                            <sub-events>
+                                <event-block sid="101144897075582">
+                                    <conditions>
+                                        <condition id="-8" name="Compare two values" sid="102574990181549" type="System">
+                                            <param id="0" name="First value">Browser.Platform</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Second value">&quot;Win32&quot;</param>
+                                        </condition>
+                                    </conditions>
+                                    <actions>
+                                        <action id="-9" name="Set value" sid="948981221955321" type="System">
+                                            <param id="0" name="Variable">workfolder</param>
+                                            <param id="1" name="Value">NWjs.AppFolder</param>
+                                        </action>
+                                        <action id="0" name="Call function" sid="416443065436050" type="Function">
+                                            <param id="0" name="Name">&quot;mainScript&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <comment>else: mac</comment>
+                                <event-block sid="410195878259451">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="426704051578094" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="1" name="Request project file" sid="358264459284756" type="AJAX">
+                                            <param id="0" name="Tag">&quot;config.json&quot;</param>
+                                            <param id="1" name="File">config.json</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                            </sub-events>
+                        </event-block>
+                    </sub-events>
                 </event-block>
                 <event-block sid="735629405522881">
                     <conditions>
@@ -35,44 +92,15 @@
                             <param id="1" name="Reference point">0</param>
                             <param id="2" name="Key {n}"></param>
                         </action>
+                        <action id="-9" name="Set value" sid="174413214845218" type="System">
+                            <param id="0" name="Variable">workfolder</param>
+                            <param id="1" name="Value">config.Value(0, &quot;path&quot;)</param>
+                        </action>
+                        <action id="0" name="Call function" sid="434232492071817" type="Function">
+                            <param id="0" name="Name">&quot;mainScript&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
                     </actions>
-                    <sub-events>
-                        <event-block sid="391372763882195">
-                            <conditions>
-                                <condition id="-18" name="Is in preview" sid="874713942747914" type="System" />
-                            </conditions>
-                            <actions>
-                                <action id="-9" name="Set value" sid="426297559136655" type="System">
-                                    <param id="0" name="Variable">workfolder</param>
-                                    <param id="1" name="Value">&quot;C:\Users\narF\Documents\github\bot-discord\bin\&quot;</param>
-                                </action>
-                            </actions>
-                        </event-block>
-                        <event-block sid="153425098908382">
-                            <conditions>
-                                <condition id="-22" name="Else" sid="173496804694693" type="System" />
-                            </conditions>
-                            <actions>
-                                <action id="-9" name="Set value" sid="174413214845218" type="System">
-                                    <param id="0" name="Variable">workfolder</param>
-                                    <param id="1" name="Value">config.Value(0, &quot;path&quot;)</param>
-                                </action>
-                            </actions>
-                        </event-block>
-                        <event-block sid="116868378194569">
-                            <conditions />
-                            <actions>
-                                <action id="14" name="Log" sid="948661802871077" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;workfolder &quot; &amp; workfolder</param>
-                                </action>
-                                <action id="0" name="Call function" sid="434232492071817" type="Function">
-                                    <param id="0" name="Name">&quot;mainScript&quot;</param>
-                                    <param id="1" name="Parameter {n}"></param>
-                                </action>
-                            </actions>
-                        </event-block>
-                    </sub-events>
                 </event-block>
                 <event-block sid="910290590643327">
                     <conditions>
@@ -81,9 +109,9 @@
                         </condition>
                     </conditions>
                     <actions>
-                        <action id="14" name="Log" sid="173411575420331" type="Browser">
-                            <param id="0" name="Type">2</param>
-                            <param id="1" name="Message">&quot;Could not load config.json&quot;</param>
+                        <action id="0" name="Call function" sid="866024900269074" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;Could not load config.json&quot;</param>
                         </action>
                         <action id="0" name="Call function" sid="838386174682300" type="Function">
                             <param id="0" name="Name">&quot;exit&quot;</param>
@@ -102,6 +130,10 @@
                         </condition>
                     </conditions>
                     <actions>
+                        <action id="0" name="Call function" sid="573268769594515" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;workfolder &quot; &amp; workfolder</param>
+                        </action>
                         <action id="0" name="Call function" sid="689383315290107" type="Function">
                             <param id="0" name="Name">&quot;json.initialize&quot;</param>
                             <param id="1" name="Parameter {n}"></param>
@@ -133,9 +165,9 @@
                         </condition>
                     </conditions>
                     <actions>
-                        <action id="14" name="Log" sid="717736451574547" type="Browser">
-                            <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">&quot;close&quot;</param>
+                        <action id="0" name="Call function" sid="158561494617772" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;close&quot;</param>
                         </action>
                     </actions>
                     <sub-events>
@@ -144,6 +176,13 @@
                                 <condition id="-18" inverted="1" name="Is in preview" sid="688484125188679" type="System" />
                             </conditions>
                             <actions>
+                                <action id="0" name="Call function" sid="895441752089679" type="Function">
+                                    <param id="0" name="Name">&quot;log.save&quot;</param>
+                                    <param id="1" name="Parameter {n}"></param>
+                                </action>
+                                <action id="-16" name="Wait" sid="381289750714780" type="System">
+                                    <param id="0" name="Seconds">10</param>
+                                </action>
                                 <action id="1" name="Close" sid="472457383851585" type="Browser" />
                             </actions>
                         </event-block>
@@ -152,9 +191,13 @@
                                 <condition id="-22" name="Else" sid="529100524324020" type="System" />
                             </conditions>
                             <actions>
-                                <action id="14" name="Log" sid="167496316903364" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;lol nope, not closing cause i&apos;m in preview&quot;</param>
+                                <action id="0" name="Call function" sid="562662393157310" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;lol nope, not closing cause i&apos;m in preview&quot;</param>
+                                </action>
+                                <action id="0" name="Call function" sid="389641698413180" type="Function">
+                                    <param id="0" name="Name">&quot;log.save&quot;</param>
+                                    <param id="1" name="Parameter {n}"></param>
                                 </action>
                             </actions>
                         </event-block>
@@ -171,9 +214,9 @@
                         </condition>
                     </conditions>
                     <actions>
-                        <action id="14" name="Log" sid="590646131175098" type="Browser">
-                            <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">&quot;function json.initialize: &quot; &amp; workfolder&amp;JSON_FILENAME</param>
+                        <action id="0" name="Call function" sid="802986212209201" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;function json.initialize: &quot; &amp; workfolder&amp;JSON_FILENAME</param>
                         </action>
                     </actions>
                     <sub-events>
@@ -189,6 +232,10 @@
                                     <param id="1" name="Reference point">0</param>
                                     <param id="2" name="Key {n}"></param>
                                 </action>
+                                <action id="0" name="Call function" sid="301597753395746" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">data.AsJson(0)</param>
+                                </action>
                             </actions>
                             <sub-events>
                                 <event-block sid="362715330394910">
@@ -203,9 +250,9 @@
                                             <param id="0" name="Variable">level</param>
                                             <param id="1" name="Value">Function.Call(&quot;json.getlevel&quot;)</param>
                                         </action>
-                                        <action id="14" name="Log" sid="296229723226345" type="Browser">
-                                            <param id="0" name="Type">0</param>
-                                            <param id="1" name="Message">&quot;level: &quot; &amp; level</param>
+                                        <action id="0" name="Call function" sid="297825495085252" type="Function">
+                                            <param id="0" name="Name">&quot;log&quot;</param>
+                                            <param id="1" name="Parameter {n}">&quot;level: &quot; &amp; level</param>
                                         </action>
                                     </actions>
                                     <sub-events>
@@ -216,9 +263,9 @@
                                                 </condition>
                                             </conditions>
                                             <actions>
-                                                <action id="14" name="Log" sid="407349699589055" type="Browser">
-                                                    <param id="0" name="Type">0</param>
-                                                    <param id="1" name="Message">&quot;level was NaN, so we set it to 1&quot;</param>
+                                                <action id="0" name="Call function" sid="495073198347096" type="Function">
+                                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                                    <param id="1" name="Parameter {n}">&quot;level was NaN, so we set it to 1&quot;</param>
                                                 </action>
                                                 <action id="-9" name="Set value" sid="296044918629559" type="System">
                                                     <param id="0" name="Variable">level</param>
@@ -233,9 +280,9 @@
                                         <condition id="-22" name="Else" sid="503054442519407" type="System" />
                                     </conditions>
                                     <actions>
-                                        <action id="14" name="Log" sid="267788910220754" type="Browser">
-                                            <param id="0" name="Type">0</param>
-                                            <param id="1" name="Message">&quot;JSON was empty, so level was set to 1&quot;</param>
+                                        <action id="0" name="Call function" sid="494568025779957" type="Function">
+                                            <param id="0" name="Name">&quot;log&quot;</param>
+                                            <param id="1" name="Parameter {n}">&quot;JSON was empty, so level was set to 1&quot;</param>
                                         </action>
                                         <action id="-9" name="Set value" sid="253088312028075" type="System">
                                             <param id="0" name="Variable">level</param>
@@ -250,9 +297,9 @@
                                 <condition id="-22" name="Else" sid="860630259261369" type="System" />
                             </conditions>
                             <actions>
-                                <action id="14" name="Log" sid="655371551299413" type="Browser">
-                                    <param id="0" name="Type">2</param>
-                                    <param id="1" name="Message">&quot;Path doesn&apos;t exist: &quot; &amp; workfolder&amp;JSON_FILENAME</param>
+                                <action id="0" name="Call function" sid="482642029888979" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;Path doesn&apos;t exist: &quot; &amp; workfolder&amp;JSON_FILENAME</param>
                                 </action>
                                 <action id="0" name="Call function" sid="923238907844843" type="Function">
                                     <param id="0" name="Name">&quot;exit&quot;</param>
@@ -313,14 +360,19 @@
                         <event-block sid="352493687113611">
                             <conditions />
                             <actions>
-                                <action id="14" name="Log" sid="567413116678961" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">data.AsJson(0)</param>
+                                <action id="0" name="Write file" sid="837337624271072" type="NWjs">
+                                    <param id="0" name="Path">workfolder&amp;JSON_FILENAME</param>
+                                    <param id="1" name="Contents">data.AsJson(0)</param>
+                                </action>
+                                <action id="0" name="Call function" sid="755768776549368" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;Write &quot;&amp;data.AsJson(0)&amp;&quot; into &quot; &amp;workfolder&amp;JSON_FILENAME</param>
                                 </action>
                             </actions>
                         </event-block>
                     </sub-events>
                 </event-block>
+                <comment>outputError is not called currently...</comment>
                 <event-block sid="148861231589872">
                     <conditions>
                         <condition id="0" name="On function" sid="936330001890679" type="Function">
@@ -341,9 +393,9 @@
                             <param id="0" name="Path">workfolder&amp;JSON_FILENAME</param>
                             <param id="1" name="Contents">data.AsJson(0)</param>
                         </action>
-                        <action id="14" name="Log" sid="352412924871185" type="Browser">
-                            <param id="0" name="Type">1</param>
-                            <param id="1" name="Message">&quot;json.outputError: &quot; &amp; data.AsJson(0)</param>
+                        <action id="0" name="Call function" sid="247095861321195" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;json.outputError: &quot; &amp; data.AsJson(0)</param>
                         </action>
                     </actions>
                 </event-block>
@@ -376,7 +428,7 @@
                         </action>
                         <action id="14" name="Log" sid="596582483258609" type="Browser">
                             <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">&quot;level.generate: &quot; &amp; x</param>
+                            <param id="1" name="Message">&quot;level.generate: size &quot;&amp;x&amp;&quot;x&quot;&amp;y</param>
                         </action>
                     </actions>
                     <sub-events>
@@ -695,9 +747,9 @@
                         <action id="17" name="Execute Javascript" sid="984983615080600" type="Browser">
                             <param id="0" name="Javascript">&quot;var fs = require(&apos;fs&apos;);fs[&apos;writeFileSync&apos;](&apos;&quot; &amp;replace(workfolder &amp; PNG_FILENAME,&quot;\&quot;,&quot;\\&quot;)&amp; &quot;&apos;,&apos;&quot; &amp;CanvasSnapshot&amp; &quot;&apos;.split(&apos;,&apos;)[1], {&apos;encoding&apos;: &apos;base64&apos;});&quot;</param>
                         </action>
-                        <action id="14" name="Log" sid="124434599215462" type="Browser">
-                            <param id="0" name="Type">0</param>
-                            <param id="1" name="Message">&quot;Export screenshot: &quot; &amp; workfolder &amp; PNG_FILENAME</param>
+                        <action id="0" name="Call function" sid="790694484336978" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;Export screenshot: &quot; &amp; workfolder &amp; PNG_FILENAME</param>
                         </action>
                         <action disabled="1" id="-16" name="Wait" sid="484841093213604" type="System">
                             <param id="0" name="Seconds">2</param>
@@ -1361,9 +1413,70 @@
                                     <param id="2" name="Parameter index">2</param>
                                     <param id="3" name="Value">luminosity</param>
                                 </action>
-                                <action id="14" name="Log" sid="392329664688046" type="Browser">
+                                <action id="0" name="Call function" sid="313923941361421" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;adjusting colors: &quot; &amp; hue &amp; &quot;, &quot; &amp; saturation &amp; &quot;, &quot; &amp; luminosity</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+            </sub-events>
+        </event-group>
+        <event-group description="" sid="834150883673432" title="Log">
+            <sub-events>
+                <variable comment="Maintain the log" constant="0" name="log" sid="513315077531989" static="1" type="text"></variable>
+                <event-block sid="289526770799524">
+                    <conditions>
+                        <condition id="0" name="On function" sid="295932430243417" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                        </condition>
+                    </conditions>
+                    <actions />
+                    <sub-events>
+                        <variable constant="0" name="t" sid="224480612893195" static="0" type="text"></variable>
+                        <event-block sid="461966867188312">
+                            <conditions />
+                            <actions>
+                                <action id="-9" name="Set value" sid="679345837672997" type="System">
+                                    <param id="0" name="Variable">t</param>
+                                    <param id="1" name="Value">Function.Param(0)</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                        <event-block sid="455292228933548">
+                            <conditions />
+                            <actions>
+                                <action id="-10" name="Add to" sid="911314247227795" type="System">
+                                    <param id="0" name="Variable">log</param>
+                                    <param id="1" name="Value">t&amp;newline</param>
+                                </action>
+                                <action id="14" name="Log" sid="920042414648851" type="Browser">
                                     <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;adjusting colors: &quot; &amp; hue &amp; &quot;, &quot; &amp; saturation &amp; &quot;, &quot; &amp; luminosity</param>
+                                    <param id="1" name="Message">t</param>
+                                </action>
+                                <action disabled="1" id="14" name="Log" sid="108393836858249" type="Browser">
+                                    <param id="0" name="Type">0</param>
+                                    <param id="1" name="Message">log</param>
+                                </action>
+                            </actions>
+                        </event-block>
+                    </sub-events>
+                </event-block>
+                <event-block sid="365743041526832">
+                    <conditions>
+                        <condition id="0" name="On function" sid="729002121411934" type="Function">
+                            <param id="0" name="Name">&quot;log.save&quot;</param>
+                        </condition>
+                    </conditions>
+                    <actions />
+                    <sub-events>
+                        <event-block sid="570476409517158">
+                            <conditions />
+                            <actions>
+                                <action id="0" name="Write file" sid="906717965390532" type="NWjs">
+                                    <param id="0" name="Path">workfolder&amp;LOG_FILENAME</param>
+                                    <param id="1" name="Contents">log</param>
                                 </action>
                             </actions>
                         </event-block>
