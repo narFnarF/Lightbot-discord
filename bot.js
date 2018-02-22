@@ -14,6 +14,7 @@ var fs = require('fs');
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
+var logPath = "bin/log.txt";
 var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
@@ -135,7 +136,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: "Hello. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time."
 				});
-				logger.info("Help requested.")
+				logger.info("Help requested.");
 			break;
 
 			case "register":
@@ -171,6 +172,17 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					bot.sendMessage({
 						to: channelID,
 						message: "<@"+userID+"> Aren't you a little impatient? Your image evolves only every 5 minutes. Use that time to meditate, then try again."})
+				}
+			break;
+
+			case "log":
+				if (userID == playersDB.admin.narF){
+					var log = fs.readFileSync(logPath);
+					bot.sendMessage({
+						to: playersDB.admin.narF,
+						message: "```"+log+"```"
+					});
+					logger.info("Log requested.");
 				}
 			break;
 		}
@@ -339,10 +351,10 @@ function announceResult(userID, channelID){
 	var level = playersDB.players[userID].level;
 	var win = playersDB.players[userID].win;
 	if (win) {
-		levelUp(userID);
+		doLevelUp(userID);
 		msg = "Enlighted! You've reached level "+level+". I wonder what will your next image look like?";
 	}else {
-		msg = "Delightful! You are level "+level+".";
+		msg = "You are level "+level+". Delightful!";
 	}
 	bot.sendMessage({
 		to: channelID,
@@ -350,7 +362,7 @@ function announceResult(userID, channelID){
 	});
 }
 
-function levelUp(userID) {
+function doLevelUp(userID) {
 	// Do the level up data modifications inside playersDB
 	playersDB.players[userID].level++;
 	playersDB.players[userID].win = false;
