@@ -71,12 +71,11 @@ bot.on('disconnect', (errMsg, errCode) => {
 	if (errCode===1000) {
 		// intentional disconnection
 		logger.info("Intentional disconnect");
-		// TODO turn off app
 		logger.info("Bye bye!");
-		process.exit();
+		process.exit(); // Exit Node
 	}else{
 		// unintentional disconnect
-		logger.warn("Not intentional disconnection!!!");
+		logger.warn("Disconnected unintentionally!");
 		setTimeout(reconnect, 2000);
 	}
 });
