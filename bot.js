@@ -61,18 +61,30 @@ bot.on('ready', function (evt) {
 	bot.setPresence({game: {name: "type !light or !help"}});
 });
 
-// Disconnected for some reasons
-bot.on("disconnected", function () {
-	console.log("Disconnected for some reasons...");
-	process.exit(1); //exit node with an error
-	//TODO reconnect instead?
-});
 
 // // Reconnects if bot loses connection / connection is closed
-// bot.on("disconnect", (err) => {
-//     console.log("Disconnected with error "+err);
-//     setTimeout(function(){ bot.connect(); }, 5000);
-// });
+bot.on('disconnect', (errMsg, errCode) => {
+    logger.warn("Disconnected. Code: "+errCode);
+	if (errMsg) {
+		logger.info(errMsg);
+	}
+	if (errCode===1000) {
+		// intentional disconnection
+		logger.info("Intentional disconnect");
+		// TODO turn off app
+		logger.info("Bye bye!");
+		process.exit();
+	}else{
+		// unintentional disconnect
+		logger.warn("Not intentional disconnection!!!");
+		setTimeout(reconnect, 2000);
+	}
+});
+
+function reconnect() {
+	logger.info("Attempting to reconnect.");
+	bot.connect();
+}
 
 // When a message is received
 bot.on('message', function (username, userID, channelID, message, evt) {
@@ -193,17 +205,8 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 // Control+C signal received: disconnect the bot before exit
 process.on("SIGINT", function () {
 	console.log("");
-	logger.info("Disconnecting bot...")
-	bot.sendMessage({
-		to: playersDB.admin["narF"],
-		message: "Bot is shutting down. Bye bye!"
-	})
-
-	setTimeout(function(){
-		logger.info("Bye bye!  "+playersDB.admin["narF"])
-		bot.disconnect();
-		process.exit();
-	}, 1000);
+	logger.info("SIGINT received. Disconnecting bot...");
+	bot.disconnect();
 });
 
 function launchGame() {
