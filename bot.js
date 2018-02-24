@@ -55,7 +55,7 @@ if (testingMode = false) {
 // bot is online. Display in console.
 bot.on('ready', function (evt) {
 	logger.info('Connected');
-	logger.info('Logged in as: '+bot.username+' - ('+bot.id+')' );
+	logger.info('I am '+bot.username+'  ('+bot.id+')' );
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
