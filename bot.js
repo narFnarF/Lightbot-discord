@@ -150,13 +150,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				logger.info("Help requested.");
 			break;
 
-			case "register":
-				registerPlayerInDB(userID,username);
-				logger.info("Registered user"+userID+" "+username);
-				bot.sendMessage({
-					to: channelID,
-					message: "You're registered!\n"+JSON.stringify(playersDB.players[userID], null, 4)
-				});
 			break;
 
 			case 'light':
