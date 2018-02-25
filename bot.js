@@ -182,7 +182,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'link':
 				logger.info("Requested link.");
 				bot.sendMessage({
-					to: userID
+					to: userID,
 					message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
 				});
 			break;
