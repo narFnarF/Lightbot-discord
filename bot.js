@@ -41,7 +41,7 @@ var bot = new Discord.Client({
 
 
 // testing ground
-var testingMode = true;
+var testingMode = false;
 if (testingMode) {
 	logger.warn('We\'re running in debug mode.');
 	var id = '000000000fake00000';
@@ -69,15 +69,15 @@ bot.on('ready', function (evt) {
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
-	logger.debug("presenceStatus: "+bot.presenceStatus);
-	logger.debug("bot.connected: "+bot.connected);
+	// logger.debug("presenceStatus: "+bot.presenceStatus);
+	// logger.debug("bot.connected: "+bot.connected);
 });
 
 
 // // Reconnects if bot loses connection / connection is closed
 bot.on('disconnect', (errMsg, errCode) => {
-	logger.debug("presenceStatus: "+bot.presenceStatus);
-	logger.debug("bot.connected: "+bot.connected);
+	// logger.debug("presenceStatus: "+bot.presenceStatus);
+	// logger.debug("bot.connected: "+bot.connected);
 	logger.warn("Disconnected. Code: "+errCode);
 	if (errMsg) {
 		logger.info(errMsg);
