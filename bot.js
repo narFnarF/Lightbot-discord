@@ -21,7 +21,9 @@ var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/b
 var windowsCommand = "bin\\nw.exe";
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
+var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
+var adminNotifications = true;
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -63,6 +65,7 @@ if (testingMode) {
 bot.on('ready', function (evt) {
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
+	// logger.debug(evt);
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
@@ -79,11 +82,12 @@ bot.on('disconnect', (errMsg, errCode) => {
 	if (errMsg) {
 		logger.info(errMsg);
 	}
-	if (errCode===1000) {
+	if (intentToExit) {
 		// intentional disconnection
 		logger.info("Intentional disconnect");
 		logger.info("Bye bye!");
 		process.exit(); // Exit Node
+		// setTimeout(reconnect, 2000); // temporaire, le temps qu'on comprenne pourquoi ça déconnecte avec err1000 des fois
 	}else{
 		// unintentional disconnect
 		logger.warn("Disconnected unintentionally!");
@@ -223,13 +227,20 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 
 // Control+C signal received: disconnect the bot before exit
 process.on("SIGINT", function () {
-	console.log("");
+	console.log(""); // a blank line so that the displayed interupt signal displays nicely (because I'm meticulous like that!)
 	logger.info("SIGINT received. Disconnecting bot...");
+	intentToExit = true;
 	bot.disconnect();
 	setTimeout(function () {
 		logger.warn("Timout on disconnection. Let's quit anyway!");
 		process.exit(); // Quit the server
 	}, 5000);
+
+	// En attendant de trouver pourquoi il déconnecte pas correctement, on force quit après 1 seconde
+	// setTimeout(function () {
+	// 	logger.debug("Tant! pis!");
+	// 	process.exit(); // Quit the server
+	// }, 1000);
 });
 
 function launchGame() {
