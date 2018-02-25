@@ -945,18 +945,29 @@
                             <param id="0" name="Name">&quot;log.save&quot;</param>
                         </condition>
                     </conditions>
-                    <actions />
-                    <sub-events>
-                        <event-block sid="570476409517158">
-                            <conditions />
-                            <actions>
-                                <action id="0" name="Write file" sid="906717965390532" type="NWjs">
-                                    <param id="0" name="Path">workfolder&amp;LOG_FILENAME</param>
-                                    <param id="1" name="Contents">log</param>
-                                </action>
-                            </actions>
-                        </event-block>
-                    </sub-events>
+                    <actions>
+                        <action id="0" name="Write file" sid="906717965390532" type="NWjs">
+                            <param id="0" name="Path">workfolder&amp;LOG_FILENAME</param>
+                            <param id="1" name="Contents">log</param>
+                        </action>
+                    </actions>
+                </event-block>
+                <event-block sid="113206237363517">
+                    <conditions>
+                        <condition id="-6" name="Every X seconds" sid="571685044953906" type="System">
+                            <param id="0" name="Interval (seconds)">5</param>
+                        </condition>
+                    </conditions>
+                    <actions>
+                        <action id="0" name="Call function" sid="444344219648220" type="Function">
+                            <param id="0" name="Name">&quot;log&quot;</param>
+                            <param id="1" name="Parameter {n}">&quot;I still haven&apos;t quit, so i&apos;m gonna save the log&quot;</param>
+                        </action>
+                        <action id="0" name="Call function" sid="442953816339744" type="Function">
+                            <param id="0" name="Name">&quot;log.save&quot;</param>
+                            <param id="1" name="Parameter {n}"></param>
+                        </action>
+                    </actions>
                 </event-block>
             </sub-events>
         </event-group>
