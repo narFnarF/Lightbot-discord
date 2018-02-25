@@ -97,7 +97,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 		args = args.splice(1); //removes the first parameter from the list of parameters
 
 		switch(cmd) {
-			// !ping
 			case 'ping':
 				bot.sendMessage({
 					to: channelID,
@@ -113,7 +112,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				});
 				logger.info(username+' ('+userID+') a pété! 💩 ');
 			break;
-
 
 			case "rename":
 				if (userID == playersDB.admin.narF) {
@@ -147,25 +145,25 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case "help":
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
+					message: "Hello <@"+userID+">. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
 				});
 				logger.info("Help requested.");
 			break;
 
 			case 'helpmore':
-			bot.sendMessage({
-				to: channelID,
-				message: "Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands."
-			});
-			logger.info("More help requested.");
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands."
+				});
+				logger.info("More help requested.");
 			break;
 
 			case 'helpadmin':
-			bot.sendMessage({
-				to: channelID,
-				message: "Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
-			});
-			logger.info("Admin help requested.");
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
+				});
+				logger.info("Admin help requested.");
 			break;
 
 			case 'light':
