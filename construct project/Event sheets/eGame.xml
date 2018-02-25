@@ -68,11 +68,36 @@
                                 <event-block sid="410195878259451">
                                     <conditions>
                                         <condition id="-22" name="Else" sid="426704051578094" type="System" />
+                                        <condition id="-8" name="Compare two values" sid="883512864145372" type="System">
+                                            <param id="0" name="First value">Browser.Platform</param>
+                                            <param id="1" name="Comparison">0</param>
+                                            <param id="2" name="Second value">&quot;MacIntel&quot;</param>
+                                        </condition>
                                     </conditions>
                                     <actions>
                                         <action id="1" name="Request project file" sid="358264459284756" type="AJAX">
                                             <param id="0" name="Tag">&quot;config.json&quot;</param>
                                             <param id="1" name="File">config.json</param>
+                                        </action>
+                                    </actions>
+                                </event-block>
+                                <comment>else: I don&apos;t know!</comment>
+                                <event-block sid="150478682611096">
+                                    <conditions>
+                                        <condition id="-22" name="Else" sid="696530714998778" type="System" />
+                                    </conditions>
+                                    <actions>
+                                        <action id="0" name="Call function" sid="583095505000816" type="Function">
+                                            <param id="0" name="Name">&quot;log&quot;</param>
+                                            <param id="1" name="Parameter {n}">&quot;I don&apos;t understand what this platform is!&quot;</param>
+                                        </action>
+                                        <action id="-9" name="Set value" sid="121855690790799" type="System">
+                                            <param id="0" name="Variable">workfolder</param>
+                                            <param id="1" name="Value">NWjs.AppFolder</param>
+                                        </action>
+                                        <action id="0" name="Call function" sid="713444944651698" type="Function">
+                                            <param id="0" name="Name">&quot;mainScript&quot;</param>
+                                            <param id="1" name="Parameter {n}"></param>
                                         </action>
                                     </actions>
                                 </event-block>
