@@ -182,7 +182,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'link':
 				logger.info(username+" requested link.");
 				bot.sendMessage({
-					to: userID,
+					to: channelID,
 					message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
 				});
 			break;
@@ -478,12 +478,12 @@ function askLevel(userID, username, channelID) {
 			to: channelID,
 			message: '<@'+userID+'> You are level `'+playersDB.players[userID].level+'`'
 		});
-		logger.info(username+'asked for their level: '+playersDB.players[userID].level);
+		logger.info(username+' asked for their level: '+playersDB.players[userID].level);
 	} else { // userID doesn't exist in DB
 		bot.sendMessage({
 			to: channelID,
 			message: '<@'+userID+'> It seems you never played with me before. You can type `!light` to play.'
 		});
-		logger.info(username+" asked for their level, but were not in the DB.");
+		logger.info(username+' asked for their level but they never played before.');
 	}
 }
