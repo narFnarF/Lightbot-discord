@@ -166,7 +166,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'helpmore':
 				bot.sendMessage({
 					to: channelID,
-					message: "<@"+userID+"> Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands."
+					message: "<@"+userID+"> Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
 				logger.info("More help requested.");
 			break;
@@ -177,6 +177,14 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					message: "<@"+userID+"> Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
 				});
 				logger.info("Admin help requested.");
+			break;
+
+			case 'link':
+				logger.info("Requested link.");
+				bot.sendMessage({
+					to: userID
+					message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
+				});
 			break;
 
 			case 'light':
