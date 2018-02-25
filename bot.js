@@ -217,6 +217,10 @@ process.on("SIGINT", function () {
 	console.log("");
 	logger.info("SIGINT received. Disconnecting bot...");
 	bot.disconnect();
+	setTimeout(function () {
+		logger.warn("Timout on disconnection. Let's quit anyway!");
+		process.exit(); // Quit the server
+	}, 5000);
 });
 
 function launchGame() {
