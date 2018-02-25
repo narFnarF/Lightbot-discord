@@ -344,7 +344,7 @@ function saveDataJson(userID) {
 	//Write data.json to disk
 
 	//get the data from the DB
-	playerData = JSON.parse(JSON.stringify(playersDB.players[userID])); //make a copy
+	var playerData = JSON.parse(JSON.stringify(playersDB.players[userID])); //make a copy
 	playerData.userID = userID;
 
 	//make it pretty and write in file on disk
@@ -436,7 +436,7 @@ function canPlay(userID) {
 	if (userID !== undefined){
 		if (playersDB.players.hasOwnProperty(userID)){ //if player exists in DB
 			if (playersDB.players[userID].lastPlayed !== undefined){
-				lastPlayed = playersDB.players[userID].lastPlayed;
+				var lastPlayed = playersDB.players[userID].lastPlayed;
 				logger.info("lastPlayed: "+lastPlayed);
 				return Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
 			}else {
