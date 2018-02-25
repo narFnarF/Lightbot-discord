@@ -9,7 +9,7 @@
         <variable comment="in seconds" constant="0" name="delay" sid="233878733708793" static="0" type="number">300</variable>
         <variable constant="0" name="workfolder" sid="372749836834010" static="0" type="text"></variable>
         <variable constant="1" name="json_filename" sid="439621911725426" static="0" type="text">data.json</variable>
-        <variable constant="1" name="LOG_FILENAME" sid="217482923794249" static="0" type="text">log.txt</variable>
+        <variable constant="1" name="LOG_FILENAME" sid="217482923794249" static="0" type="text">log construct.txt</variable>
         <variable constant="1" name="png_filename" sid="327046001471604" static="0" type="text">screenshot.png</variable>
         <event-group description="" sid="940768003895520" title="Load config.json">
             <sub-events>

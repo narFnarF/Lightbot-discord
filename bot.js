@@ -16,7 +16,7 @@ var fs = require('fs');
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
-var logPath = "bin/log.txt";
+var logPathConstruct = "bin/log construct.txt";
 var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
@@ -216,7 +216,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 
 			case "log":
 				if (userID == playersDB.admin.narF){
-					var log = fs.readFileSync(logPath);
+					var log = fs.readFileSync(logPathConstruct);
 					bot.sendMessage({
 						to: playersDB.admin.narF,
 						message: "```"+log+"```"
