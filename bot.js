@@ -166,7 +166,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'helpmore':
 				bot.sendMessage({
 					to: channelID,
-					message: "<@"+userID+"> Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
+					message: "<@"+userID+"> **Commands:**\n`!light` Request your image.\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
 				logger.info("More help requested.");
 			break;
