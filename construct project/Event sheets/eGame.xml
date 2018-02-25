@@ -536,25 +536,25 @@
                                     <param id="0" name="Variable">rollMax</param>
                                     <param id="1" name="Value">ceil(level+(3/level)-1)</param>
                                 </action>
-                                <action id="14" name="Log" sid="336715454971486" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;rollMax: &quot; &amp; rollMax</param>
+                                <action id="0" name="Call function" sid="336715454971486" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;rollMax: &quot; &amp; rollMax</param>
                                 </action>
                                 <action id="-9" name="Set value" sid="125385485535513" type="System">
                                     <param id="0" name="Variable">roll</param>
                                     <param id="1" name="Value">ceil(random(0.000001, rollMax))</param>
                                 </action>
-                                <action id="14" name="Log" sid="406384620158779" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;roll: &quot; &amp; roll</param>
+                                <action id="0" name="Call function" sid="406384620158779" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;roll: &quot; &amp; roll</param>
                                 </action>
                                 <action id="-9" name="Set value" sid="599709453325694" type="System">
                                     <param id="0" name="Variable">lights</param>
                                     <param id="1" name="Value">ceil( roll/rollMax * light.PickedCount )</param>
                                 </action>
-                                <action id="14" name="Log" sid="630717905509738" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;lights: &quot; &amp; lights</param>
+                                <action id="0" name="Call function" sid="630717905509738" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;lights: &quot;&amp;lights&amp;&quot;/&quot;&amp;light.PickedCount</param>
                                 </action>
                                 <action id="-9" name="Set value" sid="569670656564407" type="System">
                                     <param id="0" name="Variable">nbLights</param>
@@ -568,9 +568,9 @@
                                     <param id="0" name="Variable">winState</param>
                                     <param id="1" name="Value">Function.Call(&quot;has won&quot;)</param>
                                 </action>
-                                <action id="14" name="Log" sid="534021239553272" type="Browser">
-                                    <param id="0" name="Type">0</param>
-                                    <param id="1" name="Message">&quot;win: &quot; &amp; winState</param>
+                                <action id="0" name="Call function" sid="534021239553272" type="Function">
+                                    <param id="0" name="Name">&quot;log&quot;</param>
+                                    <param id="1" name="Parameter {n}">&quot;win: &quot; &amp; winState</param>
                                 </action>
                                 <action id="0" name="Call function" sid="269252653437648" type="Function">
                                     <param id="0" name="Name">&quot;json.setWinState&quot;</param>
@@ -589,7 +589,7 @@
                         </condition>
                     </conditions>
                     <actions>
-                        <action id="14" name="Log" sid="379945932628718" type="Browser">
+                        <action disabled="1" id="14" name="Log" sid="379945932628718" type="Browser">
                             <param id="0" name="Type">0</param>
                             <param id="1" name="Message">&quot;function: has won?&quot;</param>
                         </action>
@@ -634,7 +634,7 @@
                                 <action id="1" name="Set return value" sid="637729034923474" type="Function">
                                     <param id="0" name="Value">&quot;true&quot;</param>
                                 </action>
-                                <action id="14" name="Log" sid="485282337776202" type="Browser">
+                                <action disabled="1" id="14" name="Log" sid="485282337776202" type="Browser">
                                     <param id="0" name="Type">0</param>
                                     <param id="1" name="Message">&quot;has won? &quot; &amp; n &amp; &quot;: true&quot;</param>
                                 </action>
@@ -648,7 +648,7 @@
                                 <action id="1" name="Set return value" sid="584626804631124" type="Function">
                                     <param id="0" name="Value">&quot;false&quot;</param>
                                 </action>
-                                <action id="14" name="Log" sid="704754950681419" type="Browser">
+                                <action disabled="1" id="14" name="Log" sid="704754950681419" type="Browser">
                                     <param id="0" name="Type">0</param>
                                     <param id="1" name="Message">&quot;has won? &quot; &amp; n &amp; &quot;: false&quot;</param>
                                 </action>
