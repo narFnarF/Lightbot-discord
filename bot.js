@@ -115,7 +115,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: 'Pong!'
 				});
-				logger.info('Ping pong!');
+				logger.info('Ping pong with '+username+'!');
 			break;
 
 			case 'prout':
