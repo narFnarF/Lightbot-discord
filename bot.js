@@ -483,6 +483,7 @@ function askLevel(userID, username, channelID) {
 		bot.sendMessage({
 			to: channelID,
 			message: '<@'+userID+'> It seems you never played with me before. You can type `!light` to play.'
-		})
+		});
+		logger.info(username+" asked for their level, but were not in the DB.");
 	}
 }
