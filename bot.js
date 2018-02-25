@@ -145,11 +145,25 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case "help":
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time."
+					message: "Hello. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
 				});
 				logger.info("Help requested.");
 			break;
 
+			case 'helpmore':
+			bot.sendMessage({
+				to: channelID,
+				message: "Commands:\n`!light` Request your image.\n`!level` Tell you your current level.\n`!helpadmin` Help about admin commands."
+			});
+			logger.info("More help requested.");
+			break;
+
+			case 'helpadmin':
+			bot.sendMessage({
+				to: channelID,
+				message: "Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
+			});
+			logger.info("Admin help requested.");
 			break;
 
 			case 'light':
