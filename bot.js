@@ -160,7 +160,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: "Hello <@"+userID+">. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
 				});
-				logger.info("Help requested.");
+				logger.info("Help requested by "+username);
 			break;
 
 			case 'helpmore':
@@ -168,7 +168,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: "<@"+userID+"> **Commands:**\n`!light` Request your image.\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
-				logger.info("More help requested.");
+				logger.info("More help requested by "+username);
 			break;
 
 			case 'helpadmin':
@@ -176,11 +176,11 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: "<@"+userID+"> Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
 				});
-				logger.info("Admin help requested.");
+				logger.info("Admin help requested by "+username);
 			break;
 
 			case 'link':
-				logger.info("Requested link.");
+				logger.info(username+" requested link.");
 				bot.sendMessage({
 					to: userID,
 					message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
@@ -221,7 +221,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 						to: playersDB.admin.narF,
 						message: "```"+log+"```"
 					});
-					logger.info("Log requested.");
+					logger.info("Log requested by "+username);
 				}
 			break;
 
