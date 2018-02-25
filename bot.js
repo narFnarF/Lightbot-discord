@@ -407,7 +407,7 @@ function sendImage(userID, channelID) {
 		bot.uploadFile({
 			to: channelID,
 			file: screenshotPath,
-			message: "<@"+userID+"> Here's your image!"
+			message: "<@"+userID+"> Here's your lightshow!"
 		}), function (err, res) { console.log(err, res) };
 	}else{
 		logger.error("The screenshot isn't there?!");
