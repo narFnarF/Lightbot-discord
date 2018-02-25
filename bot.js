@@ -196,6 +196,10 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					logger.info("Log requested.");
 				}
 			break;
+
+			case 'level':
+				askLevel(userID, username, channelID);
+			break;
 		}
 	}
 });
@@ -426,5 +430,20 @@ function canPlay(userID) {
 	}else{
 		logger.error("Missing parameter function canPlay()");
 		return false;
+	}
+}
+
+function askLevel(userID, username, channelID) {
+	if (playersDB.players[userID]) {// userID exists in DB
+		bot.sendMessage({
+			to: channelID,
+			message: '<@'+userID+'> You are level `'+playersDB.players[userID].level+'`'
+		});
+		logger.info(username+'asked for their level: '+playersDB.players[userID].level);
+	} else { // userID doesn't exist in DB
+		bot.sendMessage({
+			to: channelID,
+			message: '<@'+userID+'> It seems you never played with me before. You can type `!light` to play.'
+		})
 	}
 }
