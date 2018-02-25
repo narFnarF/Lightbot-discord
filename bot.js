@@ -123,7 +123,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					to: channelID,
 					message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
 				});
-				logger.info(username+' ('+userID+') a pété! 💩 ');
+				logger.info(username+' a pété! 💩 ');
 			break;
 
 			case "rename":
