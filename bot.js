@@ -12,11 +12,18 @@ var child;
 // to write files
 var fs = require('fs');
 
+// Configure logger settings
+initializeWinstonLogger();
+
+logger.info("Launching the bot!")
+
+
 // configurations
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
 var logPathConstruct = "bin/log construct.txt";
+var logPathNode = "lightbot.log";
 var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
@@ -25,12 +32,44 @@ var intentToExit = false; // If true, the app will exit on disconnections. Other
 
 var adminNotifications = true;
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, {
-	colorize: true
-});
-logger.level = 'debug';
+
+function initializeWinstonLogger() {
+	// Configure logger settings
+	logger.remove(logger.transports.Console);
+	logger.add(logger.transports.Console, {
+		colorize: true,
+		level: 'debug',
+		timestamp: function () {
+			return Date();
+		}
+	});
+
+	logger.add(logger.transports.File, {
+		name: 'info-log',
+		filename: 'lightbot.log',
+		level: 'debug',
+		timestamp: function () {
+			return Date();
+		},
+		maxsize: 500*1000, // 500KB
+		maxFiles: 2,
+		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
+		json: false
+	});
+
+	logger.add(logger.transports.File, {
+		name: 'warning-log',
+		filename: 'lightbot-errors.log',
+		level: 'warn',
+		timestamp: function () {
+			return Date();
+		},
+		maxsize: 500*1000, // 500KB
+		maxFiles: 2,
+		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
+		json: false
+	});
+}
 
 
 // Initialize Discord Bot
@@ -126,7 +165,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				logger.info(username+' a pété! 💩 ');
 			break;
 
-			case "rename":
+			case 'rename':
 				if (userID == playersDB.admin.narF) {
 					var name = args.join(" ");
 					logger.info("Renaming the bot to: "+name);
@@ -155,7 +194,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				}
 			break;
 
-			case "help":
+			case 'help':
 				bot.sendMessage({
 					to: channelID,
 					message: "Hello <@"+userID+">. I'm a bot. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
@@ -214,14 +253,26 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 				}
 			break;
 
-			case "log":
+			case 'log':
 				if (userID == playersDB.admin.narF){
 					var log = fs.readFileSync(logPathConstruct);
+
 					bot.sendMessage({
 						to: playersDB.admin.narF,
-						message: "```"+log+"```"
+						message: "**Construct Log:** ```"+log+"```\n"
 					});
+
+					bot.uploadFile({
+						to: playersDB.admin.narF,
+						file: logPathNode,
+						message: "**The Node log:**"
+					}), function (err, res) {
+						if (err){logger.warn(err)}
+						if (res){logger.info(res)}
+					};
 					logger.info("Log requested by "+username);
+				}else {
+					// TODO send message back to say they can't do this
 				}
 			break;
 
@@ -269,13 +320,13 @@ function launchGame() {
 	child = exec(runThis,
 		function (error, stdout, stderr) {
 			if (stdout !== null && stdout !== ""){
-				console.log('stdout: ' + stdout);
+				logger.info('stdout: ' + stdout);
 			}
 			if (stderr !== null && stderr !== ""){
-				console.log('stderr: ' + stderr);
+				console.warn('stderr: ' + stderr);
 			}
 			if (error !== null) {
-				console.log('exec error: ' + error);
+				console.warn('exec error: ' + error);
 			}
 		}
 	);
@@ -300,13 +351,6 @@ function readPlayerDBJson(){
 
 		//parse JSON
 		json = JSON.parse(data);
-		// try {
-		// 	json = JSON.parse(data);
-		// } catch (e) {
-		// 	logger.warn(e);
-		// 	throw "playersDB.json is not a proper JSON."
-		// 	//json = {players:{}};
-		// }
 
 		//check if DB is empty
 		if (!json.hasOwnProperty("players")) {
@@ -317,7 +361,6 @@ function readPlayerDBJson(){
 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
 		json = {players:{}};
 	}
-	// console.log(json);
 	return json;
 }
 
@@ -352,7 +395,6 @@ function registerPlayerInDB(userID, username) {
 			"win": false,
 			"lastPlayed": 0
 		};
-		// console.log(playersDB);
 	}
 	logger.info("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
 	savePlayersDB();
@@ -436,7 +478,10 @@ function sendImage(userID, channelID) {
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your lightshow!"
-		}), function (err, res) { console.log(err, res) };
+		}), function (err, res) {
+			if (err){logger.warn(err)}
+			if (res){logger.info(res)}
+		};
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
