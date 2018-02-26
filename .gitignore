@@ -79,5 +79,6 @@ auth.json
 #Add new ignored files below
 screenshot.png
 bin/
-data.json
 playersDB.json
+lightbot.log
+lightbot-errors.log
