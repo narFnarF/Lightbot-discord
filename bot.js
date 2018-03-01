@@ -279,6 +279,13 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'level':
 				askLevel(userID, username, channelID);
 			break;
+
+			case 'invite':
+				bot.sendMessage({
+					to: userID,
+					message: "<@"+userID+"> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \n"+bot.inviteURL
+				})
+			break;
 		}
 	}
 });
