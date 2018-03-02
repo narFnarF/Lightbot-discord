@@ -29,6 +29,7 @@ var windowsCommand = "bin\\nw.exe";
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
+var busy = false // Boolean. The bot cannot process !light command while this is true.
 
 var adminNotifications = true;
 
@@ -228,23 +229,33 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 
 			case 'light':
 				if (canPlay(userID)) {
-					try {
-						preparePlayerData(userID, username);
+					if (!busy) {
+						try {
+							busy = true
+							preparePlayerData(userID, username);
+							bot.sendMessage({
+								to: channelID,
+								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"});
+							launchGame();
+							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
+						} catch (e) {
+							busy = false
+							bot.sendMessage({
+								to: channelID,
+								message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
+							logger.error(e);
+							bot.sendMessage({
+								to: channelID,
+								message: e
+							})
+						}
+					} else {
+						logger.info("Player "+username+" "+userID+" tried to play but I'm busy!")
 						bot.sendMessage({
 							to: channelID,
-							message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"});
-						launchGame();
-						setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
-					} catch (e) {
-						bot.sendMessage({
-							to: channelID,
-							message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
-						logger.error(e);
-						bot.sendMessage({
-							to: channelID,
-							message: e
-						})
+							message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
 					}
+
 				} else {
 					logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
 					bot.sendMessage({
@@ -455,6 +466,7 @@ function announceResult(userID, channelID){
 		to: channelID,
 		message: "<@"+userID+"> "+msg
 	});
+	busy = false
 }
 
 function doLevelUp(userID) {
@@ -508,7 +520,7 @@ function canPlay(userID) {
 		if (playersDB.players.hasOwnProperty(userID)){ //if player exists in DB
 			if (playersDB.players[userID].lastPlayed !== undefined){
 				var lastPlayed = playersDB.players[userID].lastPlayed;
-				logger.info("lastPlayed: "+lastPlayed);
+				// logger.debug("lastPlayed: "+lastPlayed);
 				return Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
 			}else {
 				logger.warn("lastPlayer is undefined for player "+userID);
