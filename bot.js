@@ -22,7 +22,7 @@ logger.info("Launching the bot!")
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
-var logPathConstruct = "bin/log construct.txt";
+var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
 var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
