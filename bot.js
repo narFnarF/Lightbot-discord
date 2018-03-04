@@ -504,7 +504,7 @@ function sendImage(userID, channelID) {
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
-			to: userID,
+			to: channelID,
 			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
 		});
 		// throw "Screenshot is missing";
