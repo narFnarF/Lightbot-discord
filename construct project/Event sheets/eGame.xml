@@ -920,12 +920,21 @@
                                 </action>
                             </actions>
                         </event-block>
+                        <variable constant="0" name="date" sid="470559530534217" static="0" type="text"></variable>
                         <event-block sid="455292228933548">
                             <conditions />
                             <actions>
+                                <action id="-9" name="Set value" sid="190939034252008" type="System">
+                                    <param id="0" name="Variable">date</param>
+                                    <param id="1" name="Value">Date.Year&amp;&quot;-&quot;&amp;Date.Month&amp;&quot;-&quot;&amp;Date.Date&amp;&quot; &quot;&amp;Date.Hours&amp;&quot;:&quot;&amp;Date.Minutes&amp;&quot;:&quot;&amp;Date.Seconds&amp;&quot;.&quot;&amp;Date.Milliseconds</param>
+                                </action>
                                 <action id="-10" name="Add to" sid="911314247227795" type="System">
                                     <param id="0" name="Variable">log</param>
-                                    <param id="1" name="Value">t&amp;newline</param>
+                                    <param id="1" name="Value">date&amp;&quot;  &quot;&amp;t&amp;newline</param>
+                                </action>
+                                <action disabled="1" id="14" name="Log" sid="204314783045665" type="Browser">
+                                    <param id="0" name="Type">0</param>
+                                    <param id="1" name="Message">date</param>
                                 </action>
                                 <action id="14" name="Log" sid="920042414648851" type="Browser">
                                     <param id="0" name="Type">0</param>
