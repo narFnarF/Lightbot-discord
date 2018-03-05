@@ -455,20 +455,19 @@ function afterLaunching(userID, channelID) {
 }
 
 function announceResult(userID, channelID){
-	var msg;
-	var level = playersDB.players[userID].level;
-	var win = playersDB.players[userID].win;
+	var msg
+	var level = playersDB.players[userID].level
+	var win = playersDB.players[userID].win
+	msg = "You are level "+level+"."
 	if (win) {
-		doLevelUp(userID);
+		doLevelUp(userID)
 		level = playersDB.players[userID].level; //necessary to get the updated level
-		msg = "Enlighted! You've reached level "+level+". I wonder what will your next image look like?";
-	}else {
-		msg = "You are level "+level+". Delightful!";
+		msg += "\nEnlighted! You've reached level "+level+". I wonder what will your next image look like?"
 	}
 	bot.sendMessage({
 		to: channelID,
 		message: "<@"+userID+"> "+msg
-	});
+	})
 	busy = false
 }
 
