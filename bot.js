@@ -191,7 +191,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					bot.sendMessage({
 						to: channelID,
 						message: "<@"+userID+"> You're not my admin. You cannot change my name."
-					});
+					})
 				}
 			break;
 
@@ -266,12 +266,13 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 
 			case 'log':
 				if (userID == playersDB.admin.narF){
-					var log = fs.readFileSync(logPathConstruct);
+					logger.info("Log requested by "+username)
+					var log = fs.readFileSync(logPathConstruct)
 
 					bot.sendMessage({
 						to: playersDB.admin.narF,
 						message: "**Construct Log:** ```"+log+"```\n"
-					});
+					})
 
 					bot.uploadFile({
 						to: playersDB.admin.narF,
@@ -281,9 +282,11 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 						if (err){logger.warn(err)}
 						if (res){logger.info(res)}
 					};
-					logger.info("Log requested by "+username);
 				}else {
-					// TODO send message back to say they can't do this
+					bot.sendMessage({
+						to: channelID,
+						message: "<@"+userID+"> You are not my admin. You cannot request logs."
+					})
 				}
 			break;
 
