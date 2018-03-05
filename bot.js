@@ -22,9 +22,9 @@ logger.info("Launching the bot!")
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
-var logPathConstruct = "bin/log construct.txt";
+var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
-var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
+var macCommand = "open 'bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
@@ -191,7 +191,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					bot.sendMessage({
 						to: channelID,
 						message: "<@"+userID+"> You're not my admin. You cannot change my name."
-					});
+					})
 				}
 			break;
 
@@ -260,18 +260,19 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
 					bot.sendMessage({
 						to: channelID,
-						message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every 5 minutes. Close your eyes, take a deep breath, then try again."})
+						message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
 				}
 			break;
 
 			case 'log':
 				if (userID == playersDB.admin.narF){
-					var log = fs.readFileSync(logPathConstruct);
+					logger.info("Log requested by "+username)
+					var log = fs.readFileSync(logPathConstruct)
 
 					bot.sendMessage({
 						to: playersDB.admin.narF,
 						message: "**Construct Log:** ```"+log+"```\n"
-					});
+					})
 
 					bot.uploadFile({
 						to: playersDB.admin.narF,
@@ -281,9 +282,11 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 						if (err){logger.warn(err)}
 						if (res){logger.info(res)}
 					};
-					logger.info("Log requested by "+username);
 				}else {
-					// TODO send message back to say they can't do this
+					bot.sendMessage({
+						to: channelID,
+						message: "<@"+userID+"> You are not my admin. You cannot request logs."
+					})
 				}
 			break;
 
@@ -322,7 +325,6 @@ process.on("SIGINT", function () {
 
 function launchGame() {
 	logger.info("Launching the Construct app");
-	// TODO make this line multiplatform for my own sake. Also configurable.
 	var windows = "win32";
 	var mac = "darwin";
 	var runThis;
@@ -452,20 +454,19 @@ function afterLaunching(userID, channelID) {
 }
 
 function announceResult(userID, channelID){
-	var msg;
-	var level = playersDB.players[userID].level;
-	var win = playersDB.players[userID].win;
+	var msg
+	var level = playersDB.players[userID].level
+	var win = playersDB.players[userID].win
+	msg = "You are level "+level+"."
 	if (win) {
-		doLevelUp(userID);
+		doLevelUp(userID)
 		level = playersDB.players[userID].level; //necessary to get the updated level
-		msg = "Enlighted! You've reached level "+level+". I wonder what will your next image look like?";
-	}else {
-		msg = "You are level "+level+". Delightful!";
+		msg += "\nEnlighted! You've reached level "+level+". I wonder what will your next image look like?"
 	}
 	bot.sendMessage({
 		to: channelID,
 		message: "<@"+userID+"> "+msg
-	});
+	})
 	busy = false
 }
 
@@ -504,7 +505,7 @@ function sendImage(userID, channelID) {
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
-			to: userID,
+			to: channelID,
 			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
 		});
 		// throw "Screenshot is missing";
