@@ -24,7 +24,7 @@ var playersDBPath = "playersDB.json";
 var screenshotPath = "bin/screenshot.png";
 var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
-var macCommand = "open '/Users/narF/Documents/game\ dev/git\ stuff/bot-discord/bin/lightbot.app'";
+var macCommand = "open 'bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
@@ -325,7 +325,6 @@ process.on("SIGINT", function () {
 
 function launchGame() {
 	logger.info("Launching the Construct app");
-	// TODO make this line multiplatform for my own sake. Also configurable.
 	var windows = "win32";
 	var mac = "darwin";
 	var runThis;
