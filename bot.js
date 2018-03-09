@@ -267,8 +267,8 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'log':
 				if (userID == playersDB.admin.narF){
 					logger.info("Log requested by "+username)
-					var log = fs.readFileSync(logPathConstruct)
 
+					var log = fs.readFileSync(logPathConstruct)
 					bot.sendMessage({
 						to: playersDB.admin.narF,
 						message: "**Construct Log:** ```"+log+"```\n"
@@ -281,7 +281,16 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					}), function (err, res) {
 						if (err){logger.warn(err)}
 						if (res){logger.info(res)}
-					};
+					}
+
+					bot.uploadFile({
+						to: playersDB.admin.narF,
+						file: playersDBPath,
+						message: "**The PlayersDB**"
+					}), function (err, res) {
+						if (err){logger.warn(err)}
+						if (res){logger.info(res)}
+					}
 				}else {
 					bot.sendMessage({
 						to: channelID,
