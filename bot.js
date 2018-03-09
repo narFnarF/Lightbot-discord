@@ -241,7 +241,6 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 									logger.warn(err)
 									return
 								}
-								console.log(res)
 								deleteMsgAfterDelay(res.id, channelID, 5)
 							});
 							launchGame();
@@ -497,13 +496,13 @@ function announceResult(userID, channelID){
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 	logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
 	setTimeout(function () {
-		// TODO delete the message
 		bot.deleteMessage({
 			channelID: chID,
 			messageID: msgID
-		}, function (error, response) {
-			console.log(error)
-			console.log(response);
+		}, function (error, result) {
+			if (error) {
+				logger.warn(error)
+			}
 		})
 		logger.debug("deleted now!")
 	}, delayInSeconds*1000)
