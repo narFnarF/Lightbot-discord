@@ -476,6 +476,13 @@ function announceResult(userID, channelID){
 		to: channelID,
 		message: "<@"+userID+"> "+msg
 	})
+	if (level >= 4 && !win) {
+		bot.sendMessage({
+			to: channelID,
+			message: "<@"+userID+"> You're getting good at this. Can you tell us what you see in this picture?"
+		})
+	}
+
 	busy = false
 }
 
