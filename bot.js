@@ -235,7 +235,15 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 							preparePlayerData(userID, username);
 							bot.sendMessage({
 								to: channelID,
-								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"});
+								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
+							}, function(err, res) {
+								if (err){
+									logger.warn(err)
+									return
+								}
+								console.log(res)
+								deleteMsgAfterDelay(res.id, channelID, 5)
+							});
 							launchGame();
 							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
 						} catch (e) {
@@ -484,6 +492,21 @@ function announceResult(userID, channelID){
 	}
 
 	busy = false
+}
+
+function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
+	logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
+	setTimeout(function () {
+		// TODO delete the message
+		bot.deleteMessage({
+			channelID: chID,
+			messageID: msgID
+		}, function (error, response) {
+			console.log(error)
+			console.log(response);
+		})
+		logger.debug("deleted now!")
+	}, delayInSeconds*1000)
 }
 
 function doLevelUp(userID) {
