@@ -235,7 +235,14 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 							preparePlayerData(userID, username);
 							bot.sendMessage({
 								to: channelID,
-								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"});
+								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
+							}, function(err, res) {
+								if (err){
+									logger.warn(err)
+									return
+								}
+								deleteMsgAfterDelay(res.id, channelID, 5)
+							});
 							launchGame();
 							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
 						} catch (e) {
@@ -267,8 +274,8 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			case 'log':
 				if (userID == playersDB.admin.narF){
 					logger.info("Log requested by "+username)
-					var log = fs.readFileSync(logPathConstruct)
 
+					var log = fs.readFileSync(logPathConstruct)
 					bot.sendMessage({
 						to: playersDB.admin.narF,
 						message: "**Construct Log:** ```"+log+"```\n"
@@ -281,7 +288,16 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					}), function (err, res) {
 						if (err){logger.warn(err)}
 						if (res){logger.info(res)}
-					};
+					}
+
+					bot.uploadFile({
+						to: playersDB.admin.narF,
+						file: playersDBPath,
+						message: "**The PlayersDB**"
+					}), function (err, res) {
+						if (err){logger.warn(err)}
+						if (res){logger.info(res)}
+					}
 				}else {
 					bot.sendMessage({
 						to: channelID,
@@ -467,7 +483,29 @@ function announceResult(userID, channelID){
 		to: channelID,
 		message: "<@"+userID+"> "+msg
 	})
+	if (level >= 4 && !win) {
+		bot.sendMessage({
+			to: channelID,
+			message: "<@"+userID+"> You're getting good at this. Can you tell us what you see in this picture?"
+		})
+	}
+
 	busy = false
+}
+
+function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
+	logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
+	setTimeout(function () {
+		bot.deleteMessage({
+			channelID: chID,
+			messageID: msgID
+		}, function (error, result) {
+			if (error) {
+				logger.warn(error)
+			}
+		})
+		logger.debug("deleted now!")
+	}, delayInSeconds*1000)
 }
 
 function doLevelUp(userID) {
