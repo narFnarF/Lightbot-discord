@@ -232,6 +232,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 					if (!busy) {
 						try {
 							busy = true
+							logger.info("Player "+username+" wants light.")
 							preparePlayerData(userID, username);
 							bot.sendMessage({
 								to: channelID,
@@ -340,7 +341,7 @@ process.on("SIGINT", function () {
 });
 
 function launchGame() {
-	logger.info("Launching the Construct app");
+	// logger.debug("Launching the Construct app");
 	var windows = "win32";
 	var mac = "darwin";
 	var runThis;
@@ -406,9 +407,9 @@ function preparePlayerData(userID, username){
 }
 
 function registerPlayerInDB(userID, username) {
-	logger.info("We're registering player "+username+" "+userID);
+	// logger.debug("We're registering player "+username+" "+userID);
 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
-		logger.info("Found player "+username+" "+userID);
+		// logger.debug("Found player "+username+" "+userID);
 
 		//check if it's missing any values:
 		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
@@ -424,7 +425,7 @@ function registerPlayerInDB(userID, username) {
 			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
 		}
 	}else{
-		logger.warn(username+" "+userID+" was not in there. But we're going to add it!")
+		logger.info(username+" "+userID+" was not in the playersDB. But we're going to add it!")
 		playersDB.players[userID] = {
 			"username": username,
 			"level": 1,
@@ -432,7 +433,7 @@ function registerPlayerInDB(userID, username) {
 			"lastPlayed": 0
 		};
 	}
-	logger.info("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
+	// logger.debug("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
 	savePlayersDB();
 }
 
@@ -447,7 +448,7 @@ function saveDataJson(userID) {
 	//make it pretty and write in file on disk
 	var beautifulPlayerData = JSON.stringify(playerData, null, 4);
 	fs.writeFileSync(dataJsonPath, beautifulPlayerData);
-	logger.info("Saved data.json to disk.");
+	// logger.debug("Saved data.json to disk.");
 }
 
 function savePlayersDB() {
@@ -455,7 +456,7 @@ function savePlayersDB() {
 	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
 	try{
 		fs.writeFileSync(playersDBPath, beautifulPlayersDB);
-		logger.info("Saved the DB");
+		// logger.debug("Saved the DB");
 	}catch(e){
 		logger.warn("Could not write playersDB.json on disk.");
 		logger.warn(e);
@@ -473,6 +474,7 @@ function announceResult(userID, channelID){
 	var msg
 	var level = playersDB.players[userID].level
 	var win = playersDB.players[userID].win
+	var username = playersDB.players[userID].username
 	msg = "You are level "+level+"."
 	if (win) {
 		doLevelUp(userID)
@@ -490,11 +492,12 @@ function announceResult(userID, channelID){
 		})
 	}
 
+	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
 	busy = false
 }
 
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
-	logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
+	// logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
 	setTimeout(function () {
 		bot.deleteMessage({
 			channelID: chID,
@@ -504,7 +507,7 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 				logger.warn(error)
 			}
 		})
-		logger.debug("deleted now!")
+		// logger.debug("deleted now!")
 	}, delayInSeconds*1000)
 }
 
@@ -525,7 +528,7 @@ function mergeDataToDB(userID) {
 	// merge data.json in playersDB
 	playersDB.players[userID] = playerData;
 
-	logger.info("Merged data.json into playersDB.json.")
+	// logger.debug("Merged data.json into playersDB.json.")
 	savePlayersDB(); // write playersDB to file playersDB.json
 }
 
