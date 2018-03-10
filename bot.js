@@ -238,11 +238,12 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 								to: channelID,
 								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
 							}, function(err, res) {
-								if (err){
+								if (!err){
+									deleteMsgAfterDelay(res.id, channelID, 5)
+								}else {
+									logger.warn("Error while sending the message Enlightment is coming.")
 									logger.warn(err)
-									return
 								}
-								deleteMsgAfterDelay(res.id, channelID, 5)
 							});
 							launchGame();
 							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
