@@ -480,7 +480,7 @@ function announceResult(userID, channelID){
 	if (win) {
 		doLevelUp(userID)
 		level = playersDB.players[userID].level; //necessary to get the updated level
-		msg += "\n🎇 Enlighted! You've reached level "+level+". 🎇 I wonder what will your next image look like?"
+		msg += "\n🎇 Enlighted! You've reached **level "+level+"**. 🎇 I wonder what will your next image look like?"
 	}
 	bot.sendMessage({
 		to: channelID,
