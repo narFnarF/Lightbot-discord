@@ -228,7 +228,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			break;
 
 			case 'light':
-				if (canPlay(userID)) {
+				if (canPlay(userID) || testingMode) {
 					if (!busy) {
 						try {
 							busy = true
