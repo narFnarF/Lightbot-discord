@@ -259,7 +259,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 							})
 						}
 					} else {
-						logger.info("Player "+username+" "+userID+" tried to play but I'm busy!")
+						logger.info("Player "+username+" tried to play but I'm busy!")
 						bot.sendMessage({
 							to: channelID,
 							message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
