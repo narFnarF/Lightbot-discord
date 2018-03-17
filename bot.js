@@ -102,10 +102,10 @@ if (testingMode) {
 
 
 // bot is online. Display in console.
-bot.on('ready', function (evt) {
+bot.on('ready', function (event) {
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
-	// logger.debug(evt);
+	// logger.debug(event);
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
@@ -141,7 +141,7 @@ function reconnect() {
 }
 
 // When a message is received
-bot.on('message', function (username, userID, channelID, message, evt) {
+bot.on('message', function (username, userID, channelID, message, event) {
 	// Our bot needs to know if it will execute a command
 	// It will listen for messages that will start with `!`
 	if (message.substring(0, 1) == '!') {
