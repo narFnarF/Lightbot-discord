@@ -109,8 +109,6 @@ bot.on('ready', function (event) {
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
-	// logger.debug("presenceStatus: "+bot.presenceStatus);
-	// logger.debug("bot.connected: "+bot.connected);
 });
 
 
