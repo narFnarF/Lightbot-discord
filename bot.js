@@ -116,8 +116,6 @@ bot.on('ready', function (event) {
 
 // // Reconnects if bot loses connection / connection is closed
 bot.on('disconnect', (errMsg, errCode) => {
-	// logger.debug("presenceStatus: "+bot.presenceStatus);
-	// logger.debug("bot.connected: "+bot.connected);
 	logger.warn("Disconnected. Code: "+errCode);
 	if (errMsg) {
 		logger.info(errMsg);
@@ -127,13 +125,41 @@ bot.on('disconnect', (errMsg, errCode) => {
 		logger.info("Intentional disconnect");
 		logger.info("Bye bye!");
 		process.exit(); // Exit Node
-		// setTimeout(reconnect, 2000); // temporaire, le temps qu'on comprenne pourquoi ça déconnecte avec err1000 des fois
 	}else{
 		// unintentional disconnect
 		logger.warn("Disconnected unintentionally!");
-		setTimeout(reconnect, 2000);
+		recheckConnection(2);
 	}
 });
+
+setInterval(maintainConnection, 1*60*1000); // 1 minute
+function maintainConnection() {
+	// logger.debug("maintainConnection");
+	if (!bot.connected) {
+		logger.warn("The bot is offline again?! Let's check again in 20 seconds.");
+		recheckConnection(20); //20 sec
+	}
+}
+
+var checking = false;
+function recheckConnection(duration) {
+	logger.warn("Let's check again the connection in "+duration+" seconds.");
+
+	if (!checking){
+		checking = true;
+		setTimeout(function () {
+			if (!bot.connected) {
+				logger.warn("Why is the bot still offline?! It's been "+duration+" seconds! Let's restart it!");
+				reconnect();
+			}else{
+				logger.warn("Oh! The bot is actually back online. Good!")
+			}
+			checking = false;
+		}, duration*1000);
+	} else {
+		logger.warn("But I'm already checking!");
+	}
+}
 
 function reconnect() {
 	logger.info("Attempting to reconnect.");
@@ -329,16 +355,15 @@ process.on("SIGINT", function () {
 	logger.info("SIGINT received. Disconnecting bot...");
 	intentToExit = true;
 	bot.disconnect();
-	setTimeout(function () {
-		logger.warn("Timout on disconnection. Let's quit anyway!");
-		process.exit(); // Quit the server
-	}, 5000);
 
-	// En attendant de trouver pourquoi il déconnecte pas correctement, on force quit après 1 seconde
-	// setTimeout(function () {
-	// 	logger.debug("Tant! pis!");
-	// 	process.exit(); // Quit the server
-	// }, 1000);
+	if (!bot.connected) {
+		process.exit(); // Quit the server
+	} else { // if i'm still connected
+		setTimeout(function () {
+			logger.warn("Timout on disconnection. Let's quit anyway!");
+			process.exit(); // Quit the server
+		}, 5000);
+	}
 });
 
 function launchGame() {
