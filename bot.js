@@ -338,9 +338,10 @@ bot.on('message', function (username, userID, channelID, message, event) {
 
 			case 'invite':
 				bot.sendMessage({
-					to: userID,
+					to: channelID,
 					message: "<@"+userID+"> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \n"+bot.inviteURL
-				})
+				});
+				logger.info(username+" requested the invite link.");
 			break;
 		}
 	}
@@ -615,7 +616,7 @@ function askLevel(userID, username, channelID) {
 	} else { // userID doesn't exist in DB
 		bot.sendMessage({
 			to: channelID,
-			message: '<@'+userID+'> It seems you never played with me before. You can type `!light` to play.'
+			message: "<@"+userID+"> It seems you never played with me before, so you're level 1. You can type `!light` to play."
 		});
 		logger.info(username+' asked for their level but they never played before.');
 	}
