@@ -94,30 +94,26 @@ if (testingMode) {
 	// logger.debug(canPlay(id));
 	// afterLaunching(id, "channelID", username);
 	// logger.debug(canPlay(id));
-	setTimeout(function(){
+	setInterval(function(){
 		logger.debug("presenceStatus: "+bot.presenceStatus);
 		logger.debug("bot.connected: "+bot.connected);
-	}, 5000);
+	}, 15000);
 }
 
 
 // bot is online. Display in console.
-bot.on('ready', function (evt) {
+bot.on('ready', function (event) {
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
-	// logger.debug(evt);
+	// logger.debug(event);
 	console.log(); // blank line return
 
 	bot.setPresence({game: {name: "type !light or !help"}});
-	// logger.debug("presenceStatus: "+bot.presenceStatus);
-	// logger.debug("bot.connected: "+bot.connected);
 });
 
 
 // // Reconnects if bot loses connection / connection is closed
 bot.on('disconnect', (errMsg, errCode) => {
-	// logger.debug("presenceStatus: "+bot.presenceStatus);
-	// logger.debug("bot.connected: "+bot.connected);
 	logger.warn("Disconnected. Code: "+errCode);
 	if (errMsg) {
 		logger.info(errMsg);
@@ -127,13 +123,41 @@ bot.on('disconnect', (errMsg, errCode) => {
 		logger.info("Intentional disconnect");
 		logger.info("Bye bye!");
 		process.exit(); // Exit Node
-		// setTimeout(reconnect, 2000); // temporaire, le temps qu'on comprenne pourquoi ça déconnecte avec err1000 des fois
 	}else{
 		// unintentional disconnect
 		logger.warn("Disconnected unintentionally!");
-		setTimeout(reconnect, 2000);
+		recheckConnection(2);
 	}
 });
+
+setInterval(maintainConnection, 1*60*1000); // 1 minute
+function maintainConnection() {
+	// logger.debug("maintainConnection");
+	if (!bot.connected) {
+		logger.warn("The bot is offline again?! Let's check again in 20 seconds.");
+		recheckConnection(20); //20 sec
+	}
+}
+
+var checking = false;
+function recheckConnection(duration) {
+	logger.warn("Let's check again the connection in "+duration+" seconds.");
+
+	if (!checking){
+		checking = true;
+		setTimeout(function () {
+			if (!bot.connected) {
+				logger.warn("Why is the bot still offline?! It's been "+duration+" seconds! Let's restart it!");
+				reconnect();
+			}else{
+				logger.warn("Oh! The bot is actually back online. Good!")
+			}
+			checking = false;
+		}, duration*1000);
+	} else {
+		logger.warn("But I'm already checking!");
+	}
+}
 
 function reconnect() {
 	logger.info("Attempting to reconnect.");
@@ -141,7 +165,7 @@ function reconnect() {
 }
 
 // When a message is received
-bot.on('message', function (username, userID, channelID, message, evt) {
+bot.on('message', function (username, userID, channelID, message, event) {
 	// Our bot needs to know if it will execute a command
 	// It will listen for messages that will start with `!`
 	if (message.substring(0, 1) == '!') {
@@ -228,7 +252,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 			break;
 
 			case 'light':
-				if (canPlay(userID)) {
+				if (canPlay(userID) || testingMode) {
 					if (!busy) {
 						try {
 							busy = true
@@ -259,7 +283,7 @@ bot.on('message', function (username, userID, channelID, message, evt) {
 							})
 						}
 					} else {
-						logger.info("Player "+username+" "+userID+" tried to play but I'm busy!")
+						logger.info("Player "+username+" tried to play but I'm busy!")
 						bot.sendMessage({
 							to: channelID,
 							message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
@@ -329,16 +353,15 @@ process.on("SIGINT", function () {
 	logger.info("SIGINT received. Disconnecting bot...");
 	intentToExit = true;
 	bot.disconnect();
-	setTimeout(function () {
-		logger.warn("Timout on disconnection. Let's quit anyway!");
-		process.exit(); // Quit the server
-	}, 5000);
 
-	// En attendant de trouver pourquoi il déconnecte pas correctement, on force quit après 1 seconde
-	// setTimeout(function () {
-	// 	logger.debug("Tant! pis!");
-	// 	process.exit(); // Quit the server
-	// }, 1000);
+	if (!bot.connected) {
+		process.exit(); // Quit the server
+	} else { // if i'm still connected
+		setTimeout(function () {
+			logger.warn("Timout on disconnection. Let's quit anyway!");
+			process.exit(); // Quit the server
+		}, 5000);
+	}
 });
 
 function launchGame() {
@@ -540,10 +563,13 @@ function sendImage(userID, channelID) {
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your lightshow!"
-		}), function (err, res) {
-			if (err){logger.warn(err)}
-			if (res){logger.info(res)}
-		};
+		}, function (err, res) {
+				if (err){logger.warn(err)}
+				// if (res){logger.info(res)}
+				fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
+					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+			});
+		});
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({

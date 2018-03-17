@@ -77,8 +77,9 @@ node_modules/
 auth.json
 
 #Add new ignored files below
-screenshot.png
 bin/
 playersDB.json
 lightbot.log
+lightbot1.log
 lightbot-errors.log
+lightbot-errors1.log
