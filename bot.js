@@ -540,10 +540,13 @@ function sendImage(userID, channelID) {
 			to: channelID,
 			file: screenshotPath,
 			message: "<@"+userID+"> Here's your lightshow!"
-		}), function (err, res) {
-			if (err){logger.warn(err)}
-			if (res){logger.info(res)}
-		};
+		}, function (err, res) {
+				if (err){logger.warn(err)}
+				// if (res){logger.info(res)}
+				fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
+					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+			});
+		});
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
