@@ -94,10 +94,10 @@ if (testingMode) {
 	// logger.debug(canPlay(id));
 	// afterLaunching(id, "channelID", username);
 	// logger.debug(canPlay(id));
-	setTimeout(function(){
+	setInterval(function(){
 		logger.debug("presenceStatus: "+bot.presenceStatus);
 		logger.debug("bot.connected: "+bot.connected);
-	}, 5000);
+	}, 15000);
 }
 
 
