@@ -40,8 +40,10 @@ function start() {
 
 function makeGrid(size) {
    var grid;
-   for (var x = 0, i<3, i++){
-      logger.info("test");
+   for (var x = 0; x < size; x++) {
+      for (var y = 0; y < size; y++) {
+         logger.info("allo");
+      }
    }
    return grid;
 }
