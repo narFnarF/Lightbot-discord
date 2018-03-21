@@ -297,6 +297,10 @@ bot.on('message', function (username, userID, channelID, message, event) {
 				}
 			break;
 
+			case 'relight':
+				relight(userID, channelID, username);
+			break;
+
 			case 'log':
 				if (userID == playersDB.admin.narF){
 					logger.info("Log requested by "+username)
@@ -541,6 +545,31 @@ function doLevelUp(userID) {
 	playersDB.players[userID].level++;
 	playersDB.players[userID].win = false;
 	savePlayersDB(); // write playersDB to file playersDB.json
+}
+
+function relight(userID, channelID, username) {
+
+	logger.info(username+" relight!!!");
+
+	if (playersDB.players[userID]){ // if player is in DB
+		if (playersDB.players[userID].level >= 22) {
+			if (!playersDB.players[userID].relight) {
+				playersDB.players[userID].relight = 0;
+			}
+			playersDB.players[userID].relight++;
+			playersDB.players[userID].level = 1;
+			var r = playersDB.players[userID].relight;
+			var lv = playersDB.players[userID].level;
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+"time(s). You are now back to level "+lv+"."});
+
+		} else { // player has not reached the correct level to relight
+			logger.info(username+" hasn't reached the level to relight");
+			// TODO inform the player
+		}
+	} else { // players doesn't exist in DB
+		// TODO inform the player on how to play.
+		bot.sendMessage({to: channelID, message: "<@"+userID+"> It seems you never played. Type `!light` to start."});
+	}
 }
 
 function mergeDataToDB(userID) {
