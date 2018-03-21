@@ -222,7 +222,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'help':
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
+					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Like a desk plant, your image evolves over time and your progression is saved. You can type `!helpmore` for additional details. Keep light in your day and reach enlightment!"
 				});
 				logger.info("Help requested by "+username);
 			break;
@@ -230,7 +230,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'helpmore':
 				bot.sendMessage({
 					to: channelID,
-					message: "<@"+userID+"> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the `!light` command, your image will evolve. You can call it every 5 minutes, which is how long it takes to generate a new image for you. \n**Commands:**\n`!light` Request your image.\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!invite` To get an URL to invite Light Bot to your own Discord server. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
+					message: "<@"+userID+"> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the `!light` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image. \n**Commands:**\n`!light` Request your image. Watch it grow!\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!invite` To get an URL to invite Light Bot to your own Discord server. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
 				logger.info("More help requested by "+username);
 			break;
