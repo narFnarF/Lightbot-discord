@@ -565,7 +565,7 @@ function relight(userID, channelID, username) {
 
 		} else { // player has not reached the correct level to relight
 			logger.info(username+" tried to relight but hasn't reached the level required.");
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> You are not ready."});
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You are not ready. :waning_crescent_moon: "});
 		}
 	} else { // players doesn't exist in DB
 		bot.sendMessage({to: channelID, message: "<@"+userID+"> It seems you never played. Type `!light` to start."});
