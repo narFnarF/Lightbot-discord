@@ -222,7 +222,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'help':
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Your progression is saved and your image evolves over time. You can type `!helpmore` for additional details."
+					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Like a desk plant, your image evolves over time and your progression is saved. You can type `!helpmore` for additional details. Keep light in your day and reach enlightment!"
 				});
 				logger.info("Help requested by "+username);
 			break;
@@ -230,7 +230,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'helpmore':
 				bot.sendMessage({
 					to: channelID,
-					message: "<@"+userID+"> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the `!light` command, your image will evolve. You can call it every 5 minutes, which is how long it takes to generate a new image for you. \n**Commands:**\n`!light` Request your image.\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!invite` To get an URL to invite Light Bot to your own Discord server. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
+					message: "<@"+userID+"> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the `!light` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image. \n**Commands:**\n`!light` Request your image. Watch it grow!\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!invite` To get an URL to invite Light Bot to your own Discord server. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
 				logger.info("More help requested by "+username);
 			break;
@@ -295,6 +295,10 @@ bot.on('message', function (username, userID, channelID, message, event) {
 						to: channelID,
 						message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
 				}
+			break;
+
+			case 'relight':
+				relight(userID, channelID, username);
 			break;
 
 			case 'log':
@@ -541,6 +545,32 @@ function doLevelUp(userID) {
 	playersDB.players[userID].level++;
 	playersDB.players[userID].win = false;
 	savePlayersDB(); // write playersDB to file playersDB.json
+}
+
+function relight(userID, channelID, username) {
+	if (playersDB.players[userID]){ // if player is in DB
+		if (playersDB.players[userID].level >= 23) { // player is at least level 23
+			if (!playersDB.players[userID].relight) {
+				playersDB.players[userID].relight = 0;
+			}
+			playersDB.players[userID].relight++;
+			playersDB.players[userID].level = 1;
+			var r = playersDB.players[userID].relight;
+			var lv = playersDB.players[userID].level;
+
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+" time(s). You are now back to level "+lv+"."});
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart:"});
+			logger.info(username+" relight!!! Now relit "+r+" time(s) and level "+lv+".");
+			savePlayersDB();
+
+		} else { // player has not reached the correct level to relight
+			logger.info(username+" tried to relight but hasn't reached the level required.");
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You are not ready."});
+		}
+	} else { // players doesn't exist in DB
+		bot.sendMessage({to: channelID, message: "<@"+userID+"> It seems you never played. Type `!light` to start."});
+		logger.info(username+" tried to relight but is not in playersDB.");
+	}
 }
 
 function mergeDataToDB(userID) {
