@@ -548,11 +548,8 @@ function doLevelUp(userID) {
 }
 
 function relight(userID, channelID, username) {
-
-	logger.info(username+" relight!!!");
-
 	if (playersDB.players[userID]){ // if player is in DB
-		if (playersDB.players[userID].level >= 22) {
+		if (playersDB.players[userID].level >= 23) { // player is at least level 23
 			if (!playersDB.players[userID].relight) {
 				playersDB.players[userID].relight = 0;
 			}
@@ -560,15 +557,19 @@ function relight(userID, channelID, username) {
 			playersDB.players[userID].level = 1;
 			var r = playersDB.players[userID].relight;
 			var lv = playersDB.players[userID].level;
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+"time(s). You are now back to level "+lv+"."});
+
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+" time(s). You are now back to level "+lv+"."});
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart:"});
+			logger.info(username+" relight!!! Now relit "+r+" time(s) and level "+lv+".");
+			savePlayersDB();
 
 		} else { // player has not reached the correct level to relight
-			logger.info(username+" hasn't reached the level to relight");
-			// TODO inform the player
+			logger.info(username+" tried to relight but hasn't reached the level required.");
+			bot.sendMessage({to: channelID, message: "<@"+userID+"> You are not ready."});
 		}
 	} else { // players doesn't exist in DB
-		// TODO inform the player on how to play.
 		bot.sendMessage({to: channelID, message: "<@"+userID+"> It seems you never played. Type `!light` to start."});
+		logger.info(username+" tried to relight but is not in playersDB.");
 	}
 }
 
