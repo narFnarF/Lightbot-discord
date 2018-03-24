@@ -466,7 +466,6 @@ function registerPlayerInDB(userID, username) {
 	savePlayersDB();
 }
 
-
 function saveDataJson(userID) {
 	//Write data.json to disk
 
@@ -611,7 +610,6 @@ function sendImage(userID, channelID) {
 	}
 }
 
-
 function canPlay(userID) {
 	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
 
@@ -638,16 +636,22 @@ function canPlay(userID) {
 
 function askLevel(userID, username, channelID) {
 	if (playersDB.players[userID]) {// userID exists in DB
-		bot.sendMessage({
-			to: channelID,
-			message: '<@'+userID+'> You are level `'+playersDB.players[userID].level+'`'
-		});
-		logger.info(username+' asked for their level: '+playersDB.players[userID].level);
+		var lv = playersDB.players[userID].level;
+		if (playersDB.players[userID].relight) { // user have relit at least once
+			var rel = playersDB.players[userID].relight;
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${lv}\` and have relit \`${rel}\` time.`});
+		} else {
+			bot.sendMessage({
+				to: channelID,
+				message: `<@${userID}> You are level \`${lv}\``
+			});
+		}
+		logger.info(`${username} asked for their level: ${lv}`);
 	} else { // userID doesn't exist in DB
 		bot.sendMessage({
 			to: channelID,
-			message: "<@"+userID+"> It seems you never played with me before, so you're level 1. You can type `!light` to play."
+			message: `<@${userID}> It seems you never played with me before, so you're level 1. You can type \`!light\` to play.`
 		});
-		logger.info(username+' asked for their level but they never played before.');
+		logger.info(`${username} asked for their level but they never played before.`);
 	}
 }
