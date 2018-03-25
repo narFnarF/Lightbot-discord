@@ -506,41 +506,49 @@ function afterLaunching(userID, channelID) {
 	sendImage(userID, channelID);
 }
 
+function displayLevel(level, relight) {
+	return level+(relight*endLevel);
+}
+
 function announceResult(userID, channelID){
 	var msg;
+	var win = playersDB.players[userID].win || fakeWin; // if fakeWin is activated, this is always true
+
 	var level = playersDB.players[userID].level;
 	var displayLevel = level;
-	var rl = playersDB.players[userID].relight;
-	if (rl) {
-		displayLevel = level+(rl*endLevel);
-		logger.debug("displayLevel: ", displayLevel);
-	}
-	var win = playersDB.players[userID].win;
-	if (fakeWin) {
-		win = true;
-	}
-	var username = playersDB.players[userID].username;
-	msg = "You are level "+level+"."
-	if (win) {
-		doLevelUp(userID)
-		level = playersDB.players[userID].level; // necessary to get the updated level
-		msg += "\n🎇 Enlighted! You've reached **level "+level+"**. 🎇";
-	}
+	msg = `You are level ${level}.`;
 	if (level < endLevel){
-		msg += " I wonder what will your next image look like?"
+		msg += " I wonder what your next image will look like...";
+	}
+	if (win) {
+		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
+		level = playersDB.players[userID].level;
+		msg += `\n🎇 Enlighted! You've reached **level ${level}**. 🎇`;
+		if (level < 4){
+			msg += "\nI wonder what your next image will look like...";
+		}else if (level >= endLevel) {
+			msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+			logger.info(`${username} is ready!`);
+		}
+	} else {
+		if (level >=4 && ) {
+			msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
-	if (level >= endLevel) {
-		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
-		logger.info(`${username} is ready!`);
+	// TODO move everything under↓ this to above↑ // // TODO
+
+	var rl = playersDB.players[userID].relight;
+	if (rl) {
+		displayLevel = displayLevel(level, rl);
+		logger.debug("displayLevel: ", displayLevel);
 	}
-	else if (level >= 4 && !win) {
-		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
-	}
+	var username = playersDB.players[userID].username;
+
+
+
 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
 
 	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
-	busy = false
 }
 
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
@@ -613,16 +621,19 @@ function sendImage(userID, channelID) {
 				to: channelID,
 				file: screenshotPath,
 				message: "<@"+userID+"> Here's your lightshow!"
-			}, function (err, res) {
-					if (err){logger.warn(err)}
-					fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
-						if ( err ) logger.warn('Could not rename the screenshot: ' + err);
-					});
-					if (!err) {
-						mergeDataToDB(userID);
-						announceResult(userID, channelID);
-					}
+			}, (err, res) => {
+				fs.rename(screenshotPath, screenshotPath+" old.png", (err)=>{
+					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+				});
+
+				if (err){
+					logger.warn(err);
+				} else { // no error
+					mergeDataToDB(userID);
+					announceResult(userID, channelID);
 				}
+				busy = false;
+			}
 		);
 	}else{
 		logger.error("The screenshot isn't there?!");
@@ -631,6 +642,7 @@ function sendImage(userID, channelID) {
 			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
 		});
 		// throw "Screenshot is missing";
+		bot.sendMessage({ to: playersDB.admin.narF, message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after calling the Construct app. Maybe take a look?`});
 	}
 }
 
