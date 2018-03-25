@@ -26,6 +26,7 @@ var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
 var macCommand = "open 'bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
+var endLevel = 20;
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
@@ -81,7 +82,8 @@ var bot = new Discord.Client({
 
 
 // testing ground
-var testingMode = false;
+var testingMode = true;
+var fakeWin = false;
 if (testingMode) {
 	logger.warn('We\'re running in debug mode.');
 	var id = '000000000fake00000';
@@ -502,31 +504,40 @@ function savePlayersDB() {
 function afterLaunching(userID, channelID) {
 	// logger.info("afterLaunching()")
 	sendImage(userID, channelID);
-	mergeDataToDB(userID);
-	announceResult(userID, channelID);
 }
 
 function announceResult(userID, channelID){
-	var msg
-	var level = playersDB.players[userID].level
-	var win = playersDB.players[userID].win
-	var username = playersDB.players[userID].username
+	var msg;
+	var level = playersDB.players[userID].level;
+	var displayLevel = level;
+	var rl = playersDB.players[userID].relight;
+	if (rl) {
+		displayLevel = level+(rl*endLevel);
+		logger.debug("displayLevel: ", displayLevel);
+	}
+	var win = playersDB.players[userID].win;
+	if (fakeWin) {
+		win = true;
+	}
+	var username = playersDB.players[userID].username;
 	msg = "You are level "+level+"."
 	if (win) {
 		doLevelUp(userID)
-		level = playersDB.players[userID].level; //necessary to get the updated level
-		msg += "\n🎇 Enlighted! You've reached **level "+level+"**. 🎇 I wonder what will your next image look like?"
+		level = playersDB.players[userID].level; // necessary to get the updated level
+		msg += "\n🎇 Enlighted! You've reached **level "+level+"**. 🎇";
 	}
-	bot.sendMessage({
-		to: channelID,
-		message: "<@"+userID+"> "+msg
-	})
-	if (level >= 4 && !win) {
-		bot.sendMessage({
-			to: channelID,
-			message: "<@"+userID+"> You're getting good at this. Can you tell us what you see in this picture?"
-		})
+	if (level < endLevel){
+		msg += " I wonder what will your next image look like?"
 	}
+
+	if (level >= endLevel) {
+		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+		logger.info(`${username} is ready!`);
+	}
+	else if (level >= 4 && !win) {
+		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
+	}
+	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
 
 	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
 	busy = false
@@ -556,18 +567,18 @@ function doLevelUp(userID) {
 
 function relight(userID, channelID, username) {
 	if (playersDB.players[userID]){ // if player is in DB
-		if (playersDB.players[userID].level >= 23) { // player is at least level 23
+		var lv = playersDB.players[userID].level;
+		if (lv >= endLevel) {
 			if (!playersDB.players[userID].relight) {
 				playersDB.players[userID].relight = 0;
 			}
 			playersDB.players[userID].relight++;
 			playersDB.players[userID].level = 1;
-			var r = playersDB.players[userID].relight;
-			var lv = playersDB.players[userID].level;
 
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+" time(s). You are now back to level "+lv+"."});
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart:"});
-			logger.info(username+" relight!!! Now relit "+r+" time(s) and level "+lv+".");
+			var r = playersDB.players[userID].relight;
+			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time(s). You are now back to level ${lv}.`
+			bot.sendMessage({to: channelID, message: txt});
+			logger.info(`Relight for ${username}: ${r} time(s) and level ${lv}.`);
 			savePlayersDB();
 
 		} else { // player has not reached the correct level to relight
@@ -597,17 +608,22 @@ function mergeDataToDB(userID) {
 function sendImage(userID, channelID) {
 	// logger.info("sendImage")
 	if (fs.existsSync(screenshotPath)) { //if the file exists on disk
-		bot.uploadFile({
-			to: channelID,
-			file: screenshotPath,
-			message: "<@"+userID+"> Here's your lightshow!"
-		}, function (err, res) {
-				if (err){logger.warn(err)}
-				// if (res){logger.info(res)}
-				fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
-					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
-			});
-		});
+		bot.uploadFile(
+			{
+				to: channelID,
+				file: screenshotPath,
+				message: "<@"+userID+"> Here's your lightshow!"
+			}, function (err, res) {
+					if (err){logger.warn(err)}
+					fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
+						if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+					});
+					if (!err) {
+						mergeDataToDB(userID);
+						announceResult(userID, channelID);
+					}
+				}
+		);
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
