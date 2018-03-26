@@ -75,10 +75,6 @@
                                         </condition>
                                     </conditions>
                                     <actions>
-                                        <action disabled="1" id="1" name="Request project file" sid="358264459284756" type="AJAX">
-                                            <param id="0" name="Tag">&quot;config.json&quot;</param>
-                                            <param id="1" name="File">config.json</param>
-                                        </action>
                                         <action id="-9" name="Set value" sid="965167563713508" type="System">
                                             <param id="0" name="Variable">workfolder</param>
                                             <param id="1" name="Value">NWjs.AppFolder&amp;&quot;../../../../../../../&quot;</param>
@@ -113,6 +109,7 @@
                         </event-block>
                     </sub-events>
                 </event-block>
+                <comment>pretty sure i could remove this ↓</comment>
                 <event-block sid="735629405522881">
                     <conditions>
                         <condition id="0" name="On completed" sid="904863649084337" type="AJAX">
