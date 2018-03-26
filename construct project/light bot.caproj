@@ -114,6 +114,5 @@
             <file name="icon-256.png" />
             <file name="loading-logo.png" />
         </file-folder>
-        <file name="config.json" />
     </files-folder>
 </c2project>
