@@ -512,7 +512,7 @@ function displayLevel(user) {
 
 function announceResult(userID, channelID){
 	var msg;
-	var win = playersDB.players[userID].win || fakeWin; // if fakeWin is activated, this is always true
+	var win = (playersDB.players[userID].win || fakeWin); // if fakeWin is activated, this is always true
 
 	var level = playersDB.players[userID].level;
 	msg = `You are level ${level}.`; // add the relight info here
@@ -633,10 +633,12 @@ function sendImage(userID, channelID) {
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
 			to: channelID,
-			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
+			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
 		});
-		// throw "Screenshot is missing";
-		bot.sendMessage({ to: playersDB.admin.narF, message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after calling the Construct app. Maybe take a look?`});
+		bot.sendMessage({
+			to: playersDB.admin.narF,
+			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after calling the Construct app. Maybe take a look at the !log?`
+		});
 	}
 }
 
