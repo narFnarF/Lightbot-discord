@@ -506,8 +506,8 @@ function afterLaunching(userID, channelID) {
 	sendImage(userID, channelID);
 }
 
-function displayLevel(level, relight) {
-	return level+(relight*endLevel);
+function displayLevel(user) {
+	return user.level+(user.relight*endLevel);
 }
 
 function announceResult(userID, channelID){
@@ -515,15 +515,14 @@ function announceResult(userID, channelID){
 	var win = playersDB.players[userID].win || fakeWin; // if fakeWin is activated, this is always true
 
 	var level = playersDB.players[userID].level;
-	var displayLevel = level;
-	msg = `You are level ${level}.`;
+	msg = `You are level ${level}.`; // add the relight info here
 	if (level < endLevel){
 		msg += " I wonder what your next image will look like...";
 	}
 	if (win) {
 		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
 		level = playersDB.players[userID].level;
-		msg += `\n🎇 Enlighted! You've reached **level ${level}**. 🎇`;
+		msg += `\n🎇 Enlighted! You've reached **level ${playersDB.players[userID]}**. 🎇`;
 		if (level < 4){
 			msg += "\nI wonder what your next image will look like...";
 		}else if (level >= endLevel) {
@@ -531,23 +530,18 @@ function announceResult(userID, channelID){
 			logger.info(`${username} is ready!`);
 		}
 	} else {
-		if (level >=4 && ) {
+		if (level >=4) {
 			msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
-	// TODO move everything under↓ this to above↑ // // TODO
 
 	var rl = playersDB.players[userID].relight;
 	if (rl) {
-		displayLevel = displayLevel(level, rl);
-		logger.debug("displayLevel: ", displayLevel);
+		logger.debug("displayLevel: ", displayLevel(level, rl));
 	}
-	var username = playersDB.players[userID].username;
-
-
 
 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
-
+	var username = playersDB.players[userID].username;
 	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
 }
 
