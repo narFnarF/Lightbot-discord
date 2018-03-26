@@ -82,7 +82,7 @@ var bot = new Discord.Client({
 
 
 // testing ground
-var testingMode = true;
+var testingMode = false;
 var fakeWin = false;
 if (testingMode) {
 	logger.warn('We\'re running in debug mode.');
