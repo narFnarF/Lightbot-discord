@@ -906,7 +906,7 @@
                                 </action>
                                 <action id="-9" name="Set value" sid="933468908191257" type="System">
                                     <param id="0" name="Variable">luminosity</param>
-                                    <param id="1" name="Value">2^((level+10)/6) +100-4</param>
+                                    <param id="1" name="Value">2^((level+11.4)/5.7) +100-4</param>
                                 </action>
                             </actions>
                         </event-block>
