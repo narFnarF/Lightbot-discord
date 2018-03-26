@@ -507,7 +507,11 @@ function afterLaunching(userID, channelID) {
 }
 
 function displayLevel(user) {
-	return user.level+(user.relight*endLevel);
+	if (user.relight) {
+		return user.level+(user.relight*endLevel);
+	} else {
+		return user.level;
+	}
 }
 
 function announceResult(userID, channelID){
@@ -515,29 +519,26 @@ function announceResult(userID, channelID){
 	var win = (playersDB.players[userID].win || fakeWin); // if fakeWin is activated, this is always true
 
 	var level = playersDB.players[userID].level;
-	msg = `You are level ${level}.`; // add the relight info here
+	msg = `You are level ${displayLevel(playersDB.players[userID])}.`;
+	if (win) {
+		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
+		level++;
+		var dlv = displayLevel( playersDB.players[userID] );
+		msg += `\n🎇 Enlighted! You've reached **level ${dlv}**. 🎇`;
+
+	}
 	if (level < endLevel){
 		msg += " I wonder what your next image will look like...";
 	}
-	if (win) {
-		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
-		level = playersDB.players[userID].level;
-		msg += `\n🎇 Enlighted! You've reached **level ${playersDB.players[userID]}**. 🎇`;
-		if (level < 4){
-			msg += "\nI wonder what your next image will look like...";
-		}else if (level >= endLevel) {
-			msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
-			logger.info(`${username} is ready!`);
-		}
-	} else {
-		if (level >=4) {
-			msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
+
+	if (!win && level >=4 && level < endLevel) {
+		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
 
-	var rl = playersDB.players[userID].relight;
-	if (rl) {
-		logger.debug("displayLevel: ", displayLevel(level, rl));
+	if (level >= endLevel) {
+		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+		logger.info(`${username} is ready!`);
 	}
 
 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
@@ -578,14 +579,14 @@ function relight(userID, channelID, username) {
 			playersDB.players[userID].level = 1;
 
 			var r = playersDB.players[userID].relight;
-			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time(s). You are now back to level ${lv}.`
+			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time${r>1?"s":""}. You have jumped to level ${displayLevel(playersDB.players[userID])}.`
 			bot.sendMessage({to: channelID, message: txt});
 			logger.info(`Relight for ${username}: ${r} time(s) and level ${lv}.`);
 			savePlayersDB();
 
 		} else { // player has not reached the correct level to relight
 			logger.info(username+" tried to relight but hasn't reached the level required.");
-			bot.sendMessage({to: channelID, message: `<@${userID}"> You are not ready. :waning_crescent_moon: `});
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are not ready. :waning_crescent_moon: `});
 		}
 	} else { // players doesn't exist in DB
 		bot.sendMessage({to: channelID, message: `<@${userID}> It seems you never played. Type \`!light\` to start.`});
@@ -671,7 +672,7 @@ function askLevel(userID, username, channelID) {
 		var lv = playersDB.players[userID].level;
 		if (playersDB.players[userID].relight) { // user have relit at least once
 			var rel = playersDB.players[userID].relight;
-			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${lv}\` and have relit \`${rel}\` time.`});
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${displayLevel(playersDB.players[userID])}\` and have relit \`${rel}\` time.`});
 		} else {
 			bot.sendMessage({
 				to: channelID,
