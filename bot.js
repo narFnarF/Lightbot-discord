@@ -26,6 +26,7 @@ var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
 var macCommand = "open 'bin/lightbot.app'";
 var windowsCommand = "bin\\nw.exe";
+var endLevel = 20;
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
@@ -82,6 +83,7 @@ var bot = new Discord.Client({
 
 // testing ground
 var testingMode = false;
+var fakeWin = false;
 if (testingMode) {
 	logger.warn('We\'re running in debug mode.');
 	var id = '000000000fake00000';
@@ -222,7 +224,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'help':
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Like a desk plant, your image evolves over time and your progression is saved. You can type `!helpmore` for additional details. Keep light in your day and reach enlightment!"
+					message: "Hello <@"+userID+">. I'm **Light Bot**. Request a picture by typing `!light` in the chat. Like a desk plant, your image evolves over time and your progression is saved. You can type `!helpmore` for additional details. Embrace `!light` in your days and reach enlightment!"
 				});
 				logger.info("Help requested by "+username);
 			break;
@@ -230,9 +232,17 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'helpmore':
 				bot.sendMessage({
 					to: channelID,
-					message: "<@"+userID+"> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the `!light` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image. \n**Commands:**\n`!light` Request your image. Watch it grow!\n`!level` Tell you your current level.\n`!link` To get the URL link to the original version of this game. \n`!invite` To get an URL to invite Light Bot to your own Discord server. \n`!helpadmin` Help about admin commands.\nYou can also play the app version of this light game at https://narf.itch.io/light-game "
+					message: `<@${userID}> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the \`!light\` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image.\n`+
+					"**Commands:**\n"+
+					"`!light` Request your image. Watch it grow!\n"+
+					"`!level` Tell you your current level.\n"+
+					"`!relight` For when you've reached the end.\n"+
+					"`!link` To get the URL link to the original version of this game.\n"+
+					"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
+					"`!helpadmin` Help about admin commands.\n"+
+					"You can also play the app version of this light game at https://narf.itch.io/light-game "
 				});
-				logger.info("More help requested by "+username);
+				logger.info(`More help requested by ${username}`);
 			break;
 
 			case 'helpadmin':
@@ -466,7 +476,6 @@ function registerPlayerInDB(userID, username) {
 	savePlayersDB();
 }
 
-
 function saveDataJson(userID) {
 	//Write data.json to disk
 
@@ -495,34 +504,46 @@ function savePlayersDB() {
 function afterLaunching(userID, channelID) {
 	// logger.info("afterLaunching()")
 	sendImage(userID, channelID);
-	mergeDataToDB(userID);
-	announceResult(userID, channelID);
+}
+
+function displayLevel(user) {
+	if (user.relight) {
+		return user.level+(user.relight*endLevel);
+	} else {
+		return user.level;
+	}
 }
 
 function announceResult(userID, channelID){
-	var msg
-	var level = playersDB.players[userID].level
-	var win = playersDB.players[userID].win
-	var username = playersDB.players[userID].username
-	msg = "You are level "+level+"."
+	var msg;
+	var win = (playersDB.players[userID].win || fakeWin); // if fakeWin is activated, this is always true
+
+	var level = playersDB.players[userID].level;
+	msg = `You are level ${displayLevel(playersDB.players[userID])}.`;
 	if (win) {
-		doLevelUp(userID)
-		level = playersDB.players[userID].level; //necessary to get the updated level
-		msg += "\n🎇 Enlighted! You've reached **level "+level+"**. 🎇 I wonder what will your next image look like?"
+		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
+		level++;
+		var dlv = displayLevel( playersDB.players[userID] );
+		msg += `\n🎇 Enlighted! You've reached **level ${dlv}**. 🎇`;
+
 	}
-	bot.sendMessage({
-		to: channelID,
-		message: "<@"+userID+"> "+msg
-	})
-	if (level >= 4 && !win) {
-		bot.sendMessage({
-			to: channelID,
-			message: "<@"+userID+"> You're getting good at this. Can you tell us what you see in this picture?"
-		})
+	if (level < endLevel){
+		msg += " I wonder what your next image will look like...";
 	}
 
+	if (!win && level >=4 && level < endLevel) {
+		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
+	}
+
+
+	if (level >= endLevel) {
+		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+		logger.info(`${username} is ready!`);
+	}
+
+	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
+	var username = playersDB.players[userID].username;
 	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
-	busy = false
 }
 
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
@@ -549,26 +570,26 @@ function doLevelUp(userID) {
 
 function relight(userID, channelID, username) {
 	if (playersDB.players[userID]){ // if player is in DB
-		if (playersDB.players[userID].level >= 23) { // player is at least level 23
+		var lv = playersDB.players[userID].level;
+		if (lv >= endLevel) {
 			if (!playersDB.players[userID].relight) {
 				playersDB.players[userID].relight = 0;
 			}
 			playersDB.players[userID].relight++;
 			playersDB.players[userID].level = 1;
-			var r = playersDB.players[userID].relight;
-			var lv = playersDB.players[userID].level;
 
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> You have relit "+r+" time(s). You are now back to level "+lv+"."});
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart:"});
-			logger.info(username+" relight!!! Now relit "+r+" time(s) and level "+lv+".");
+			var r = playersDB.players[userID].relight;
+			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time${r>1?"s":""}. You have jumped to level ${displayLevel(playersDB.players[userID])}.`
+			bot.sendMessage({to: channelID, message: txt});
+			logger.info(`Relight for ${username}: ${r} time(s) and level ${lv}.`);
 			savePlayersDB();
 
 		} else { // player has not reached the correct level to relight
 			logger.info(username+" tried to relight but hasn't reached the level required.");
-			bot.sendMessage({to: channelID, message: "<@"+userID+"> You are not ready. :waning_crescent_moon: "});
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are not ready. :waning_crescent_moon: `});
 		}
 	} else { // players doesn't exist in DB
-		bot.sendMessage({to: channelID, message: "<@"+userID+"> It seems you never played. Type `!light` to start."});
+		bot.sendMessage({to: channelID, message: `<@${userID}> It seems you never played. Type \`!light\` to start.`});
 		logger.info(username+" tried to relight but is not in playersDB.");
 	}
 }
@@ -590,27 +611,37 @@ function mergeDataToDB(userID) {
 function sendImage(userID, channelID) {
 	// logger.info("sendImage")
 	if (fs.existsSync(screenshotPath)) { //if the file exists on disk
-		bot.uploadFile({
-			to: channelID,
-			file: screenshotPath,
-			message: "<@"+userID+"> Here's your lightshow!"
-		}, function (err, res) {
-				if (err){logger.warn(err)}
-				// if (res){logger.info(res)}
-				fs.rename(screenshotPath, screenshotPath+" old.png", function(err) {
+		bot.uploadFile(
+			{
+				to: channelID,
+				file: screenshotPath,
+				message: "<@"+userID+"> Here's your lightshow!"
+			}, (err, res) => {
+				fs.rename(screenshotPath, screenshotPath+" old.png", (err)=>{
 					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
-			});
-		});
+				});
+
+				if (err){
+					logger.warn(err);
+				} else { // no error
+					mergeDataToDB(userID);
+					announceResult(userID, channelID);
+				}
+				busy = false;
+			}
+		);
 	}else{
 		logger.error("The screenshot isn't there?!");
 		bot.sendMessage({
 			to: channelID,
-			message: "<@"+userID+"> Err... sorry, i messed up. Maybe try again in a couple minutes?"
+			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
 		});
-		// throw "Screenshot is missing";
+		bot.sendMessage({
+			to: playersDB.admin.narF,
+			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after calling the Construct app. Maybe take a look at the !log?`
+		});
 	}
 }
-
 
 function canPlay(userID) {
 	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
@@ -638,16 +669,22 @@ function canPlay(userID) {
 
 function askLevel(userID, username, channelID) {
 	if (playersDB.players[userID]) {// userID exists in DB
-		bot.sendMessage({
-			to: channelID,
-			message: '<@'+userID+'> You are level `'+playersDB.players[userID].level+'`'
-		});
-		logger.info(username+' asked for their level: '+playersDB.players[userID].level);
+		var lv = playersDB.players[userID].level;
+		if (playersDB.players[userID].relight) { // user have relit at least once
+			var rel = playersDB.players[userID].relight;
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${displayLevel(playersDB.players[userID])}\` and have relit \`${rel}\` time.`});
+		} else {
+			bot.sendMessage({
+				to: channelID,
+				message: `<@${userID}> You are level \`${lv}\``
+			});
+		}
+		logger.info(`${username} asked for their level: ${lv}`);
 	} else { // userID doesn't exist in DB
 		bot.sendMessage({
 			to: channelID,
-			message: "<@"+userID+"> It seems you never played with me before, so you're level 1. You can type `!light` to play."
+			message: `<@${userID}> It seems you never played with me before, so you're level 1. You can type \`!light\` to play.`
 		});
-		logger.info(username+' asked for their level but they never played before.');
+		logger.info(`${username} asked for their level but they never played before.`);
 	}
 }
