@@ -40,7 +40,7 @@ function start() {
 
 
 
-
+// Bout de code qui remplace une couleur par une autre couleur:
 // Jimp.read('Bot-Test.jpg').then(image => {
 //   const targetColor = {r: 60, g: 171, b: 118, a: 255};  // Color you want to replace
 //   const replaceColor = {r: 0, g: 0, b: 0, a: 0};  // Color you want to replace with
