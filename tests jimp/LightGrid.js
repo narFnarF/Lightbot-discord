@@ -98,6 +98,7 @@ class LightGrid {
       return out;
    }
 }
+module.exports = LightGrid;
 
 // Des trucs pour tester
 // var g = new LightGrid(5);
