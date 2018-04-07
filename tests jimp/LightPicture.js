@@ -1,22 +1,27 @@
 "use strict";
 
-var qqc = require("./light_Grid.js")
-
 class LightPicture {
    constructor(lg){
       this.lightGrid = lg;
-      this.pictureGrid = [];
+      this.pictureGrid = [[]];
 
       this.constantes = {
          pictureDimention: 500,
          workingDimention: 600
       }
 
-      var actualDimention = Math.floor(this.constantes.workingDimention / this.lightGrid.length);
-      console.log(actualDimention);
-      // for () {
-      //
-      // }
+      var actualCellDimention = Math.floor(this.constantes.workingDimention / this.lightGrid.length);
+      var actualDimention = this.lightGrid.length * actualCellDimention;
+      console.log(`actualDimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
+
+
+      this.pictureGrid = new Array(actualDimention);
+      for (var x = 0; x < this.pictureGrid.length; x++) {
+         this.pictureGrid[x] = new Array(actualDimention);
+      }
+      // console.log(this.pictureGrid);
+
+
    }
 
    makePicture(level, won) {
@@ -32,5 +37,6 @@ class LightPicture {
 
 
 // Tester cette classe
-var l = require("./light_Grid.js")(4);
+var LightGrid = require("./LightGrid.js");
+var l = new LightGrid(19);
 var p = new LightPicture(l);
