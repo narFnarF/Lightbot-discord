@@ -97,6 +97,16 @@ class LightGrid {
       }
       return out;
    }
+
+   forEach(callbackFunction) {
+      for (var y = 0; y < this.length; y++) {
+         for (var x = 0; x < this.length; x++) {
+            var i = this.xyToIndex(x, y);
+            callbackFunction(x, y, i);
+         }
+      }
+
+   }
 }
 module.exports = LightGrid;
 
