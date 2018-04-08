@@ -1,8 +1,11 @@
 "use strict";
 
+var LightGrid = require("./LightGrid.js");
+var Jimp = require("jimp");
+
 class LightPicture {
-   constructor(lg){
-      this.lightGrid = lg;
+   constructor(size, won){
+      this.lightGrid = new LightGrid(size);
       this.pictureGrid = [[]];
 
       this.constantes = {
@@ -21,22 +24,25 @@ class LightPicture {
       }
       // console.log(this.pictureGrid);
 
+      this.lightGrid.forEach( (x, y, i) => {
+         console.log(`in forEach ${x}, ${y}, ${i}`);
+         var startX = x * actualCellDimention;
+         var startY = y * actualCellDimention;
+         console.log(`startX ${startX}, startY ${startY}`);
+
+         for (var cellY = startY; cellY < startY+actualCellDimention; cellY++) {
+            for (var cellX = startX; cellX < startX+actualCellDimention; cellX++) {
+               console.log(`cell ${i} each pixel ${cellX}, ${cellY}`);
+            }
+         }
+      });
+
 
    }
 
-   makePicture(level, won) {
-      var path = "";
-      return path;
-   }
-
-   makePictureBase64(level, won) {
-      var base64Picture;
-      return base64Picture;
-   }
 }
 
+module.exports = LightPicture;
 
 // Tester cette classe
-var LightGrid = require("./LightGrid.js");
-var l = new LightGrid(19);
-var p = new LightPicture(l);
+var p = new LightPicture(7);
