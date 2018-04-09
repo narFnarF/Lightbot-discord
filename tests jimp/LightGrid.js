@@ -1,7 +1,20 @@
 "use strict";
 
+const NOT_FILLED = 0;
+const FILLED = 1;
+const WINNING = 3;
+
 class LightGrid {
+   // constantes
+   static get NOT_FILLED() {return NOT_FILLED;}
+   static get FILLED() {return FILLED;}
+   static get WINNING() {return WINNING;}
+
    constructor(size) {
+      this.grid;
+
+      console.log(`Constructing a LightGrid:`);
+      // console.log(`I can has constants? ${LightGrid.FILLED}`);
       this.grid = [];
       for (var x = 0; x<size; x++) {
          this.grid[x] = [];
@@ -9,6 +22,11 @@ class LightGrid {
             this.grid[x][y] = "";
          }
       }
+
+      // TODO: select the value for nb
+      var nb = 2
+      this.fillGrid(nb, LightGrid.FILLED, LightGrid.NOT_FILLED);
+
    }
 
    indexToXY(i) {
@@ -98,11 +116,18 @@ class LightGrid {
       return out;
    }
 
-   forEach(callbackFunction) {
+   forEachFilled(callbackFunction) {
+      console.log(`Start forEachFilled(). cell(0,0) = ${this.cellXY(0, 0)}`);
+      console.log(this);
       for (var y = 0; y < this.length; y++) {
          for (var x = 0; x < this.length; x++) {
-            var i = this.xyToIndex(x, y);
-            callbackFunction(x, y, i);
+            console.log(`Looking at x,y: ${x} ${y}`);
+            console.log(`if ${this.cellXY(x, y)} === ${LightGrid.FILLED}`);
+            if (this.cellXY(x, y) === this.FILLED) {
+               console.log(`I'm filled! ${x} ${y}`);
+               var i = this.xyToIndex(x, y);
+               callbackFunction(x, y, i, this.cellXY(x, y));
+            }
          }
       }
 
