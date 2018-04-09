@@ -6,7 +6,8 @@ var Jimp = require("jimp");
 class LightPicture {
    constructor(size, won){
       this.lightGrid = new LightGrid(size);
-      this.pictureGrid = [[]];
+      // this.pictureGrid = [[]];
+      this.picture;
 
       this.constantes = {
          pictureDimention: 500,
@@ -15,28 +16,64 @@ class LightPicture {
 
       var actualCellDimention = Math.floor(this.constantes.workingDimention / this.lightGrid.length);
       var actualDimention = this.lightGrid.length * actualCellDimention;
-      console.log(`actualDimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
+      console.log(`actual dimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
 
 
-      this.pictureGrid = new Array(actualDimention);
-      for (var x = 0; x < this.pictureGrid.length; x++) {
-         this.pictureGrid[x] = new Array(actualDimention);
-      }
-      // console.log(this.pictureGrid);
+      const outputpath = "output.png";
+      const rose = {r: 255, g:100, b:100, a:255};
 
-      this.lightGrid.forEach( (x, y, i) => {
-         console.log(`in forEach ${x}, ${y}, ${i}`);
-         var startX = x * actualCellDimention;
-         var startY = y * actualCellDimention;
-         console.log(`startX ${startX}, startY ${startY}`);
+      // Make the picture
+      this.picture = new Jimp(actualDimention, actualDimention, 0xFFFFFFFF, (err, image) => {
+         console.log(1);
+         this.lightGrid.forEachFilled( (x, y, i, state) => {
+            var startX = x * actualCellDimention;
+            var startY = y * actualCellDimention;
+            console.log(`in forEach ${x}, ${y}, ${i}, startX ${startX}, startY ${startY}`);
 
-         for (var cellY = startY; cellY < startY+actualCellDimention; cellY++) {
-            for (var cellX = startX; cellX < startX+actualCellDimention; cellX++) {
-               console.log(`cell ${i} each pixel ${cellX}, ${cellY}`);
+            // which color are we filling with
+            if (state === this.lightGrid.FILLED) {
+               var color = rose;
+            } else if (state === this.lightGrid.WINNING) {
+               var extra = Math.random()*50;
+               var rosePale = {
+                  r: rose.r,
+                  g: rose.g + extra,
+                  b: rose.b + extra,
+                  a: rose.a
+               };
             }
-         }
+
+            image.scan(startX, startY, actualCellDimention, actualCellDimention, (x, y, index) => {
+               if ((index/4) %4 == 1) {
+                  // console.log("tout dedans");
+                  image.bitmap.data[index+0] = color.r;
+                  image.bitmap.data[index+1] = color.g;
+                  image.bitmap.data[index+2] = color.b;
+                  image.bitmap.data[index+3] = color.a;
+               }
+            });
+         });
+         image.resize(500, Jimp.AUTO)
+              .write(outputpath);
+         console.log("Wrote to "+outputpath+".");
       });
 
+
+      // Probably not required either. I could to this straight in the jimp object
+      // Initialize an empty array for the picture
+      // this.pictureGrid = new Array(actualDimention);
+      // for (var x = 0; x < this.pictureGrid.length; x++) {
+      //    this.pictureGrid[x] = new Array(actualDimention);
+      // }
+      // console.log(this.pictureGrid);
+
+
+      // Pas besoin de ça. Scan le fait pour nous.
+      // for (var cellY = startY; cellY < startY+actualCellDimention; cellY++) {
+      //    for (var cellX = startX; cellX < startX+actualCellDimention; cellX++) {
+      //       console.log(`cell ${i} each pixel ${cellX}, ${cellY}`);
+      //    }
+      // }
 
    }
 
@@ -45,4 +82,5 @@ class LightPicture {
 module.exports = LightPicture;
 
 // Tester cette classe
-var p = new LightPicture(7);
+var p = new LightPicture(2);
+console.log(`yo ${LightGrid.enHaut} ${LightGrid.enDedans}`);
