@@ -13,18 +13,31 @@ class LightGrid {
    constructor(size) {
       this.grid;
 
-      console.log(`Constructing a LightGrid:`);
-      // console.log(`I can has constants? ${LightGrid.FILLED}`);
+      // init the empty grid
       this.grid = [];
       for (var x = 0; x<size; x++) {
-         this.grid[x] = [];
-         for (var y=0; y<size; y++) {
-            this.grid[x][y] = "";
-         }
+         this.grid[x] = new Array(size);
+         // for (var y=0; y<size; y++) {
+         //    this.grid[x][y] = "";
+         // }
       }
 
+      // Determine how many cells will be lit
+      // TODO
+      var level = size-1;
+      var rollMax = Math.ceil(level+(3/level)-1);
+      var roll = Math.floor(Math.random()*rollMax);
+      if (roll == 0) { // win!!
+
+      } else { // don't win
+
+      }
+      var cellLit ;
+
+      // TODO: Determine if we won
+
       // TODO: select the value for nb
-      var nb = 2
+      var nb = Math.floor(Math.random()*this.area); // TODO: change this so that it pick from 1 to area-1
       this.fillGrid(nb, LightGrid.FILLED, LightGrid.NOT_FILLED);
 
    }
@@ -117,14 +130,12 @@ class LightGrid {
    }
 
    forEachFilled(callbackFunction) {
-      console.log(`Start forEachFilled(). cell(0,0) = ${this.cellXY(0, 0)}`);
-      console.log(this);
       for (var y = 0; y < this.length; y++) {
          for (var x = 0; x < this.length; x++) {
-            console.log(`Looking at x,y: ${x} ${y}`);
-            console.log(`if ${this.cellXY(x, y)} === ${LightGrid.FILLED}`);
-            if (this.cellXY(x, y) === this.FILLED) {
-               console.log(`I'm filled! ${x} ${y}`);
+            // console.log(`Looking at x,y: ${x} ${y}`);
+            // console.log(`if ${this.cellXY(x, y)} === ${LightGrid.FILLED}`);
+            if (this.cellXY(x, y) === LightGrid.FILLED) {
+               // console.log(`I'm filled! ${x} ${y}`);
                var i = this.xyToIndex(x, y);
                callbackFunction(x, y, i, this.cellXY(x, y));
             }

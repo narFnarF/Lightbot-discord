@@ -4,7 +4,7 @@ var LightGrid = require("./LightGrid.js");
 var Jimp = require("jimp");
 
 class LightPicture {
-   constructor(size, won){
+   constructor(size){
       this.lightGrid = new LightGrid(size);
       // this.pictureGrid = [[]];
       this.picture;
@@ -21,19 +21,20 @@ class LightPicture {
 
       const outputpath = "output.png";
       const rose = {r: 255, g:100, b:100, a:255};
+      // var color;
 
       // Make the picture
       this.picture = new Jimp(actualDimention, actualDimention, 0xFFFFFFFF, (err, image) => {
-         console.log(1);
          this.lightGrid.forEachFilled( (x, y, i, state) => {
             var startX = x * actualCellDimention;
             var startY = y * actualCellDimention;
-            console.log(`in forEach ${x}, ${y}, ${i}, startX ${startX}, startY ${startY}`);
+            // console.log(`in forEach ${x}, ${y}, ${i}, startX ${startX}, startY ${startY}`);
 
             // which color are we filling with
-            if (state === this.lightGrid.FILLED) {
+            // var color;
+            if (state === LightGrid.FILLED) {
                var color = rose;
-            } else if (state === this.lightGrid.WINNING) {
+            } else if (state === LightGrid.WINNING) {
                var extra = Math.random()*50;
                var rosePale = {
                   r: rose.r,
@@ -41,16 +42,15 @@ class LightPicture {
                   b: rose.b + extra,
                   a: rose.a
                };
+               var color = rosePale;
             }
 
             image.scan(startX, startY, actualCellDimention, actualCellDimention, (x, y, index) => {
-               if ((index/4) %4 == 1) {
-                  // console.log("tout dedans");
-                  image.bitmap.data[index+0] = color.r;
-                  image.bitmap.data[index+1] = color.g;
-                  image.bitmap.data[index+2] = color.b;
-                  image.bitmap.data[index+3] = color.a;
-               }
+               // console.log("tout dedans");
+               image.bitmap.data[index+0] = color.r;
+               image.bitmap.data[index+1] = color.g;
+               image.bitmap.data[index+2] = color.b;
+               image.bitmap.data[index+3] = color.a;
             });
          });
          image.resize(500, Jimp.AUTO)
@@ -82,5 +82,4 @@ class LightPicture {
 module.exports = LightPicture;
 
 // Tester cette classe
-var p = new LightPicture(2);
-console.log(`yo ${LightGrid.enHaut} ${LightGrid.enDedans}`);
+var p = new LightPicture(7);
