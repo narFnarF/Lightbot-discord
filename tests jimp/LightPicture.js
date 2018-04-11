@@ -9,14 +9,14 @@ class LightPicture {
       // this.pictureGrid = [[]];
       this.picture;
 
-      this.constantes = {
+      this.constantes = { // TODO: move these as real static constants
          pictureDimention: 500,
          workingDimention: 600
       }
 
       var actualCellDimention = Math.floor(this.constantes.workingDimention / this.lightGrid.length);
       var actualDimention = this.lightGrid.length * actualCellDimention;
-      console.log(`actual dimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
+      // console.log(`actual dimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
 
 
       const outputpath = "output.png";
@@ -31,11 +31,13 @@ class LightPicture {
             // console.log(`in forEach ${x}, ${y}, ${i}, startX ${startX}, startY ${startY}`);
 
             // which color are we filling with
-            // var color;
             if (state === LightGrid.FILLED) {
+               // console.log(`cell is filled`);
                var color = rose;
             } else if (state === LightGrid.WINNING) {
-               var extra = Math.random()*50;
+               // console.log("cell is winning");
+               var extra = 40+Math.random()*50;
+               // console.log(`extra is ${extra}`);
                var rosePale = {
                   r: rose.r,
                   g: rose.g + extra,
@@ -45,6 +47,7 @@ class LightPicture {
                var color = rosePale;
             }
 
+            // Apply the color in the cell
             image.scan(startX, startY, actualCellDimention, actualCellDimention, (x, y, index) => {
                // console.log("tout dedans");
                image.bitmap.data[index+0] = color.r;
@@ -82,4 +85,4 @@ class LightPicture {
 module.exports = LightPicture;
 
 // Tester cette classe
-var p = new LightPicture(7);
+var p = new LightPicture(4);

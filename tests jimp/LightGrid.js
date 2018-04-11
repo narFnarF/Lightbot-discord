@@ -23,23 +23,24 @@ class LightGrid {
       }
 
       // Determine how many cells will be lit
-      // TODO
       var level = size-1;
       var rollMax = Math.ceil(level+(3/level)-1);
-      var roll = Math.floor(Math.random()*rollMax);
-      if (roll == 0) { // win!!
+      var roll = 1+Math.floor(Math.random()*rollMax);
+      var cellLit;
+      var levelUp = false;
+      // console.log(`roll == rollMax: ${roll} == ${rollMax}`);
+      if (roll == rollMax) { // win!!
+         // console.log("WINNING!!!!!!");
+         levelUp = true;
+         cellLit = this.area;
+         this.fillGrid(cellLit, LightGrid.WINNING, LightGrid.NOT_FILLED);
 
       } else { // don't win
-
+         // console.log("not winning");
+         cellLit = 1+Math.floor(Math.random()*(this.area-1));
+         this.fillGrid(cellLit, LightGrid.FILLED, LightGrid.NOT_FILLED);
       }
-      var cellLit ;
-
-      // TODO: Determine if we won
-
-      // TODO: select the value for nb
-      var nb = Math.floor(Math.random()*this.area); // TODO: change this so that it pick from 1 to area-1
-      this.fillGrid(nb, LightGrid.FILLED, LightGrid.NOT_FILLED);
-
+      // console.log(this.grid);
    }
 
    indexToXY(i) {
@@ -117,7 +118,6 @@ class LightGrid {
          // this.setCellAt(randomList[i], a);
       }
    }
-
    toString() {
       var out = "";
       for (var y=0; y<this.length; y++){
@@ -134,15 +134,17 @@ class LightGrid {
          for (var x = 0; x < this.length; x++) {
             // console.log(`Looking at x,y: ${x} ${y}`);
             // console.log(`if ${this.cellXY(x, y)} === ${LightGrid.FILLED}`);
-            if (this.cellXY(x, y) === LightGrid.FILLED) {
-               // console.log(`I'm filled! ${x} ${y}`);
-               var i = this.xyToIndex(x, y);
-               callbackFunction(x, y, i, this.cellXY(x, y));
+            switch ( this.cellXY(x, y) ) { //If the cell is either filled or winning
+               case LightGrid.FILLED :
+               case LightGrid.WINNING :
+                  // console.log(`I'm filled! ${x} ${y}`);
+                  var i = this.xyToIndex(x, y);
+                  callbackFunction(x, y, i, this.cellXY(x, y));
             }
          }
       }
-
    }
+
 }
 module.exports = LightGrid;
 
