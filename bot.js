@@ -3,6 +3,7 @@
 var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
+var LightPicture = require("./tests jimp/LightPicture.js");
 
 // Required to launch an app (exec)
 // var sys = require('sys')
@@ -356,6 +357,33 @@ bot.on('message', function (username, userID, channelID, message, event) {
 					message: "<@"+userID+"> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \n"+bot.inviteURL
 				});
 				logger.info(username+" requested the invite link.");
+			break;
+
+			case "testJimp":
+				var lvl = 1 + Math.floor(Math.random()*19);
+				logger.info(`test Jimp with random level: ${lvl}`);
+
+				var p = new LightPicture(lvl+1, "toto.png", (err, res)=>{
+					if (err) {
+						logger.warn(err);
+					} else {
+						logger.info("Created a picture: toto.png");
+						bot.uploadFile({
+							to: channelID,
+							file: "toto.png",
+							message: `this is level ${lvl}.`
+						}, (error, response)=>{
+							if (error) {
+								logger.error(error);
+							} else {
+								logger.info("Send picture with success.");
+								fs.rename("toto.png", "totoOld.png", (err)=>{
+									if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+								});
+							}
+						});
+					}
+				});
 			break;
 		}
 	}
