@@ -263,49 +263,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'light':
-				if (canPlay(userID) || testingMode) {
-					if (!busy) {
-						try {
-							busy = true
-							logger.info("Player "+username+" wants light.")
-							preparePlayerData(userID, username);
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
-							}, function(err, res) {
-								if (!err){
-									deleteMsgAfterDelay(res.id, channelID, 5)
-								}else {
-									logger.warn("Error while sending the message Enlightment is coming.")
-									logger.warn(err)
-								}
-							});
-							launchGame();
-							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
-						} catch (e) {
-							busy = false
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
-							logger.error(e);
-							bot.sendMessage({
-								to: channelID,
-								message: e
-							})
-						}
-					} else {
-						logger.info("Player "+username+" tried to play but I'm busy!")
-						bot.sendMessage({
-							to: channelID,
-							message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
-					}
-
-				} else {
-					logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
-					bot.sendMessage({
-						to: channelID,
-						message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
-				}
+				lightCommand(userID, channelID, username);
 			break;
 
 			case 'relight':
@@ -406,6 +364,52 @@ process.on("SIGINT", function () {
 		}, 5000);
 	}
 });
+
+function lightCommand(userID, channelID, username) {
+	if (canPlay(userID) || testingMode) {
+		if (!busy) {
+			try {
+				busy = true
+				logger.info("Player "+username+" wants light.")
+				preparePlayerData(userID, username);
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
+				}, function(err, res) {
+					if (!err){
+						deleteMsgAfterDelay(res.id, channelID, 5)
+					}else {
+						logger.warn("Error while sending the message Enlightment is coming.")
+						logger.warn(err)
+					}
+				});
+				launchGame();
+				setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
+			} catch (e) {
+				busy = false
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
+				logger.error(e);
+				bot.sendMessage({
+					to: channelID,
+					message: e
+				})
+			}
+		} else {
+			logger.info("Player "+username+" tried to play but I'm busy!")
+			bot.sendMessage({
+				to: channelID,
+				message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
+		}
+
+	} else {
+		logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
+		bot.sendMessage({
+			to: channelID,
+			message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
+	}
+}
 
 function launchGame() {
 	// logger.debug("Launching the Construct app");
