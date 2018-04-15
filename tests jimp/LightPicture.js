@@ -4,7 +4,7 @@ var LightGrid = require("./LightGrid.js");
 var Jimp = require("jimp");
 
 class LightPicture {
-   constructor(size){
+   constructor(size, outputpath, callback){
       this.lightGrid = new LightGrid(size);
       // this.pictureGrid = [[]];
       this.picture;
@@ -14,12 +14,12 @@ class LightPicture {
          workingDimention: 600
       }
 
+      // console.log(`A new LightPicture of size ${size}.`);
       var actualCellDimention = Math.floor(this.constantes.workingDimention / this.lightGrid.length);
       var actualDimention = this.lightGrid.length * actualCellDimention;
       // console.log(`actual dimention: ${actualDimention} et actual cell dimensions: ${actualCellDimention}.`);
 
 
-      const outputpath = "output.png";
       const rose = {r: 255, g:100, b:100, a:255};
       // var color;
 
@@ -56,33 +56,38 @@ class LightPicture {
                image.bitmap.data[index+3] = color.a;
             });
          });
-         image.resize(500, Jimp.AUTO)
-              .write(outputpath);
-         console.log("Wrote to "+outputpath+".");
+         var level = size-1;
+         var a=32, c=1.14, b=1, h=20, k=-2;
+         var luminosity = a*Math.pow(c,(b*(level-h)))+k;
+         var hue = ((size-2)*23.4 % 360) - 360;
+
+         image.color([
+             { apply: 'hue', params: [ hue ] },
+             { apply: 'lighten', params: [ luminosity ] }
+         ]);
+         // console.log(`Luminosity ${luminosity} and hue ${hue}`);
+         image.resize(500, Jimp.AUTO);
+         image.write(outputpath, (err, res)=>{
+            if (err) {
+               if (callback) {
+                  callback(err, null);
+               }
+            } else {
+               // console.log("Wrote to "+outputpath+".");
+               if (callback) {
+                  callback(null, this);
+               }
+            }
+         });
       });
-
-
-      // Probably not required either. I could to this straight in the jimp object
-      // Initialize an empty array for the picture
-      // this.pictureGrid = new Array(actualDimention);
-      // for (var x = 0; x < this.pictureGrid.length; x++) {
-      //    this.pictureGrid[x] = new Array(actualDimention);
-      // }
-      // console.log(this.pictureGrid);
-
-
-      // Pas besoin de ça. Scan le fait pour nous.
-      // for (var cellY = startY; cellY < startY+actualCellDimention; cellY++) {
-      //    for (var cellX = startX; cellX < startX+actualCellDimention; cellX++) {
-      //       console.log(`cell ${i} each pixel ${cellX}, ${cellY}`);
-      //    }
-      // }
-
    }
 
 }
-
 module.exports = LightPicture;
 
 // Tester cette classe
-var p = new LightPicture(4);
+// for (var lvl = 1; lvl<=20; lvl++) {
+//    var p = new LightPicture(lvl+1, `output level ${lvl}.png`);
+// }
+
+// var p = new LightPicture(3+1, "output level 3.png");
