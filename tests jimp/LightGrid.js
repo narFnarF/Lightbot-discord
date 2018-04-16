@@ -12,6 +12,7 @@ class LightGrid {
 
    constructor(size) {
       this.grid;
+      this.won = false;
 
       // init the empty grid
       this.grid = [];
@@ -27,11 +28,10 @@ class LightGrid {
       var rollMax = Math.ceil(level+(3/level)-1);
       var roll = 1+Math.floor(Math.random()*rollMax);
       var cellLit;
-      var levelUp = false;
       // console.log(`roll == rollMax: ${roll} == ${rollMax}`);
       if (roll == rollMax) { // win!!
          // console.log("WINNING!!!!!!");
-         levelUp = true;
+         this.won = true;
          cellLit = this.area;
          this.fillGrid(cellLit, LightGrid.WINNING, LightGrid.NOT_FILLED);
 
