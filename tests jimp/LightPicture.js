@@ -6,8 +6,8 @@ var Jimp = require("jimp");
 class LightPicture {
    constructor(size, outputpath, callback){
       this.lightGrid = new LightGrid(size);
-      // this.pictureGrid = [[]];
       this.picture;
+      this.path = outputpath;
 
       this.constantes = { // TODO: move these as real static constants
          pictureDimention: 500,
@@ -82,12 +82,20 @@ class LightPicture {
       });
    }
 
+   get won() {
+      return this.lightGrid.won;
+   }
+
 }
 module.exports = LightPicture;
 
 // Tester cette classe
-// for (var lvl = 1; lvl<=20; lvl++) {
-//    var p = new LightPicture(lvl+1, `output level ${lvl}.png`);
-// }
+for (var lvl = 1; lvl<=20; lvl++) {
+   var p = new LightPicture(lvl+1, `output level ${lvl}.png`, ()=>{
+      console.log(`output to ${p.path} with return: ${p.won}.`);
+   });
+} // TODO: Pourquoi ça fait le callback tout à la fin plutôt que au fur et à mesure??
 
-// var p = new LightPicture(3+1, "output level 3.png");
+// var p = new LightPicture(3+1, "output level 3.png", (err, res)=>{
+//    console.log(`output to ${p.path} with return: ${p.won}.`);
+// });
