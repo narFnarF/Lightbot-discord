@@ -77,9 +77,8 @@ function initializeWinstonLogger() {
 // Initialize Discord Bot
 var bot = new Discord.Client({
 	token: auth.token,
-	autorun: true
+	autorun: false
 });
-
 
 // testing ground
 var testingMode = false;
@@ -108,7 +107,7 @@ bot.on('ready', function (event) {
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
 	// logger.debug(event);
-	console.log(); // blank line return
+	console.log(); // blank line return, for pretty
 
 	bot.setPresence({game: {name: "type !light or !help"}});
 });
@@ -132,38 +131,46 @@ bot.on('disconnect', (errMsg, errCode) => {
 	}
 });
 
-setInterval(maintainConnection, 1*60*1000); // 1 minute
+setInterval(maintainConnection, 1.5*60*1000); // 1.5 minute
+setInterval(maintainConnection, 3*1000); // test 3 seconds
 function maintainConnection() {
 	// logger.debug("maintainConnection");
 	if (!bot.connected) {
-		logger.warn("The bot is offline again?! Let's check again in 20 seconds.");
-		recheckConnection(20); //20 sec
+		logger.warn("MaintainConnection detected the bot is offline again."); //TODO write what happens next
+		reconnect();
 	}
 }
 
-var checking = false;
-function recheckConnection(duration) {
-	logger.warn("Let's check again the connection in "+duration+" seconds.");
-
-	if (!checking){
-		checking = true;
-		setTimeout(function () {
-			if (!bot.connected) {
-				logger.warn("Why is the bot still offline?! It's been "+duration+" seconds! Let's restart it!");
-				reconnect();
-			}else{
-				logger.warn("Oh! The bot is actually back online. Good!")
-			}
-			checking = false;
-		}, duration*1000);
-	} else {
-		logger.warn("But I'm already checking!");
-	}
-}
-
+var lastAttemptTimestamp = 0;
+var failedAttempts = 0;
+var scheduled = false;
 function reconnect() {
 	logger.info("Attempting to reconnect.");
-	bot.connect();
+	logger.info(`Hmmm ${failedAttempts}, ${lastAttemptTimestamp}.`);
+
+	if (!scheduled) {
+		var deltaTime = Date.now() - lastAttemptTimestamp;
+		var minimumWait = 3 + failedAttempts * 1000*10; //10 seconds for each failed attempt
+		if (deltaTime > minimumWait) { //if it's been long enough
+			logger.info(`It's been long enough, so let's do this! Attempts #${failedAttempts}.`);
+			bot.connect();
+			scheduled = true;
+			failedAttempts++;
+		}else{
+			scheduled = true;
+			setTimeout(reconnect, minimumWait);
+			logger.info(`Scheduled to reconnect in ${minimumWait} seconds. Attempts #${failedAttempts}.`);
+		}
+
+	}else{
+		logger.info(`But it's already scheduled! Attempts #${failedAttempts}.`);
+	}
+}
+// reconnect();
+
+function resetReconnect() {
+	scheduled = false;
+	failedAttempts = 0;
 }
 
 // When a message is received
@@ -368,15 +375,10 @@ process.on("SIGINT", function () {
 	logger.info("SIGINT received. Disconnecting bot...");
 	intentToExit = true;
 	bot.disconnect();
-
-	if (!bot.connected) {
+	setTimeout(function () {
+		logger.warn("Timout on disconnection. Let's quit anyway!");
 		process.exit(); // Quit the server
-	} else { // if i'm still connected
-		setTimeout(function () {
-			logger.warn("Timout on disconnection. Let's quit anyway!");
-			process.exit(); // Quit the server
-		}, 5000);
-	}
+	}, 5000);
 });
 
 function launchGame() {
