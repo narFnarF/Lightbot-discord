@@ -2,7 +2,7 @@
 
 var Jimp = require("jimp");
 var logger = require("winston")
-var LightPicture = require("./LightPicture.js");
+// var LightPicture = require("./LightPicture.js");
 
 
 
@@ -18,20 +18,19 @@ var LightPicture = require("./LightPicture.js");
 // });
 
 
-const outputpath = "output.png";
-const rose = {r: 255, g:100, b:100, a:255};
-var image = new Jimp(10, 10, 0xFFFFFFFF, (err, image) => {
+var outputpath = "output.png";
+var rose = {r: 255, g:100, b:100, a:255};
+var image = new Jimp(102, 102, 0xFFFFFFFF, (err, image) => {
    // this image is 256 x 256, every pixel is set to 0xFF0000FF
    image.scan(0, 0, image.bitmap.width, image.bitmap.height, (x, y, index) => {
-      if ((index/4) %4 == 1) {
+      if ((index/4) %4 == 1) { //À chaque 4 pixel, met le rose
          image.bitmap.data[index+0] = rose.r;
          image.bitmap.data[index+1] = rose.g;
          image.bitmap.data[index+2] = rose.b;
          image.bitmap.data[index+3] = rose.a;
       }
    });
-   image.resize(500, Jimp.AUTO)
-        .write(outputpath);
+   image.write(outputpath);
    logger.info("Wrote to "+outputpath+".");
 });
 
