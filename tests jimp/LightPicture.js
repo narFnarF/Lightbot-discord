@@ -61,27 +61,28 @@ class LightPicture {
          var luminosity = a*Math.pow(c,(b*(level-h)))+k;
          var hue = ((size-2)*23.4 % 360) - 360;
 
-         console.log("1");
+         // console.log("1: before color");
          image.color([
              { apply: 'hue', params: [ hue ] },
              { apply: 'lighten', params: [ luminosity ] }
          ]);
-         console.log(`Luminosity ${luminosity} and hue ${hue}`);
+         // console.log(`Luminosity ${luminosity} and hue ${hue}`);
          image.resize(500, Jimp.AUTO);
-         console.log(2);
-         image.write(outputpath, (err, res)=>{
+         // console.log("2: after resize, before write");
+         // console.log(`writing to ${this.path}`)
+         image.write(this.path, (err, res)=>{
             if (err) {
                if (callback) {
                   callback(err, null);
                }
             } else {
-               console.log("Wrote to "+outputpath+".");
+               // console.log("Wrote to "+this.path+".");
                if (callback) {
                   callback(null, this);
                }
             }
          });
-         console.log(3);
+         // console.log("3: after asking to write, probably before writing is done");
       });
    }
 
@@ -91,21 +92,3 @@ class LightPicture {
 
 }
 module.exports = LightPicture;
-
-// Tester cette classe
-// for (var lvl = 1; lvl<=20; lvl++) {
-//    console.log("avant");
-//    var p = new LightPicture(lvl+1, `output level ${lvl}.png`, ()=>{
-//       console.log(`output to ${p.path} with return: ${p.won}.`);
-//    });
-//    console.log("après");
-// } // TODO: Pourquoi ça fait le callback tout à la fin plutôt que au fur et à mesure??
-
-// var p = new LightPicture(3+1, "output level 3.png", (err, res)=>{
-//    console.log(`output to ${p.path} with return: ${p.won}.`);
-// });
-
-new LightPicture(4+1, "test4.png", ()=>{
-   console.log("callback");
-})
-console.log("après");
