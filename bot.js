@@ -291,36 +291,34 @@ function lightCommand(userID, channelID, username) {
 	if (canPlay(userID) || testingMode) {
 		logger.info("Player "+username+" wants light.")
 
-		registerPlayerInDB(userID, username);
-		playersDB.players[userID].lastPlayed = Date.now()
+		registerPlayerInDB(userID, username); //add the player to the DB or check for missing data and update its name
+
 
 		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"}, (err, res)=>{
-			if (!err){
+			if (!err){ // Do this after the call back, if there's no error
+				playersDB.players[userID].lastPlayed = Date.now()
 				deleteMsgAfterDelay(res.id, channelID, 5)
+
+				var myFile = `light ${username} ${userID} ${Date.now()}.png`
+				var size = playersDB.players[userID].level + 1
+
+				var p = new LightPicture(size, myFile, (err, res)=>{
+					if (err) {
+						logger.warn(err);
+					} else {
+						logger.info(`Created a picture: ${myFile}`);
+						sendImage(userID, channelID, res.path, res.won);
+					}
+				});
 			}else {
 				logger.warn(`Error while sending the "Enlightment is coming" message to ${username} ${userID}.`)
 				logger.warn(err)
-			}
-		});
-
-		var myFile = `light ${username} ${userID} ${Date.now()}.png`
-		var size = playersDB.players[userID].level + 1
-
-		var p = new LightPicture(size, myFile, (err, res)=>{
-			if (err) {
-				logger.warn(err);
-			} else {
-				logger.info(`Created a picture: ${myFile}`);
-
-				sendImage(userID, channelID, res.path, res.won);
 			}
 		});
 	} else {
 		logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
 		bot.sendMessage({to: channelID, message: `<@${userID}> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again.`})
 	}
-
-
 }
 
 function renameBot(userID, channelID, newName) {
@@ -387,7 +385,10 @@ function readPlayerDBJson(){
 }
 
 function registerPlayerInDB(userID, username) {
-	// logger.debug("We're registering player "+username+" "+userID);
+	// Create the player in the DB if inexistant.
+	// If it exist, make sure it has all the correct properties.
+	// Also update the player's name in the DB.
+
 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
 		// logger.debug("Found player "+username+" "+userID);
 
