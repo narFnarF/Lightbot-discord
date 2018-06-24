@@ -239,7 +239,9 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'light':
-				testJimp(userID, channelID, username);
+			case "testJimp":
+			case "betaLight":
+				lightCommand(userID, channelID, username);
 			break;
 
 			case 'relight':
@@ -292,10 +294,6 @@ bot.on('message', function (username, userID, channelID, message, event) {
 				});
 				logger.info(username+" requested the invite link.");
 			break;
-
-			case "testJimp":
-				testJimp(userID, channelID, username);
-			break;
 		}
 	}
 });
@@ -313,7 +311,7 @@ process.on("SIGINT", function () {
 	}, 5000);
 });
 
-function lightCommand(userID, channelID, username) {
+function lightCommandOld(userID, channelID, username) {
 	if (canPlay(userID) || testingMode) {
 		try {
 			logger.info("Player "+username+" wants light.")
@@ -350,7 +348,7 @@ function lightCommand(userID, channelID, username) {
 	}
 }
 
-function testJimp(userID, channelID, username) {
+function lightCommand(userID, channelID, username) {
 	if (canPlay(userID) || testingMode) {
 		logger.info("Player "+username+" wants light.")
 
