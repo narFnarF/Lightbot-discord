@@ -5,7 +5,7 @@ var LightPicture = require("./LightPicture.js");
 
 
 const startLevel = 1; // How many pictures to ouput
-const endLevel = 10;
+const endLevel = 20;
 
 var i = startLevel;
 var id = setInterval(()=>{
