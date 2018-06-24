@@ -391,6 +391,7 @@ function registerPlayerInDB(userID, username) {
 
 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
 		// logger.debug("Found player "+username+" "+userID);
+		playersDB.players[userID].username = username; // always update the player's name in the DB
 
 		//check if it's missing any values:
 		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
@@ -404,10 +405,6 @@ function registerPlayerInDB(userID, username) {
 		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
 			playersDB.players[userID].lastPlayed = 0;
 			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
-		}
-		if (!playersDB.players[userID].hasOwnProperty("username")) { //missing username
-			playersDB.players[userID].username = username; //set level to 1
-			logger.warn(`${userID} was missing it's username so it was set to ${username}.`);
 		}
 	}else{
 		logger.info(username+" "+userID+" was not in the playersDB. But we're going to add it!")
