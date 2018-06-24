@@ -170,32 +170,8 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'rename':
-				if (userID == playersDB.admin.narF) {
-					var name = args.join(" ");
-					logger.info("Renaming the bot to: "+name);
-					bot.editUserInfo({"username": name}, function(error, response){
-						if (error) {
-							logger.warn(error);
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Rename unsuccessful for some reasons..."
-							});
-						}else{
-							//TODO send success
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Rename successful to "+name
-							});
-							logger.info("Success.")
-						}
-					});
-				}else {
-					logger.info(username+" tried to change the bot name, but I stopped them.");
-					bot.sendMessage({
-						to: channelID,
-						message: "<@"+userID+"> You're not my admin. You cannot change my name."
-					})
-				}
+				var name = args.join(" ");
+				renameBot(userID, channelID, name)
 			break;
 
 			case 'help':
@@ -311,43 +287,6 @@ process.on("SIGINT", function () {
 	}, 5000);
 });
 
-function lightCommandOld(userID, channelID, username) {
-	if (canPlay(userID) || testingMode) {
-		try {
-			logger.info("Player "+username+" wants light.")
-			preparePlayerData(userID, username);
-			bot.sendMessage({
-				to: channelID,
-				message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
-			}, function(err, res) {
-				if (!err){
-					deleteMsgAfterDelay(res.id, channelID, 5)
-				}else {
-					logger.warn(`Error while sending the "Enlightment is coming" message.`)
-					logger.warn(err)
-				}
-			});
-			launchGame();
-			setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
-		} catch (e) {
-			bot.sendMessage({
-				to: channelID,
-				message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
-			logger.error(e);
-			bot.sendMessage({
-				to: channelID,
-				message: e
-			})
-		}
-
-	} else {
-		logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
-		bot.sendMessage({
-			to: channelID,
-			message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
-	}
-}
-
 function lightCommand(userID, channelID, username) {
 	if (canPlay(userID) || testingMode) {
 		logger.info("Player "+username+" wants light.")
@@ -384,33 +323,32 @@ function lightCommand(userID, channelID, username) {
 
 }
 
-function launchGame() {
-	// logger.debug("Launching the Construct app");
-	var windows = "win32";
-	var mac = "darwin";
-	var runThis;
-	if (process.platform == windows) {
-		runThis = windowsCommand
-	}else if (process.platform == mac) {
-		runThis = macCommand
+function renameBot(userID, channelID, newName) {
+	if (userID == playersDB.admin.narF) {
+		logger.info(`Renaming the bot to: ${newName}`);
+		bot.editUserInfo({"username": newName}, (error, response)=>{
+			if (error) {
+				logger.warn(error);
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Rename unsuccessful for some reasons... Maybe try again later? Sometime that works."
+				});
+			}else{
+				//TODO send success
+				bot.sendMessage({
+					to: channelID,
+					message: `<@${userID}> Rename successful to ${newName}`
+				});
+				logger.info("Success.")
+			}
+		});
 	}else {
-		logger.error("Seriously, which platform am I running on???");
-		return;
+		logger.info(`${username} tried to change the bot name, but I stopped them.`)
+		bot.sendMessage({
+			to: channelID,
+			message: "<@"+userID+"> You're not my admin. You cannot change my name."
+		})
 	}
-
-	child = exec(runThis,
-		function (error, stdout, stderr) {
-			if (stdout !== null && stdout !== ""){
-				logger.info('stdout: ' + stdout);
-			}
-			if (stderr !== null && stderr !== ""){
-				console.warn('stderr: ' + stderr);
-			}
-			if (error !== null) {
-				console.warn('exec error: ' + error);
-			}
-		}
-	);
 }
 
 function readPlayerDBJson(){
@@ -583,20 +521,6 @@ function relight(userID, channelID, username) {
 	}
 }
 
-// function mergeDataToDB(userID) {
-// 	// read data.json from Construct
-// 	var data = fs.readFileSync(dataJsonPath)
-// 	var playerData = JSON.parse(data);
-// 	delete playerData.userID; //remove "userID": 123455666 node beforme merging in DB
-// 	playerData.lastPlayed = Date.now(); //set lastPlayed timestamp
-//
-// 	// merge data.json in playersDB
-// 	playersDB.players[userID] = playerData;
-//
-// 	// logger.debug("Merged data.json into playersDB.json.")
-// 	savePlayersDB(); // write playersDB to file playersDB.json
-// }
-
 function sendImage(userID, channelID, filepath, won) {
 	// logger.info("sendImage")
 	if (fs.existsSync(filepath)) { //if the file exists on disk
@@ -660,6 +584,7 @@ function canPlay(userID) {
 }
 
 function askLevel(userID, username, channelID) {
+	// Send a message to the user with their player level.
 	if (playersDB.players[userID]) {// userID exists in DB
 		var lv = playersDB.players[userID].level;
 		if (playersDB.players[userID].relight) { // user have relit at least once
