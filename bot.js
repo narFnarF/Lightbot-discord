@@ -440,7 +440,10 @@ function readPlayerDBJson(){
 		}
 	}else{
 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
-		json = {players:{}};
+		json = {
+			players:{},
+			admin:{ "example name": "000000exampleID0000"}
+		};
 	}
 	return json;
 }
@@ -544,7 +547,6 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 				logger.warn(error)
 			}
 		})
-		// logger.debug("deleted now!")
 	}, delayInSeconds*1000)
 }
 
