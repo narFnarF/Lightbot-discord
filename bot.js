@@ -3,6 +3,7 @@
 var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
+var LightPicture = require("./tests jimp/LightPicture.js");
 
 // Required to launch an app (exec)
 // var sys = require('sys')
@@ -30,7 +31,6 @@ var endLevel = 20;
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
-var busy = false // Boolean. The bot cannot process !light command while this is true.
 
 var adminNotifications = true;
 
@@ -84,11 +84,14 @@ var bot = new Discord.Client({
 var testingMode = false;
 var fakeWin = false;
 if (testingMode) {
-	logger.warn('We\'re running in debug mode.');
-	var id = '000000000fake00000';
-	var username = 'fake';
-	// id = 214590808727355393;
+	logger.warn("We're running in debug mode.")
+	// var id = '000000000fake00000'
+	// var channelID = '0000000fake000000'
+	// var username = 'fake'
+
+	// id = "214590808727355393";
 	// username = "narF"
+	// var channelID = "426230699197071370"
 
 	// logger.debug(canPlay(id));
 	// preparePlayerData(id, username);
@@ -109,7 +112,15 @@ bot.on('ready', function (event) {
 	// logger.debug(event);
 	console.log(); // blank line return, for pretty
 
-	bot.setPresence({game: {name: "type !light or !help"}});
+	bot.setPresence({game: {name: "type !light or !help"}})
+
+	if(testingMode) {
+		var id = "214590808727355393";
+		var username = "narF"
+		var channelID = "426230699197071370"
+		logger.debug(`${id} ${username}`)
+		testJimp(id, channelID, username)
+	}
 });
 
 
@@ -127,57 +138,10 @@ bot.on('disconnect', (errMsg, errCode) => {
 	}else{
 		// unintentional disconnect
 		logger.warn("Disconnected unintentionally!");
-		// reconnect();
-		bot.connect();
+		bot.connect(); // reconnect();
 	}
 });
 
-// setInterval(maintainConnection, 1.5*60*1000); // 1.5 minute
-// setInterval(maintainConnection, 3*1000); // test 3 seconds
-// function maintainConnection() {
-// 	// logger.debug("maintainConnection");
-// 	if (!bot.connected) {
-// 		logger.warn("MaintainConnection detected the bot is offline again."); //TODO write what happens next
-// 		// reconnect();
-// 		bot.connect();
-// 	}
-// }
-//
-// var lastAttemptTimestamp = 0;
-// var failedAttempts = 0;
-// var scheduled = false;
-// function reconnect() {
-// 	logger.info("reconnect() : Attempting to reconnect.");
-// 	logger.info(`failedAttempts: ${failedAttempts}, lastAttemptTimestamp: ${lastAttemptTimestamp}.`);
-//
-// 	if (!scheduled) {
-// 		var deltaTime = Date.now() - lastAttemptTimestamp;
-// 		var minimumWait = 3 + failedAttempts * 1000*10; //10 seconds for each failed attempt
-// 		lastAttemptTimestamp = Date.now();
-// 		logger.info(`Now is ${lastAttemptTimestamp}`);
-//
-// 		if (deltaTime > minimumWait) { //if it's been long enough
-// 			logger.info(`It's been long enough, so let's do this! Attempts #${failedAttempts}.`);
-// 			bot.connect();
-// 			scheduled = false;
-// 			failedAttempts++;
-// 		}else{
-// 			scheduled = true;
-// 			setTimeout(reconnect, minimumWait);
-// 			logger.info(`Scheduled to reconnect in ${minimumWait} seconds. Attempts #${failedAttempts}.`);
-// 		}
-//
-// 	}else{
-// 		logger.info(`But it's already scheduled! Attempts #${failedAttempts}.`);
-// 	}
-// }
-// // reconnect();
-//
-// function resetReconnect() {
-// 	logger.info(`resetReconnect()`);
-// 	scheduled = false;
-// 	failedAttempts = 0;
-// }
 
 // When a message is received
 bot.on('message', function (username, userID, channelID, message, event) {
@@ -206,32 +170,8 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'rename':
-				if (userID == playersDB.admin.narF) {
-					var name = args.join(" ");
-					logger.info("Renaming the bot to: "+name);
-					bot.editUserInfo({"username": name}, function(error, response){
-						if (error) {
-							logger.warn(error);
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Rename unsuccessful for some reasons..."
-							});
-						}else{
-							//TODO send success
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Rename successful to "+name
-							});
-							logger.info("Success.")
-						}
-					});
-				}else {
-					logger.info(username+" tried to change the bot name, but I stopped them.");
-					bot.sendMessage({
-						to: channelID,
-						message: "<@"+userID+"> You're not my admin. You cannot change my name."
-					})
-				}
+				var name = args.join(" ");
+				renameBot(userID, channelID, name)
 			break;
 
 			case 'help':
@@ -275,49 +215,9 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'light':
-				if (canPlay(userID) || testingMode) {
-					if (!busy) {
-						try {
-							busy = true
-							logger.info("Player "+username+" wants light.")
-							preparePlayerData(userID, username);
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"
-							}, function(err, res) {
-								if (!err){
-									deleteMsgAfterDelay(res.id, channelID, 5)
-								}else {
-									logger.warn("Error while sending the message Enlightment is coming.")
-									logger.warn(err)
-								}
-							});
-							launchGame();
-							setTimeout(afterLaunching, 5000, userID, channelID); //wait 5 sec
-						} catch (e) {
-							busy = false
-							bot.sendMessage({
-								to: channelID,
-								message: "<@"+userID+"> Sorry. There was an error on my side. Maybe try again in a bit?"})
-							logger.error(e);
-							bot.sendMessage({
-								to: channelID,
-								message: e
-							})
-						}
-					} else {
-						logger.info("Player "+username+" tried to play but I'm busy!")
-						bot.sendMessage({
-							to: channelID,
-							message: "<@"+userID+"> Sorry, I can only handle one light show at a time."})
-					}
-
-				} else {
-					logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
-					bot.sendMessage({
-						to: channelID,
-						message: "<@"+userID+"> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again."})
-				}
+			case "testJimp":
+			case "betaLight":
+				lightCommand(userID, channelID, username);
 			break;
 
 			case 'relight':
@@ -387,33 +287,66 @@ process.on("SIGINT", function () {
 	}, 5000);
 });
 
-function launchGame() {
-	// logger.debug("Launching the Construct app");
-	var windows = "win32";
-	var mac = "darwin";
-	var runThis;
-	if (process.platform == windows) {
-		runThis = windowsCommand
-	}else if (process.platform == mac) {
-		runThis = macCommand
-	}else {
-		logger.error("Seriously, which platform am I running on???");
-		return;
-	}
+function lightCommand(userID, channelID, username) {
+	if (canPlay(userID) || testingMode) {
+		logger.info("Player "+username+" wants light.")
 
-	child = exec(runThis,
-		function (error, stdout, stderr) {
-			if (stdout !== null && stdout !== ""){
-				logger.info('stdout: ' + stdout);
+		registerPlayerInDB(userID, username); //add the player to the DB or check for missing data and update its name
+
+
+		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"}, (err, res)=>{
+			if (!err){ // Do this after the call back, if there's no error
+				playersDB.players[userID].lastPlayed = Date.now()
+				deleteMsgAfterDelay(res.id, channelID, 5)
+
+				var myFile = `light ${username} ${userID} ${Date.now()}.png`
+				var size = playersDB.players[userID].level + 1
+
+				var p = new LightPicture(size, myFile, (err, res)=>{
+					if (err) {
+						logger.warn(err);
+					} else {
+						logger.info(`Created a picture: ${myFile}`);
+						sendImage(userID, channelID, res.path, res.won);
+					}
+				});
+			}else {
+				logger.warn(`Error while sending the "Enlightment is coming" message to ${username} ${userID}.`)
+				logger.warn(err)
 			}
-			if (stderr !== null && stderr !== ""){
-				console.warn('stderr: ' + stderr);
+		});
+	} else {
+		logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
+		bot.sendMessage({to: channelID, message: `<@${userID}> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again.`})
+	}
+}
+
+function renameBot(userID, channelID, newName) {
+	if (userID == playersDB.admin.narF) {
+		logger.info(`Renaming the bot to: ${newName}`);
+		bot.editUserInfo({"username": newName}, (error, response)=>{
+			if (error) {
+				logger.warn(error);
+				bot.sendMessage({
+					to: channelID,
+					message: "<@"+userID+"> Rename unsuccessful for some reasons... Maybe try again later? Sometime that works."
+				});
+			}else{
+				//TODO send success
+				bot.sendMessage({
+					to: channelID,
+					message: `<@${userID}> Rename successful to ${newName}`
+				});
+				logger.info("Success.")
 			}
-			if (error !== null) {
-				console.warn('exec error: ' + error);
-			}
-		}
-	);
+		});
+	}else {
+		logger.info(`${username} tried to change the bot name, but I stopped them.`)
+		bot.sendMessage({
+			to: channelID,
+			message: "<@"+userID+"> You're not my admin. You cannot change my name."
+		})
+	}
 }
 
 function readPlayerDBJson(){
@@ -443,32 +376,34 @@ function readPlayerDBJson(){
 		}
 	}else{
 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
-		json = {players:{}};
+		json = {
+			players:{},
+			admin:{ "example name": "000000exampleID0000"}
+		};
 	}
 	return json;
 }
 
-function preparePlayerData(userID, username){
-	registerPlayerInDB(userID, username);
-	saveDataJson(userID, username);
-}
-
 function registerPlayerInDB(userID, username) {
-	// logger.debug("We're registering player "+username+" "+userID);
+	// Create the player in the DB if inexistant.
+	// If it exist, make sure it has all the correct properties.
+	// Also update the player's name in the DB.
+
 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
 		// logger.debug("Found player "+username+" "+userID);
+		playersDB.players[userID].username = username; // always update the player's name in the DB
 
 		//check if it's missing any values:
 		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
-			playersDB.players[userID].level = 1; //set level to 1
+			playersDB.players[userID].level = 1;
 			logger.warn(userID+" was missing it's level so it was set to 1.");
 		}
 		if (!playersDB.players[userID].hasOwnProperty("win")) { //missing win
-			playersDB.players[userID].win = false; //set level to 1
+			playersDB.players[userID].win = false;
 			logger.warn(userID+" was missing it's win state so it was set to false.");
 		}
 		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
-			playersDB.players[userID].lastPlayed = 0; //set level to 1
+			playersDB.players[userID].lastPlayed = 0;
 			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
 		}
 	}else{
@@ -484,34 +419,17 @@ function registerPlayerInDB(userID, username) {
 	savePlayersDB();
 }
 
-function saveDataJson(userID) {
-	//Write data.json to disk
-
-	//get the data from the DB
-	var playerData = JSON.parse(JSON.stringify(playersDB.players[userID])); //make a copy
-	playerData.userID = userID;
-
-	//make it pretty and write in file on disk
-	var beautifulPlayerData = JSON.stringify(playerData, null, 4);
-	fs.writeFileSync(dataJsonPath, beautifulPlayerData);
-	// logger.debug("Saved data.json to disk.");
-}
-
 function savePlayersDB() {
 	//write playersDB.json
 	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
-	try{
-		fs.writeFileSync(playersDBPath, beautifulPlayersDB);
-		// logger.debug("Saved the DB");
-	}catch(e){
-		logger.warn("Could not write playersDB.json on disk.");
-		logger.warn(e);
-	}
-}
-
-function afterLaunching(userID, channelID) {
-	// logger.info("afterLaunching()")
-	sendImage(userID, channelID);
+	fs.writeFile(playersDBPath, beautifulPlayersDB, (err)=>{
+		if (err) {
+			logger.warn("Could not write playersDB.json on disk.");
+			logger.warn(e);
+		} else {
+			logger.debug("Saved the DB");
+		}
+	});
 }
 
 function displayLevel(user) {
@@ -522,9 +440,9 @@ function displayLevel(user) {
 	}
 }
 
-function announceResult(userID, channelID){
+function announceResult(userID, channelID, won){
 	var msg;
-	var win = (playersDB.players[userID].win || fakeWin); // if fakeWin is activated, this is always true
+	var win = (won || fakeWin); // if fakeWin is activated, this is always true
 
 	var level = playersDB.players[userID].level;
 	msg = `You are level ${displayLevel(playersDB.players[userID])}.`;
@@ -565,7 +483,6 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 				logger.warn(error)
 			}
 		})
-		// logger.debug("deleted now!")
 	}, delayInSeconds*1000)
 }
 
@@ -602,40 +519,29 @@ function relight(userID, channelID, username) {
 	}
 }
 
-function mergeDataToDB(userID) {
-	// read data.json
-	var data = fs.readFileSync(dataJsonPath)
-	var playerData = JSON.parse(data);
-	delete playerData.userID; //remove "userID": 123455666 node beforme merging in DB
-	playerData.lastPlayed = Date.now(); //set lastPlayed timestamp
-
-	// merge data.json in playersDB
-	playersDB.players[userID] = playerData;
-
-	// logger.debug("Merged data.json into playersDB.json.")
-	savePlayersDB(); // write playersDB to file playersDB.json
-}
-
-function sendImage(userID, channelID) {
+function sendImage(userID, channelID, filepath, won) {
 	// logger.info("sendImage")
-	if (fs.existsSync(screenshotPath)) { //if the file exists on disk
+	if (fs.existsSync(filepath)) { //if the file exists on disk
 		bot.uploadFile(
 			{
 				to: channelID,
-				file: screenshotPath,
+				file: filepath,
 				message: "<@"+userID+"> Here's your lightshow!"
 			}, (err, res) => {
-				fs.rename(screenshotPath, screenshotPath+" old.png", (err)=>{
-					if ( err ) logger.warn('Could not rename the screenshot: ' + err);
+				fs.rename(filepath, "light old.png", (err)=>{
+					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
 				});
 
 				if (err){
+					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`)
 					logger.warn(err);
+
+					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
+						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
+					})
 				} else { // no error
-					mergeDataToDB(userID);
-					announceResult(userID, channelID);
+					announceResult(userID, channelID, won);
 				}
-				busy = false;
 			}
 		);
 	}else{
@@ -646,7 +552,7 @@ function sendImage(userID, channelID) {
 		});
 		bot.sendMessage({
 			to: playersDB.admin.narF,
-			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after calling the Construct app. Maybe take a look at the !log?`
+			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
 		});
 	}
 }
@@ -676,6 +582,7 @@ function canPlay(userID) {
 }
 
 function askLevel(userID, username, channelID) {
+	// Send a message to the user with their player level.
 	if (playersDB.players[userID]) {// userID exists in DB
 		var lv = playersDB.players[userID].level;
 		if (playersDB.players[userID].relight) { // user have relit at least once
