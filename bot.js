@@ -128,7 +128,7 @@ bot.on('ready', function (event) {
 bot.on('disconnect', (errMsg, errCode) => {
 	logger.warn("Disconnected. Code: "+errCode);
 	if (errMsg) {
-		logger.info(errMsg);
+		logger.warn(errMsg);
 	}
 	if (intentToExit) {
 		// intentional disconnection
