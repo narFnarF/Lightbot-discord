@@ -7,7 +7,7 @@
   "dependencies": {
     "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
     "jimp": "^0.2.28",
-    "npm": "^6.3.0",
+    "npm": "^6.4.0",
     "onecolor": "^3.0.5",
     "winston": "^2.4.3"
   }
