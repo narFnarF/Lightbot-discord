@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c2project>
+    <name>light bot</name>
+    <description></description>
+    <version>1</version>
+    <author>narF</author>
+    <author-email>narF@narF.ca</author-email>
+    <author-website>http://narF.ca</author-website>
+    <app-id>ca.narF.lightbot</app-id>
+    <unique-id>22sbj03s5zl2y</unique-id>
+    <saved-with-version>25200</saved-with-version>
+    <used-plugins>
+        <plugin author="Scirra" id="AJAX" version="1">AJAX</plugin>
+        <plugin author="Scirra" id="Browser" version="1">Browser</plugin>
+        <plugin author="Scirra" id="Function" version="1">Function</plugin>
+        <plugin author="Yann Granjon" id="JSON" version="1">JSON</plugin>
+        <plugin author="Scirra" id="Keyboard" version="1">Keyboard</plugin>
+        <plugin author="Scirra" id="NodeWebkit" version="1">NW.js</plugin>
+        <plugin author="Rex.Rainbow" id="Rex_Date" version="1">Date</plugin>
+        <plugin author="Scirra" id="Sprite" version="1">Sprite</plugin>
+    </used-plugins>
+    <used-behaviors />
+    <used-effects>
+        <effect author="Scirra" id="hsladjust">Adjust HSL</effect>
+    </used-effects>
+    <configurations>
+        <configuration exporter-descname="HTML5" exporter-id="html5" name="HTML5" />
+    </configurations>
+    <window-size>
+        <width>500</width>
+        <height>500</height>
+    </window-size>
+    <pixel-rounding>0</pixel-rounding>
+    <preview-effects>1</preview-effects>
+    <first-layout>game</first-layout>
+    <use-loader-layout>0</use-loader-layout>
+    <configuration-settings>
+        <prop name="Clear background">Yes</prop>
+        <prop name="Downscaling">Medium quality</prop>
+        <prop name="Enable WebGL">On</prop>
+        <prop name="Fullscreen in browser">Letterbox scale</prop>
+        <prop name="Fullscreen scaling">High quality</prop>
+        <prop name="Loader style">Progress bar &amp; logo</prop>
+        <prop name="Orientations">Any</prop>
+        <prop name="Pause on unfocus">No</prop>
+        <prop name="Physics engine">Box2D asm.js</prop>
+        <prop name="Preload sounds">Yes</prop>
+        <prop name="Preview browser">NW.js</prop>
+        <prop name="Sampling">Linear</prop>
+        <prop name="Use high-DPI display">Yes</prop>
+    </configuration-settings>
+    <object-folder>
+        <object-folder name="plugins">
+            <object-type name="Browser" sid="463990581900492">
+                <plugin id="Browser" />
+            </object-type>
+            <object-type name="Function" sid="585526323770883">
+                <plugin id="Function" />
+            </object-type>
+            <object-type name="Keyboard" sid="130072719057350">
+                <plugin id="Keyboard" />
+            </object-type>
+            <object-type name="NWjs" sid="746192085008521">
+                <plugin id="NodeWebkit" />
+            </object-type>
+            <object-type name="AJAX" sid="994813789007058">
+                <plugin id="AJAX" />
+            </object-type>
+            <object-type global="1" name="Date" sid="470304191052730">
+                <plugin id="Rex_Date" />
+            </object-type>
+        </object-folder>
+        <object-type name="light" sid="947611666461854">
+            <plugin id="Sprite" />
+            <instance-variables>
+                <instance-variable name="on" sid="266753302818456" type="boolean" />
+                <instance-variable name="dimmer" sid="154260591452367" type="number" />
+            </instance-variables>
+            <animation-folder>
+                <animation framecount="1" loop="0" name="Default" pingpong="0" repeatcount="1" repeatto="0" sid="677372214340652" speed="5">
+                    <frame duration="1" hotspotX="0.5" hotspotY="0.5" />
+                </animation>
+            </animation-folder>
+        </object-type>
+        <object-type global="1" name="data" sid="301771041259861">
+            <plugin id="JSON" />
+        </object-type>
+        <object-type global="1" name="config" sid="685897595534441">
+            <plugin id="JSON" />
+        </object-type>
+    </object-folder>
+    <families />
+    <layout-folder>
+        <layout>game.xml</layout>
+    </layout-folder>
+    <event-folder>
+        <event-sheet>eGame.xml</event-sheet>
+    </event-folder>
+    <global-instances>
+        <global-instance type="Browser" uid="1" />
+        <global-instance type="Keyboard" uid="2" />
+        <global-instance type="Function" uid="4" />
+        <global-instance type="NWjs" uid="28" />
+        <global-instance type="AJAX" uid="20" />
+    </global-instances>
+    <sounds-folder />
+    <music-folder />
+    <files-folder>
+        <file-folder name="Icons">
+            <file name="icon-16.png" />
+            <file name="icon-32.png" />
+            <file name="icon-114.png" />
+            <file name="icon-128.png" />
+            <file name="icon-256.png" />
+            <file name="loading-logo.png" />
+        </file-folder>
+    </files-folder>
+</c2project>
