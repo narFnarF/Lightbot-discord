@@ -305,7 +305,7 @@ function lightCommand(userID, channelID, username) {
 					if (err) {
 						logger.warn(err);
 					} else {
-						logger.info(`Created a picture: ${myFile}`);
+						// logger.info(`Created a picture: ${myFile}`);
 						sendImage(userID, channelID, res.path, res.won);
 					}
 				});
@@ -426,7 +426,7 @@ function savePlayersDB() {
 			logger.warn("Could not write playersDB.json on disk.");
 			logger.warn(e);
 		} else {
-			logger.debug("Saved the DB");
+			// logger.debug("Saved the DB");
 		}
 	});
 }
