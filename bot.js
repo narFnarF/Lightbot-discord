@@ -126,10 +126,9 @@ bot.on('ready', function (event) {
 
 // // Reconnects if bot loses connection / connection is closed
 bot.on('disconnect', (errMsg, errCode) => {
-	logger.warn("Disconnected. Code: "+errCode);
-	if (errMsg) {
-		logger.warn(errMsg);
-	}
+	logger.warn(`Disconnected. Code: ${errCode}`);
+	logger.warn(`Error message: ${errMsg}`);
+
 	if (intentToExit) {
 		// intentional disconnection
 		logger.info("Intentional disconnect");
