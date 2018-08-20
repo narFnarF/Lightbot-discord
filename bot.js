@@ -22,17 +22,13 @@ logger.info("Launching the bot!")
 // configurations
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
-var screenshotPath = "bin/screenshot.png";
-var logPathConstruct = "bin/log construct.log";
 var logPathNode = "lightbot.log";
-var macCommand = "open 'bin/lightbot.app'";
-var windowsCommand = "bin\\nw.exe";
 var endLevel = 20;
+var intervalLogBackup = 12 //in hours
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
-var adminNotifications = true;
 
 
 function initializeWinstonLogger() {
@@ -85,6 +81,7 @@ var testingMode = false;
 var fakeWin = false;
 if (testingMode) {
 	logger.warn("We're running in debug mode.")
+	// intervalLogBackup = 30/60/60 //30 seconds
 	// var id = '000000000fake00000'
 	// var channelID = '0000000fake000000'
 	// var username = 'fake'
@@ -98,6 +95,7 @@ if (testingMode) {
 	// logger.debug(canPlay(id));
 	// afterLaunching(id, "channelID", username);
 	// logger.debug(canPlay(id));
+
 	setInterval(function(){
 		logger.debug("presenceStatus: "+bot.presenceStatus);
 		logger.debug("bot.connected: "+bot.connected);
@@ -225,36 +223,15 @@ bot.on('message', function (username, userID, channelID, message, event) {
 
 			case 'log':
 				if (userID == playersDB.admin.narF){
-					logger.info("Log requested by "+username)
+					logger.info(`Log requested by ${username} ${userID}`)
+					sendLog()
 
-					var log = fs.readFileSync(logPathConstruct)
-					bot.sendMessage({
-						to: playersDB.admin.narF,
-						message: "**Construct Log:** ```"+log+"```\n"
-					})
-
-					bot.uploadFile({
-						to: playersDB.admin.narF,
-						file: logPathNode,
-						message: "**The Node log:**"
-					}), function (err, res) {
-						if (err){logger.warn(err)}
-						if (res){logger.info(res)}
-					}
-
-					bot.uploadFile({
-						to: playersDB.admin.narF,
-						file: playersDBPath,
-						message: "**The PlayersDB**"
-					}), function (err, res) {
-						if (err){logger.warn(err)}
-						if (res){logger.info(res)}
-					}
-				}else {
+				} else {
 					bot.sendMessage({
 						to: channelID,
 						message: "<@"+userID+"> You are not my admin. You cannot request logs."
 					})
+					logger.warn(`${username} ${userID} tried to get logs, but I stopped them.`)
 				}
 			break;
 
@@ -602,3 +579,29 @@ function askLevel(userID, username, channelID) {
 		logger.info(`${username} asked for their level but they never played before.`);
 	}
 }
+
+function sendLog() {
+	logger.debug("I entered in sendLog().")
+	bot.uploadFile({
+		to: playersDB.admin.narF,
+		file: logPathNode,
+		message: "**The Node log:**"
+	}, (err, res)=>{
+		if (err){logger.warn(err)}
+		// if (res){logger.info(res)}
+	})
+
+	bot.uploadFile({
+		to: playersDB.admin.narF,
+		file: playersDBPath,
+		message: "**The PlayersDB**"
+	}, (err, res) => {
+		if (err){logger.warn(err)}
+		// if (res){logger.info(res)}
+	})
+}
+
+setInterval(()=>{
+	logger.debug(`setInterval()`)
+	sendLog()
+}, intervalLogBackup*60*60*1000) //in hours
