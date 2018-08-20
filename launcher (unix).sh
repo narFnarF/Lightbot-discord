@@ -1,2 +1,2 @@
-node bot.js
-sleep 5
+nohup node bot.js &
+#sleep 5
