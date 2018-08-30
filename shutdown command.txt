@@ -1,1 +1,4 @@
-kill -2 
+kill -2 $(pgrep node)  //Attention: Ça risque d'arrêter tous les bots!
+
+pm2 stop bot  //changer "bot" par le nom affiché par "pm2 list"
+pm2 restart bot
