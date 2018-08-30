@@ -270,7 +270,7 @@ function lightCommand(userID, channelID, username) {
 		registerPlayerInDB(userID, username); //add the player to the DB or check for missing data and update its name
 
 
-		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightment is coming (in about 5 seconds)"}, (err, res)=>{
+		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightenment is coming (in about 5 seconds)"}, (err, res)=>{
 			if (!err){ // Do this after the call back, if there's no error
 				playersDB.players[userID].lastPlayed = Date.now()
 				deleteMsgAfterDelay(res.id, channelID, 5)
@@ -287,7 +287,7 @@ function lightCommand(userID, channelID, username) {
 					}
 				});
 			}else {
-				logger.warn(`Error while sending the "Enlightment is coming" message to ${username} ${userID}.`)
+				logger.warn(`Error while sending the "Enlightenment is coming" message to ${username} ${userID}.`)
 				logger.warn(err)
 			}
 		});
