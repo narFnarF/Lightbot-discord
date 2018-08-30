@@ -174,7 +174,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'help':
 				bot.sendMessage({
 					to: channelID,
-					message: "Hello <@"+userID+">. I'm **Light Bot**. Request an image by typing `!light` in the chat. Like a desk plant, your image evolves over time and is persistant. You can type `!helpmore` for additional details. Embrace `!light` in your days and reach enlightenment!"
+					message: "Hello <@"+userID+">. I'm **Light Bot**. Request an image by typing `!light` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type `!helpmore` for additional details. Embrace `!light` in your days and reach enlightenment!"
 				});
 				logger.info("Help requested by "+username);
 			break;
