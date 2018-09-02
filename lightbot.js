@@ -14,6 +14,8 @@ var child;
 var fs = require('fs');
 
 // Configure logger settings
+var logPath = "logs/lightbot.log";
+var logErrorPath = "logs/lightbot-errors.log"
 initializeWinstonLogger();
 
 logger.info("Launching the bot!")
@@ -22,7 +24,6 @@ logger.info("Launching the bot!")
 // configurations
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
-var logPathNode = "lightbot.log";
 var endLevel = 20;
 var intervalLogBackup = 12 //in hours
 
@@ -44,7 +45,7 @@ function initializeWinstonLogger() {
 
 	logger.add(logger.transports.File, {
 		name: 'info-log',
-		filename: 'lightbot.log',
+		filename: logPath,
 		level: 'debug',
 		timestamp: function () {
 			return Date();
@@ -57,7 +58,7 @@ function initializeWinstonLogger() {
 
 	logger.add(logger.transports.File, {
 		name: 'warning-log',
-		filename: 'lightbot-errors.log',
+		filename: logErrorPath,
 		level: 'warn',
 		timestamp: function () {
 			return Date();
@@ -504,7 +505,7 @@ function sendImage(userID, channelID, filepath, won) {
 				file: filepath,
 				message: "<@"+userID+"> Here's your lightshow!"
 			}, (err, res) => {
-				fs.rename(filepath, "light old.png", (err)=>{
+				fs.rename(filepath, "previous light.png", (err)=>{
 					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
 				});
 
@@ -584,7 +585,7 @@ function sendLog() {
 	logger.debug("I entered in sendLog().")
 	bot.uploadFile({
 		to: playersDB.admin.narF,
-		file: logPathNode,
+		file: logPath,
 		message: "**The Node log:**"
 	}, (err, res)=>{
 		if (err){logger.warn(err)}
