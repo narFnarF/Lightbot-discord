@@ -236,7 +236,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			case 'invite':
 				bot.sendMessage({
 					to: channelID,
-					message: `<@${userID}> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \nhttps://discordapp.com/api/oauth2/authorize?client_id=411618329673990157&permissions=51200&scope=bot`
+					message: `<@${userID}> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \nhttps://discordapp.com/api/oauth2/authorize?client_id=411618329673990157&permissions=52224&scope=bot`
 				});
 				logger.info(username+" requested the invite link.");
 			break;
