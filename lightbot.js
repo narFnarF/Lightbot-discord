@@ -4,14 +4,8 @@ var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
 var LightPicture = require("./tests jimp/LightPicture.js");
+var fs = require('fs'); // to write files
 
-// Required to launch an app (exec)
-// var sys = require('sys')
-// var exec = require('child_process').exec; // http://nodejs.org/api.html#_child_processes
-// var child;
-
-// to write files
-var fs = require('fs');
 
 // Configure logger settings
 var logPath = "logs/lightbot.log";
@@ -189,6 +183,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 					"`!level` Tell you your current level.\n"+
 					"`!relight` For when you've reached the end.\n"+
 					"`!link` To get the URL link to the original version of this game.\n"+
+					"`!discord` To get an invite to Lightbot's discord community server and get support.\n"+
 					"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
 					"`!helpadmin` Help about admin commands.\n"
 				});
@@ -212,8 +207,6 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'light':
-			case "testJimp":
-			case "betaLight":
 				lightCommand(userID, channelID, username);
 			break;
 
@@ -245,6 +238,15 @@ bot.on('message', function (username, userID, channelID, message, event) {
 					message: `<@${userID}> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \nhttps://discordapp.com/api/oauth2/authorize?client_id=411618329673990157&permissions=51200&scope=bot`
 				});
 				logger.info(username+" requested the invite link.");
+			break;
+
+			case 'join':
+			case 'discord':
+				bot.sendMessage({
+					to: channelID,
+					message: `<@${userID}> Here's the link to join the discord community server around Light Bot. That's a good place to ask question and get support. \nhttps://discord.gg/ysDXzdu`
+				});
+				logger.info(username+" requested the link to the community discord.");
 			break;
 		}
 	}
