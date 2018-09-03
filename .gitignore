@@ -81,3 +81,4 @@ bin/
 playersDB.json
 logs/
 previous light.png
+tests jimp/output/

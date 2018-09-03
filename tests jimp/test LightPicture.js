@@ -8,7 +8,7 @@ const startLevel = 1; // How many pictures to ouput
 const endLevel = 20;
 
 for (var i = startLevel; i <= endLevel; i++){
-   var lp = new LightPicture(i+1, `test${i}.png`, (err, res)=>{
+   var lp = new LightPicture(i+1, `output/test${i}.png`, (err, res)=>{
       console.log(`wrote to ${res.path}`);
    });
 }
