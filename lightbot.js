@@ -19,7 +19,7 @@ logger.info("Launching the bot!")
 var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var endLevel = 20;
-var intervalLogBackup = 12 //in hours
+var intervalLogBackup = 12 //in hours. Frequency at which the bot will send the backups.
 var backupChannel = "486016358140608523"; // The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
@@ -75,9 +75,13 @@ var bot = new Discord.Client({
 // testing ground
 var testingMode = false;
 var fakeWin = false;
+
 if (testingMode) {
+	runTestsAtLaunch()
+}
+
+function runTestsAtLaunch() {
 	logger.warn("We're running in debug mode.")
-	// intervalLogBackup = 30/60/60 //30 seconds
 	// var id = '000000000fake00000'
 	// var channelID = '0000000fake000000'
 	// var username = 'fake'
@@ -86,21 +90,21 @@ if (testingMode) {
 	// username = "narF"
 	// var channelID = "426230699197071370"
 
-	// logger.debug(canPlay(id));
-	// preparePlayerData(id, username);
-	// logger.debug(canPlay(id));
-	// afterLaunching(id, "channelID", username);
-	// logger.debug(canPlay(id));
-
 	setInterval(function(){
 		logger.debug("presenceStatus: "+bot.presenceStatus);
 		logger.debug("bot.connected: "+bot.connected);
 	}, 15000);
 }
 
+function runTestAtLogin(){
+	// var id = "214590808727355393";
+	// var username = "narF"
+	// var channelID = "426230699197071370"
+	// logger.debug(`${id} ${username}`)
+}
 
-// bot is online. Display in console.
 bot.on('ready', function (event) {
+	// bot is online. Display in console.
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
 	// logger.debug(event);
@@ -109,11 +113,7 @@ bot.on('ready', function (event) {
 	bot.setPresence({game: {name: "type !light or !help"}})
 
 	if(testingMode) {
-		var id = "214590808727355393";
-		var username = "narF"
-		var channelID = "426230699197071370"
-		logger.debug(`${id} ${username}`)
-		testJimp(id, channelID, username)
+		runTestAtLogin()
 	}
 });
 
@@ -591,7 +591,6 @@ function sendLog() {
 		message: "**The Node log:**"
 	}, (err, res)=>{
 		if (err){logger.warn(err)}
-		// if (res){logger.info(res)}
 	})
 
 	bot.uploadFile({
@@ -600,11 +599,16 @@ function sendLog() {
 		message: "**The PlayersDB**"
 	}, (err, res) => {
 		if (err){logger.warn(err)}
-		// if (res){logger.info(res)}
 	})
 }
 
-setInterval(()=>{
-	logger.debug(`setInterval()`)
-	sendLog()
-}, intervalLogBackup*60*60*1000) //in hours
+setupAutoBackups()
+function setupAutoBackups() {
+	// This setups the daily auto backups. These backups are sent to the admin every 12 hours.
+	logger.info(`Setting up the automated backup to every ${intervalLogBackup} hours.`)
+	setInterval(()=>{
+		logger.info(`It's time for the automated backup every ${intervalLogBackup} hours.`)
+		sendLog()
+	}, intervalLogBackup*60*60*1000) // hours to milliseconds
+	// }, 10*1000) // 10 seconds, for debugging purpose
+}
