@@ -77,7 +77,6 @@ node_modules/
 auth.json
 
 #Add new ignored files below
-bin/
 playersDB.json
 logs/
 previous light.png
