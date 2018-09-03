@@ -20,6 +20,7 @@ var dataJsonPath = "bin/data.json";
 var playersDBPath = "playersDB.json";
 var endLevel = 20;
 var intervalLogBackup = 12 //in hours
+var backupChannel = "486016358140608523"; // The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours
 
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
@@ -583,9 +584,9 @@ function askLevel(userID, username, channelID) {
 }
 
 function sendLog() {
-	logger.debug("I entered in sendLog().")
+	// logger.debug("I entered in sendLog().")
 	bot.uploadFile({
-		to: playersDB.admin.narF,
+		to: backupChannel,
 		file: logPath,
 		message: "**The Node log:**"
 	}, (err, res)=>{
@@ -594,7 +595,7 @@ function sendLog() {
 	})
 
 	bot.uploadFile({
-		to: playersDB.admin.narF,
+		to: backupChannel,
 		file: playersDBPath,
 		message: "**The PlayersDB**"
 	}, (err, res) => {
