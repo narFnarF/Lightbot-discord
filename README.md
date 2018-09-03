@@ -14,5 +14,5 @@ You can invite the bot to your own server with this invite link: https://discord
 
 ### Original game
 Lightbot is a port of Light Game.
-* Play it online: https://narf.itch.io/light-game
-* Source code: https://github.com/narFnarF/light-game
+* Play light game online: https://narf.itch.io/light-game
+* Github: https://github.com/narFnarF/light-game
