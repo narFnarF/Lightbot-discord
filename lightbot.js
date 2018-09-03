@@ -7,8 +7,8 @@ var LightPicture = require("./tests jimp/LightPicture.js");
 
 // Required to launch an app (exec)
 // var sys = require('sys')
-var exec = require('child_process').exec; // http://nodejs.org/api.html#_child_processes
-var child;
+// var exec = require('child_process').exec; // http://nodejs.org/api.html#_child_processes
+// var child;
 
 // to write files
 var fs = require('fs');
