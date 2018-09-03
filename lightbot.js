@@ -190,8 +190,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 					"`!relight` For when you've reached the end.\n"+
 					"`!link` To get the URL link to the original version of this game.\n"+
 					"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
-					"`!helpadmin` Help about admin commands.\n"+
-					"You can also play the app version of this light game at https://narf.itch.io/light-game "
+					"`!helpadmin` Help about admin commands.\n"
 				});
 				logger.info(`More help requested by ${username}`);
 			break;
