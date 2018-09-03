@@ -1,0 +1,18 @@
+#Start
+pm2 start lightbot.js
+
+#List
+pm2 ls
+
+#Monitor
+pm2 monit
+
+#Stop
+pm2 stop lightbot
+
+#Restart
+pm2 restart lightbot
+
+#Auto launch on boot
+pm2 startup #Then follow instructions by executing what it tells you to
+pm2 unstartup #To cancel
