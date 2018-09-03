@@ -3,7 +3,7 @@
 var Discord = require('discord.io');
 var logger = require('winston');
 var auth = require('./auth.json');
-var LightPicture = require("./tests jimp/LightPicture.js");
+var LightPicture = require("./LightPicture/LightPicture.js");
 var fs = require('fs'); // to write files
 
 
