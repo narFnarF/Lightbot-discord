@@ -13,18 +13,40 @@ var auth = require('./auth.json');
 var config = require('./config.json');
 
 
-initializeWinstonLogger(); // Configure logger settings
-logger.info("Launching the bot!")
-
-
 // Configurations
 var playersDBPath = config.playersDBPath;
-var endLevel = 20; // Careful changing this: it'll probably break the color tint. The tint formula will need to be adjusted.
+var endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula will need to be adjusted.
 
 // Instance variables
-var playersDB = readPlayerDBJson(); // Initialize the playersDB
-var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
+var bot // the discord bot itself
+var playersDB // the playersDB
+var intentToExit // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
+// debugging flags
+var testingMode = false; // Ignore 5 minutes wait time and run debugging init functions if true
+var fakeWin = false; // will always level up if true
+
+
+function initialize() {
+	initializeWinstonLogger(); // Configure logger settings
+	logger.info("Launching the bot!")
+
+	playersDB = readPlayerDBJson(); // Initialize the playersDB
+	intentToExit = false;
+
+	// Initialize Discord Bot
+	bot = new Discord.Client({
+		token: auth.token,
+		autorun: true
+	});
+
+	if (testingMode) {
+		runDebuggingAtLaunch()
+	}
+
+	setupAutoBackups() // It's not in on.ready because it needs to run only once.
+}
+initialize()
 
 
 function initializeWinstonLogger() {
@@ -65,22 +87,7 @@ function initializeWinstonLogger() {
 	});
 }
 
-
-// Initialize Discord Bot
-var bot = new Discord.Client({
-	token: auth.token,
-	autorun: true
-});
-
-// testing ground
-var testingMode = false;
-var fakeWin = false;
-
-if (testingMode) {
-	runTestsAtLaunch()
-}
-
-function runTestsAtLaunch() {
+function runDebuggingAtLaunch() {
 	logger.warn("We're running in debug mode.")
 	// var id = '000000000fake00000'
 	// var channelID = '0000000fake000000'
@@ -96,7 +103,7 @@ function runTestsAtLaunch() {
 	}, 15000);
 }
 
-function runTestAtLogin(){
+function runDebuggingAtLogin(){
 	// var id = "214590808727355393";
 	// var username = "narF"
 	// var channelID = "426230699197071370"
@@ -113,7 +120,7 @@ bot.on('ready', function (event) {
 	bot.setPresence({game: {name: "type !light or !help"}})
 
 	if(testingMode) {
-		runTestAtLogin()
+		runDebuggingAtLogin()
 	}
 });
 
@@ -602,7 +609,6 @@ function sendLog() {
 	})
 }
 
-setupAutoBackups()
 function setupAutoBackups() {
 	// This setups the daily auto backups. These backups are sent to the admin every 12 hours.
 	logger.info(`Setting up the automated backup to every ${config.intervalLogBackup} hours.`)
