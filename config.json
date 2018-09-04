@@ -1,0 +1,9 @@
+{
+   "logPath" : "logs/lightbot.log",
+   "logErrorPath": "logs/lightbot-errors.log",
+   "playersDBPath": "playersDB.json",
+
+   "intervalLogBackup": 12, "_Comment": "In hours. Frequency at which the bot will send the backups.",
+
+   "backupChannel" : "486016358140608523", "_Comment": "The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours"
+}

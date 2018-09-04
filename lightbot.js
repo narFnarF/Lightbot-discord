@@ -1,27 +1,27 @@
 "use strict";
 
+// Dependencies
 var Discord = require('discord.io');
 var logger = require('winston');
-var auth = require('./auth.json');
-var LightPicture = require("./LightPicture/LightPicture.js");
 var fs = require('fs'); // to write files
 
+// My own dependencies
+var LightPicture = require("./LightPicture/LightPicture.js");
 
-// Configure logger settings
-var logPath = "logs/lightbot.log";
-var logErrorPath = "logs/lightbot-errors.log"
-initializeWinstonLogger();
+// Config files
+var auth = require('./auth.json');
+var config = require('./config.json');
 
+
+initializeWinstonLogger(); // Configure logger settings
 logger.info("Launching the bot!")
 
 
-// configurations
-var dataJsonPath = "bin/data.json";
-var playersDBPath = "playersDB.json";
-var endLevel = 20;
-var intervalLogBackup = 12 //in hours. Frequency at which the bot will send the backups.
-var backupChannel = "486016358140608523"; // The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours
+// Configurations
+var playersDBPath = config.playersDBPath;
+var endLevel = 20; // Careful changing this: it'll probably break the color tint. The tint formula will need to be adjusted.
 
+// Instance variables
 var playersDB = readPlayerDBJson(); // Initialize the playersDB
 var intentToExit = false; // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
@@ -40,7 +40,7 @@ function initializeWinstonLogger() {
 
 	logger.add(logger.transports.File, {
 		name: 'info-log',
-		filename: logPath,
+		filename: config.logPath,
 		level: 'debug',
 		timestamp: function () {
 			return Date();
@@ -53,7 +53,7 @@ function initializeWinstonLogger() {
 
 	logger.add(logger.transports.File, {
 		name: 'warning-log',
-		filename: logErrorPath,
+		filename: config.logErrorPath,
 		level: 'warn',
 		timestamp: function () {
 			return Date();
@@ -586,15 +586,15 @@ function askLevel(userID, username, channelID) {
 function sendLog() {
 	// logger.debug("I entered in sendLog().")
 	bot.uploadFile({
-		to: backupChannel,
-		file: logPath,
+		to: config.backupChannel,
+		file: config.logPath,
 		message: "**The Node log:**"
 	}, (err, res)=>{
 		if (err){logger.warn(err)}
 	})
 
 	bot.uploadFile({
-		to: backupChannel,
+		to: config.backupChannel,
 		file: playersDBPath,
 		message: "**The PlayersDB**"
 	}, (err, res) => {
@@ -605,10 +605,10 @@ function sendLog() {
 setupAutoBackups()
 function setupAutoBackups() {
 	// This setups the daily auto backups. These backups are sent to the admin every 12 hours.
-	logger.info(`Setting up the automated backup to every ${intervalLogBackup} hours.`)
+	logger.info(`Setting up the automated backup to every ${config.intervalLogBackup} hours.`)
 	setInterval(()=>{
-		logger.info(`It's time for the automated backup every ${intervalLogBackup} hours.`)
+		logger.info(`It's time for the automated backup every ${config.intervalLogBackup} hours.`)
 		sendLog()
-	}, intervalLogBackup*60*60*1000) // hours to milliseconds
+	}, config.intervalLogBackup*60*60*1000) // hours to milliseconds
 	// }, 10*1000) // 10 seconds, for debugging purpose
 }
