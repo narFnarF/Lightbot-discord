@@ -45,7 +45,7 @@ class LightPicture {
                cellColor = thisLevelColor;
             } else if (state === LightGrid.WINNING) {
                // console.log("cell is winning");
-               var extra = Math.random()*0.2
+               var extra = Math.random()*0.1
                cellColor = thisLevelColor.lightness(extra, true)
             }
 
