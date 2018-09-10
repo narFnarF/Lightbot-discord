@@ -2,7 +2,7 @@
 
 // Dependencies
 var Discord = require('discord.io');
-var logger = require('winston');
+var Logger = require('./logger.js');
 var fs = require('fs'); // to write files
 
 // My own dependencies
@@ -11,6 +11,7 @@ var LightPicture = require("./LightPicture/LightPicture.js");
 // Config files
 var auth = require('./auth.json');
 var config = require('./config.json');
+var logger = new Logger(config.useWinston)
 
 
 // Configurations
