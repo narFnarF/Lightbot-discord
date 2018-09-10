@@ -147,14 +147,3 @@ class LightGrid {
 
 }
 module.exports = LightGrid;
-
-// Des trucs pour tester
-// var g = new LightGrid(5);
-// console.log("(1, 2) =  7 = "+g.xyToIndex(1, 2));
-// console.log("7ème de 3x3 = (1,2) = "+g.indexToXY(7));
-// console.log("area = 9 = "+g.area);
-// console.log("length = 3 = "+g.length);
-//
-// console.log("g.fillGrid(5, true, false): ");
-// g.fillGrid(5, true, false);
-// console.log(g.toString());
