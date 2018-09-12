@@ -2,24 +2,23 @@
 
 // Dependencies
 var Discord = require('discord.io');
-var Logger = require('./logger.js');
 var fs = require('fs'); // to write files
-
-// My own dependencies
+// var Logger = require('./logger.js');
+// var logger = new Logger(config.useWinston)
+var logger = require('./logger.js');
 var LightPicture = require("./LightPicture/LightPicture.js");
 
 // Config files
 var auth = require('./auth.json');
 var config = require('./config.json');
-var logger = new Logger(config.useWinston)
 
 
 // Configurations
-var playersDBPath = config.playersDBPath;
-var endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula will need to be adjusted.
+var endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula will need to be adjusted. //TODO: Turn that into a const
 
 // Instance variables
 var bot // the discord bot itself
+const playersDBPath = config.playersDBPath;
 var playersDB // the playersDB
 var intentToExit // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
@@ -29,8 +28,9 @@ var fakeWin = false; // will always level up if true
 
 
 function initialize() {
-	initializeWinstonLogger(); // Configure logger settings
+	// initializeWinstonLogger(); // Configure logger settings
 	logger.info("Launching the bot!")
+	console.log(logger);
 
 	playersDB = readPlayerDBJson(); // Initialize the playersDB
 	intentToExit = false;
@@ -50,43 +50,43 @@ function initialize() {
 initialize()
 
 
-function initializeWinstonLogger() {
-	// Configure logger settings
-	logger.remove(logger.transports.Console);
-	logger.add(logger.transports.Console, {
-		colorize: true,
-		level: 'debug',
-		timestamp: function () {
-			return Date();
-		}
-	});
-
-	logger.add(logger.transports.File, {
-		name: 'info-log',
-		filename: config.logPath,
-		level: 'debug',
-		timestamp: function () {
-			return Date();
-		},
-		maxsize: 500*1000, // 500KB
-		maxFiles: 2,
-		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
-		json: false
-	});
-
-	logger.add(logger.transports.File, {
-		name: 'warning-log',
-		filename: config.logErrorPath,
-		level: 'warn',
-		timestamp: function () {
-			return Date();
-		},
-		maxsize: 500*1000, // 500KB
-		maxFiles: 2,
-		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
-		json: false
-	});
-}
+// function initializeWinstonLogger() {
+// 	// Configure logger settings
+// 	logger.remove(logger.transports.Console);
+// 	logger.add(logger.transports.Console, {
+// 		colorize: true,
+// 		level: 'debug',
+// 		timestamp: function () {
+// 			return Date();
+// 		}
+// 	});
+//
+// 	logger.add(logger.transports.File, {
+// 		name: 'info-log',
+// 		filename: config.logPath,
+// 		level: 'debug',
+// 		timestamp: function () {
+// 			return Date();
+// 		},
+// 		maxsize: 500*1000, // 500KB
+// 		maxFiles: 2,
+// 		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
+// 		json: false
+// 	});
+//
+// 	logger.add(logger.transports.File, {
+// 		name: 'warning-log',
+// 		filename: config.logErrorPath,
+// 		level: 'warn',
+// 		timestamp: function () {
+// 			return Date();
+// 		},
+// 		maxsize: 500*1000, // 500KB
+// 		maxFiles: 2,
+// 		tailable: true, // The filename will always have the most recent log lines. The larger the appended number, the older the log file.
+// 		json: false
+// 	});
+// }
 
 function runDebuggingAtLaunch() {
 	logger.warn("We're running in debug mode.")

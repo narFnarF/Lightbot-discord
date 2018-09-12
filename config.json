@@ -5,7 +5,7 @@
 
    "backupChannel" : "486016358140608523", "_Comment": "The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours",
 
-   "useWinston": false, "_Comment": "Use winston for logs. Produce pretty logs, and save them in files. Otherwise use the console.",
-   "logPath" : "logs/lightbot.log", "Comment": "Which file winston will use for logs.",
-   "logErrorPath": "logs/lightbot-errors.log"
+
+   "logName" : "lightbot.log", "Comment": "Which file winston will use for logs.",
+   "logErrorName": "lightbot-errors.log"
 }
