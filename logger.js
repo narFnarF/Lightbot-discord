@@ -1,12 +1,12 @@
 "use strict";
 
 var appRoot = require('app-root-path')
-var winston = require('winston')
-var config = require('./config.json')
+const winston = require('winston')
+const config = require('./config.json')
 const { format, createLogger, transports } = winston
 
 // define the custom settings for each transport (file, console)
-var options = {
+const options = {
 	fileInfos: {
 		name: 'info-log',
 		filename: `${appRoot}/logs/${config.logName}`,
