@@ -39,7 +39,8 @@ var options = {
 			format.colorize(),
 			// format.align(),
 			format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
-		)
+		),
+		level: 'debug'
 	}
 }
 
