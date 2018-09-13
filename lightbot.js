@@ -3,6 +3,8 @@
 // Dependencies
 var Discord = require('discord.io');
 var fs = require('fs'); // to write files
+var appRoot = require('app-root-path')
+var path = require('path')
 var logger = require('./logger.js');
 var LightPicture = require("./LightPicture/LightPicture.js");
 
@@ -554,10 +556,13 @@ function sendLog() {
 	// logger.debug("I entered in sendLog().")
 	bot.uploadFile({
 		to: config.backupChannel,
-		file: config.logPath,
+		file: path.join(appRoot.toString(), "logs", config.logErrorName),
 		message: "**The Node log:**"
 	}, (err, res)=>{
-		if (err){logger.warn(err)}
+		if (err){
+			logger.warn("I had trouble sending the logs to the backup channel.")
+			logger.warn(`Error returned: ${err}`)
+		}
 	})
 
 	bot.uploadFile({
@@ -565,7 +570,10 @@ function sendLog() {
 		file: playersDBPath,
 		message: "**The PlayersDB**"
 	}, (err, res) => {
-		if (err){logger.warn(err)}
+		if (err){
+			logger.warn("I had trouble sending the playersDB to the backup channel.")
+			logger.warn(`Error returned: ${err}`)
+		}
 	})
 }
 
