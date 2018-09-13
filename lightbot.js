@@ -14,7 +14,7 @@ var config = require('./config.json');
 
 
 // Configurations
-var endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula would need to be adjusted. //TODO: Turn that into a const
+const endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula would need to be adjusted.
 
 // Instance variables
 var bot // the discord bot itself
