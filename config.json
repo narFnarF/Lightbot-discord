@@ -1,4 +1,8 @@
 {
+   "ownerAdmin": {
+      "discordID": "214590808727355393"
+   },
+   
    "playersDBPath": "playersDB.json",
 
    "intervalLogBackup": 12, "_Comment": "In hours. Frequency at which the bot will send the backups.",
