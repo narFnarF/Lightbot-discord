@@ -1,7 +1,7 @@
 {
 	"name": "lightbot",
-	"version": "0.0.2",
-	"description": "A Discord bot that produces images unique to those who call it and which evolve over time.",
+	"version": "0.0.3",
+	"description": "A Discord bot that produces images that evolve over time.",
 	"main": "lightbot.js",
 	"author": "narF",
 	"dependencies": {
