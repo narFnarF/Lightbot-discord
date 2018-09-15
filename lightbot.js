@@ -28,10 +28,10 @@ var fakeWin = false; // will always level up if true
 
 
 function initialize() {
-	logger.info("Launching the bot!")
-
 	playersDB = readPlayerDBJson(); // Initialize the playersDB
 	intentToExit = false;
+
+	logger.info("Launching the bot!")
 
 	// Initialize Discord Bot
 	bot = new Discord.Client({
@@ -514,7 +514,8 @@ function canPlay(userID) {
 			if (playersDB.players[userID].lastPlayed !== undefined){
 				var lastPlayed = playersDB.players[userID].lastPlayed;
 				// logger.debug("lastPlayed: "+lastPlayed);
-				return Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
+				var canPlay = Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
+				return canPlay;
 			}else {
 				logger.warn("lastPlayer is undefined for player "+userID);
 				return true;

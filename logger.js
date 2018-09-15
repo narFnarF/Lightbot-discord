@@ -37,7 +37,6 @@ const options = {
 				format: 'YYYY-MM-DD HH:mm:ss'
 			}),
 			format.colorize(),
-			// format.align(),
 			format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
 		),
 		level: 'debug'
@@ -46,14 +45,12 @@ const options = {
 
 // instantiate a new Winston Logger with the settings defined above
 const logger = createLogger({
-
 	transports: [
 		// new winston.transports.File(options.file),
 		new transports.File(options.fileInfos),
 		new transports.File(options.fileWarns),
 		new transports.Console(options.console)
-	],
-	// exitOnError: false, //do not exit on handled exceptions
+	]
 })
 
 module.exports = logger;
