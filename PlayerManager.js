@@ -11,7 +11,7 @@ class PlayerManager {
 		this.players = this.readDBFile(pathToDB);
 		this.currentlyWriting = false;
 
-		this.writeDBFile();
+		// this.writeDBFile();
 	}
 
 	// get pathToDB() {
@@ -26,6 +26,18 @@ class PlayerManager {
 		if (content.hasOwnProperty("players")) {
 			content = content.players;
 		}
+      // logger.debug(`Reading the DB file. I extracted this:`);
+      // console.log(content);
+
+      var listOfActualPlayers = {};
+      for (var key in content) {
+         // logger.debug(key);
+         // console.log(content[key]);
+         // listOfActualPlayers[key] = 1 //new Player(content[i])
+         content[key] = new Player(content[key]);
+      }
+      // logger.debug(`Finished reading the DB file. The object I read is:`);
+      // console.log(content);
 		return content;
 	}
 
@@ -49,7 +61,36 @@ class PlayerManager {
 		}
 	}
 
+	createPlayer(userID, name) {
+		var player = new Player(userID, name);
+		this.players[userID] = player;
+		// console.log(player);
+	}
 
+	exists(userID) {
+		// return true if the player exists in the DB
+		if (this.players[userID] == null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	getPlayer(userID) {
+      // Returns the player with this userID
+      // logger.info(`Getting player ${userID}`)
+      if (this.exists(userID)) {
+         if (this.players[userID] instanceof Player) {
+            return this.players[userID];
+         } else {
+            logger.warn(`Found a fake object!`);
+            return undefined;
+         }
+         // logger.info(`Found it. Is it a member of Player? ${this.players[userID] instanceof Player}`)
+		} else {
+			return undefined;
+		}
+	}
 
 }
 module.exports = PlayerManager;
