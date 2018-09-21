@@ -1,0 +1,15 @@
+{
+   "ownerAdmin": {
+      "discordID": "YOUR_ID_HERE"
+   },
+
+   "playersDBPath": "playersDB.json",
+
+   "intervalLogBackup": 12, "_Comment": "In hours. Frequency at which the bot will send the backups.",
+
+   "backupChannel" : "A_CHANNEL_ID_HERE", "_Comment": "The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours",
+
+
+   "logName" : "lightbot.log", "Comment": "Which file winston will use for logs.",
+   "logErrorName": "lightbot-errors.log"
+}
