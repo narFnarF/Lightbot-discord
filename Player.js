@@ -4,13 +4,6 @@ const logger = require("./logger.js");
 // Dependencies
 
 class Player {
-   // constructor(id, name) {
-   //    logger.info(`Player constructor with 2 params`)
-   //    this.name = name;
-   //    this.level = 1;
-   //    this.lastPlayed = 0;
-   // }
-
    constructor(obj) {
       // logger.debug(`argument.length: ${arguments.length}`)
 
@@ -28,30 +21,34 @@ class Player {
          this.name = obj.name || obj.username;
          this.level = obj.level;
          this.lastPlayed = obj.lastPlayed;
-         this.win = obj.win;
          this.relight = obj.relight;
       }
+      // logger.debug(`Created a new Player:`);
+      // console.log(this);
    }
 
-   // get name() {
-   //    console.log("yo");
-   //    return this._name;
-   // }
-   //
-   // set name(newName) {
-   //    this._name = newName;
-   // }
-   //
-   // getName(id) {
-   //    if (this.hasOwnProperty("name")) {
-   //       console.log("1");
-   //       return this.name;
-   //
-   //    } else {
-   //       console.log("2");
-   //       return this.username;
-   //
-   //    }
-   // }
+   increaseLevel() {
+      this.level++;
+   }
+
+   increaseRelightCount() {
+      if (this.relight == undefined) {
+         this.relight = 1;
+      } else {
+         this.relight++;
+      }
+
+   }
+
+   allowedToPlay() {
+      // Returns true if the player hasn't played in the last 5 minutes
+      var canPlay = Date.now() > this.lastPlayed + (5*60*1000); //5 minutes, in ms
+      return canPlay;
+   }
+
+   updateLastPlayed() {
+      this.lastPlayed = Date.now();
+   }
+
 }
 module.exports = Player;
