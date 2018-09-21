@@ -6,10 +6,11 @@ const Player = require('./Player.js');
 const logger = require("./logger.js")
 
 class PlayerManager {
-	constructor(pathToDB) {
+	constructor(pathToDB, adminID) {
+      this.adminID = adminID;
 		this.pathToDB = pathToDB;
 		this.players = this.readDBFile(pathToDB);
-		this.currentlyWriting = false;
+      this.currentlyWriting = false;
 
 		// this.writeDBFile();
 	}
@@ -65,6 +66,7 @@ class PlayerManager {
 		var player = new Player(userID, name);
 		this.players[userID] = player;
 		// console.log(player);
+      return player;
 	}
 
 	exists(userID) {
@@ -92,5 +94,18 @@ class PlayerManager {
 		}
 	}
 
+   getOrCreatePlayer(userID, username) {
+      if (this.exists(userID)) {
+         return this.getPlayer(userID);
+      } else {
+         return this.createPlayer(userID, username);
+      }
+   }
+
+   isAdmin(userID) {
+      // Returns true if the id is the same as the admin's id.
+      // pm.isAdmin("1234567890")
+      return userID == this.adminID;
+   }
 }
 module.exports = PlayerManager;
