@@ -8,6 +8,12 @@ const logger = require("./logger.js")
 class PlayerManager {
 	constructor(pathToDB, adminID) {
       this.adminID = adminID;
+      if (!adminID) {
+         logger.warn(`The adminID was missing when creating a new PlayerManager at "${pathToDB}"`);
+      }
+      if (!pathToDB) {
+         logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
+      }
 		this.pathToDB = pathToDB;
 		this.players = this.readDBFile(pathToDB);
       this.currentlyWriting = false;
@@ -80,6 +86,8 @@ class PlayerManager {
 
 	getPlayer(userID) {
       // Returns the player with this userID
+      // Returns undefined if the player doesn't exist
+
       // logger.info(`Getting player ${userID}`)
       if (this.exists(userID)) {
          if (this.players[userID] instanceof Player) {
@@ -104,8 +112,11 @@ class PlayerManager {
 
    isAdmin(userID) {
       // Returns true if the id is the same as the admin's id.
-      // pm.isAdmin("1234567890")
-      return userID == this.adminID;
+      // usage: pm.isAdmin("1234567890")
+		
+		var res = (userID == this.adminID);
+      // logger.debug(`Checking if ${userID} is an admin. The admin is ${this.adminID} so it is ${res}.`)
+      return res;
    }
 }
 module.exports = PlayerManager;
