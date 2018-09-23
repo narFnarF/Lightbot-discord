@@ -7,15 +7,17 @@ const logger = require("./logger.js")
 
 class PlayerManager {
 	constructor(pathToDB, adminID) {
-      this.adminID = adminID;
-      if (!adminID) {
+		if (!pathToDB) {
+         logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
+			throw (`The pathToDB is missing.`);
+      }
+		if (!adminID) {
          logger.warn(`The adminID was missing when creating a new PlayerManager at "${pathToDB}"`);
       }
-      if (!pathToDB) {
-         logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
-      }
-		this.pathToDB = pathToDB;
-		this.players = this.readDBFile(pathToDB);
+
+		this.adminID = adminID;
+      this.pathToDB = pathToDB;
+		this.players = this.readDBFile(pathToDB); // this is done in sync
       this.currentlyWriting = false;
 
 		// this.writeDBFile();
@@ -26,8 +28,13 @@ class PlayerManager {
 	// }
 
 	readDBFile(path) {
-		var txt = fs.readFileSync(path);
-		var content = JSON.parse(txt);
+		var content;
+		if (fs.existsSync(path)) {
+			var txt = fs.readFileSync(path);
+			content = JSON.parse(txt);
+		} else {
+			content = {};
+		}
 
 		// Convert the old DB style into the new one
 		if (content.hasOwnProperty("players")) {
@@ -36,7 +43,7 @@ class PlayerManager {
       // logger.debug(`Reading the DB file. I extracted this:`);
       // console.log(content);
 
-      var listOfActualPlayers = {};
+      // var listOfActualPlayers = {};
       for (var key in content) {
          // logger.debug(key);
          // console.log(content[key]);
@@ -72,6 +79,8 @@ class PlayerManager {
 			});
 		} else {
 			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing!`);
+			var err = `Trying to write to "${this.pathToDB}", but i'm actually already writing!`;
+			callback(err);
 		}
 	}
 

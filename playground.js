@@ -35,18 +35,26 @@ function test(left, right, nb) {
 }
 
 function runTests() {
-	new PlayerManager("playersDB correct copy.json")
 	try {
-		var emptyPM = new PlayerManager();
+		var emptyFile = new PlayerManager("playersDB empty.json", "adminid1234") // the file exists, but it's empty → crash
+	} catch (err) {
+		// logger.debug(`But we caught that!`);
+		test(emptyFile, undefined, 0.3);
+	}
+	new PlayerManager("playersDB doesn't exists.json", "adminid1234") // the file doesn't exists
+	new PlayerManager("playersDB copy.json") // missing the adminID
+	try {
+		var emptyPM = new PlayerManager(); //missing the path parameter
 	} catch (err) {
 		// logger.info("All according to plan.")
 		// console.log(emptyPM);
+		logger.debug(`But we caught that!`);
 		test(emptyPM, undefined, 0.5);
 	}
-	const pm = new PlayerManager("playersDB correct copy.json", config.ownerAdmin.discordID);
+	const pm = new PlayerManager("playersDB copy.json", config.ownerAdmin.discordID);
 
 
-	test(pm.exists("bullshit"), false, 1);
+	test(pm.exists(`doesn't exist ${Math.random()}`), false, 1);
 	pm.createPlayer("bullshit", "bullshit_name");
 	test(pm.exists("bullshit"), true, 2);
 
@@ -74,11 +82,19 @@ function runTests() {
 	test( pm.isAdmin("bullshit"), false, 12);
 	test( pm.isAdmin("214590808727355393"), true, 13);
 
-	pm.writeDBFile();
-	pm.writeDBFile();
-	pm.writeDBFile();
+
 	pm.writeDBFile((err)=>{
-		logger.info(`done writing the DB with err:${err}`)
+		logger.info(`done writing the DB`)
+		if (err) {
+			logger.warn(err);
+		}
+	});
+	pm.writeDBFile((err)=>{ // this one should fail because it's already writing
+		if (err) {
+			logger.debug(`It correctly got an error for double writing.`);
+		} else {
+			logger.warn(`It didn't fail but it should have!`);
+		}
 	});
 
 	logger.debug(`All tests completed. Est-ce que y'avait des warnings?`);
