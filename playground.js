@@ -74,9 +74,12 @@ function runTests() {
 	test( pm.isAdmin("bullshit"), false, 12);
 	test( pm.isAdmin("214590808727355393"), true, 13);
 
+	pm.writeDBFile();
+	pm.writeDBFile();
+	pm.writeDBFile();
 	pm.writeDBFile((err)=>{
 		logger.info(`done writing the DB with err:${err}`)
-	})
+	});
 
 	logger.debug(`All tests completed. Est-ce que y'avait des warnings?`);
 }

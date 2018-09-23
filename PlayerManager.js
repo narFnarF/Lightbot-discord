@@ -53,18 +53,25 @@ class PlayerManager {
 		if (!this.currentlyWriting) { // It is unsafe to use fs.writeFile() multiple times on the same file without waiting for the callback. https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 			this.currentlyWriting = true;
 			var beautifulPlayersDB = JSON.stringify(this.players, null, 4);
+			if (!beautifulPlayersDB) { // if the json string is empty for some reason
+				logger.debug(`I'm about to write but beautifulPlayersDB is empty. Here's the object:`);
+				console.log(this.players);
+				throw `beautifulPlayersDB is empty!`;
+			}
 			fs.writeFile(this.pathToDB, beautifulPlayersDB, 'utf8', (err)=>{
 				this.currentlyWriting = false;
 				if (err) {
-					logger.warn(`Could not write ${path} on disk.`);
+					logger.warn(`Could not write "${this.pathToDB}" on disk.`);
 					logger.warn(e);
 				} else {
-					logger.debug("Saved the DB");
+					logger.debug(`Saved the DB to "${this.pathToDB}"`);
 				}
 				if (callback) {
 					callback(err);
 				}
 			});
+		} else {
+			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing!`);
 		}
 	}
 
@@ -113,7 +120,7 @@ class PlayerManager {
    isAdmin(userID) {
       // Returns true if the id is the same as the admin's id.
       // usage: pm.isAdmin("1234567890")
-		
+
 		var res = (userID == this.adminID);
       // logger.debug(`Checking if ${userID} is an admin. The admin is ${this.adminID} so it is ${res}.`)
       return res;
