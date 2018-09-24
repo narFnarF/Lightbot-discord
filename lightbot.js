@@ -20,7 +20,9 @@ const endLevel = 20 // Careful changing this: it'll probably break the color tin
 // Instance variables
 var bot // the discord bot itself
 const playersDBPath = pathModule.join(`${appRoot}`, config.playersDBPath);
-var playersDB // the playersDB
+// var playersDB // the playersDB
+var pm = new PlayerManager("./playersDB copy.json", config.ownerAdmin.discordID);
+
 var intentToExit // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 
 // debugging flags
@@ -29,7 +31,7 @@ var fakeWin = false; // will always level up if true
 
 
 function initialize() {
-	playersDB = readPlayerDBJson(); // Initialize the playersDB
+	// playersDB = readPlayerDBJson(); // Initialize the playersDB
 	intentToExit = false;
 
 	logger.info("Launching the bot!")
@@ -186,7 +188,7 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			break;
 
 			case 'log':
-				if (userID == playersDB.admin.narF){
+				if (pm.isAdmin(userID)) {
 					logger.info(`Log requested by ${username} ${userID}`)
 					sendLog()
 
@@ -237,21 +239,27 @@ process.on("SIGINT", function () {
 });
 
 function lightCommand(userID, channelID, username) {
-	if (canPlay(userID) || testingMode) {
-		logger.info("Player "+username+" wants light.")
+	var p = pm.getOrCreatePlayer(userID, username);
 
-		registerPlayerInDB(userID, username); //add the player to the DB or check for missing data and update its name
-
-
+	if (p.allowedToPlay() || testingMode) {
+		logger.info(`Player ${username} wants light.`);
 		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightenment is coming (in about 5 seconds)"}, (err, res)=>{
 			if (!err){ // Do this after the call back, if there's no error
-				playersDB.players[userID].lastPlayed = Date.now()
+				p.updateLastPlayed();
 				deleteMsgAfterDelay(res.id, channelID, 5)
 
-				var myFile = `light ${username} ${userID} ${Date.now()}.png`
-				var size = playersDB.players[userID].level + 1
+				// pm.writeDBFile((err)=>{
+				// 	if (err) {
+				// 		logger.warn(`Could not write the DB inside lightCommand().`);
+				// 		logger.warn(err);
+				// 	}
+				// });
+				pm.writeDBFile();
 
-				var p = new LightPicture(size, myFile, (err, res)=>{
+				var myFile = `light ${username} ${userID} ${Date.now()}.png`
+				var size = p.level + 1
+
+				var pic = new LightPicture(size, myFile, (err, res)=>{
 					if (err) {
 						logger.warn(err);
 					} else {
@@ -271,7 +279,7 @@ function lightCommand(userID, channelID, username) {
 }
 
 function renameBot(userID, channelID, newName) {
-	if (userID == playersDB.admin.narF) {
+	if (pm.isAdmin(userID)) {
 		logger.info(`Renaming the bot to: ${newName}`);
 		bot.editUserInfo({"username": newName}, (error, response)=>{
 			if (error) {
@@ -298,90 +306,93 @@ function renameBot(userID, channelID, newName) {
 	}
 }
 
-function readPlayerDBJson(){
-	//returns an object: the entire playersDB!
-	logger.info("Let's read the DB file!");
-	var json;
-	if (fs.existsSync(playersDBPath)) { //if the file exists on disk
-		//logger.info("The file playersDB.json exists!");
+// function readPlayerDBJson(){
+// 	//returns an object: the entire playersDB!
+// 	logger.info("Let's read the DB file!");
+// 	var json;
+// 	if (fs.existsSync(playersDBPath)) { //if the file exists on disk
+// 		//logger.info("The file playersDB.json exists!");
+//
+// 		//read playersDB.json
+// 		var data;
+// 		try {
+// 			data = fs.readFileSync(playersDBPath, "utf8");
+// 		} catch (e) {
+// 			logger.warn("The playersDB exists but cannot be read.");
+// 			logger.warn(e);
+// 			throw "playersDB exists but cannot be read";
+// 		}
+//
+// 		//parse JSON
+// 		json = JSON.parse(data);
+//
+// 		//check if DB is empty
+// 		if (!json.hasOwnProperty("players")) {
+// 			json.players = {};
+// 			logger.warn("The DB was missing it's player node, but we recreated it.");
+// 		}
+// 	}else{
+// 		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
+// 		json = {
+// 			players:{},
+// 			admin:{ "example name": "000000exampleID0000"}
+// 		};
+// 	}
+// 	return json;
+// }
 
-		//read playersDB.json
-		var data;
-		try {
-			data = fs.readFileSync(playersDBPath, "utf8");
-		} catch (e) {
-			logger.warn("The playersDB exists but cannot be read.");
-			logger.warn(e);
-			throw "playersDB exists but cannot be read";
-		}
+// function registerPlayerInDB(userID, username) {
+// 	// Create the player in the DB if inexistant.
+// 	// If it exist, make sure it has all the correct properties.
+// 	// Also update the player's name in the DB.
+//
+// 	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
+// 		// logger.debug("Found player "+username+" "+userID);
+// 		playersDB.players[userID].username = username; // always update the player's name in the DB
+//
+// 		//check if it's missing any values:
+// 		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
+// 			playersDB.players[userID].level = 1;
+// 			logger.warn(userID+" was missing it's level so it was set to 1.");
+// 		}
+// 		if (!playersDB.players[userID].hasOwnProperty("win")) { //missing win
+// 			playersDB.players[userID].win = false;
+// 			logger.warn(userID+" was missing it's win state so it was set to false.");
+// 		}
+// 		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
+// 			playersDB.players[userID].lastPlayed = 0;
+// 			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
+// 		}
+// 	}else{
+// 		logger.info(username+" "+userID+" was not in the playersDB. But we're going to add it!")
+// 		playersDB.players[userID] = {
+// 			"username": username,
+// 			"level": 1,
+// 			"win": false,
+// 			"lastPlayed": 0
+// 		};
+// 	}
+// 	// logger.debug("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
+// 	savePlayersDB();
+// }
 
-		//parse JSON
-		json = JSON.parse(data);
+// function savePlayersDB() {
+// 	//write playersDB.json
+// 	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
+// 	fs.writeFile(playersDBPath, beautifulPlayersDB, (err)=>{
+// 		if (err) {
+// 			logger.warn("Could not write playersDB.json on disk.");
+// 			logger.warn(e);
+// 		} else {
+// 			// logger.debug("Saved the DB");
+// 		}
+// 	});
+// }
 
-		//check if DB is empty
-		if (!json.hasOwnProperty("players")) {
-			json.players = {};
-			logger.warn("The DB was missing it's player node, but we recreated it.");
-		}
-	}else{
-		logger.warn("File 'playersDB.json' doesn't exists, but we're going to create it!");
-		json = {
-			players:{},
-			admin:{ "example name": "000000exampleID0000"}
-		};
-	}
-	return json;
-}
+function displayLevel(user) { // TODO : Move this inside Player.js
+	// params:
+	// user: Player
 
-function registerPlayerInDB(userID, username) {
-	// Create the player in the DB if inexistant.
-	// If it exist, make sure it has all the correct properties.
-	// Also update the player's name in the DB.
-
-	if (playersDB.players.hasOwnProperty(userID)){ //if player already exist
-		// logger.debug("Found player "+username+" "+userID);
-		playersDB.players[userID].username = username; // always update the player's name in the DB
-
-		//check if it's missing any values:
-		if (!playersDB.players[userID].hasOwnProperty("level")) { //missing level
-			playersDB.players[userID].level = 1;
-			logger.warn(userID+" was missing it's level so it was set to 1.");
-		}
-		if (!playersDB.players[userID].hasOwnProperty("win")) { //missing win
-			playersDB.players[userID].win = false;
-			logger.warn(userID+" was missing it's win state so it was set to false.");
-		}
-		if (!playersDB.players[userID].hasOwnProperty("lastPlayed")) { //missing lastPlayed timestamp
-			playersDB.players[userID].lastPlayed = 0;
-			logger.warn(userID+" was missing it's lastPlayed timestamp so it was set to 0.");
-		}
-	}else{
-		logger.info(username+" "+userID+" was not in the playersDB. But we're going to add it!")
-		playersDB.players[userID] = {
-			"username": username,
-			"level": 1,
-			"win": false,
-			"lastPlayed": 0
-		};
-	}
-	// logger.debug("Finished registering player "+username+" "+userID+" data "+JSON.stringify(playersDB.players[userID]));
-	savePlayersDB();
-}
-
-function savePlayersDB() {
-	//write playersDB.json
-	var beautifulPlayersDB = JSON.stringify(playersDB, null, 4);
-	fs.writeFile(playersDBPath, beautifulPlayersDB, (err)=>{
-		if (err) {
-			logger.warn("Could not write playersDB.json on disk.");
-			logger.warn(e);
-		} else {
-			// logger.debug("Saved the DB");
-		}
-	});
-}
-
-function displayLevel(user) {
 	if (user.relight) {
 		return user.level+(user.relight*endLevel);
 	} else {
@@ -393,32 +404,36 @@ function announceResult(userID, channelID, won){
 	var msg;
 	var win = (won || fakeWin); // if fakeWin is activated, this is always true
 
-	var level = playersDB.players[userID].level;
-	msg = `You are level ${displayLevel(playersDB.players[userID])}.`;
+	var p = pm.getPlayer(userID);
+	// var level = p.level;
+	msg = `You are level ${displayLevel(p)}.`;
 	if (win) {
-		doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
-		level++;
-		var dlv = displayLevel( playersDB.players[userID] );
-		msg += `\n🎇 Enlighted! You've reached **level ${dlv}**. 🎇`;
+		// doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
+		// level++;
+		p.increaseLevel();
+		pm.writeDBFile(()=>{
+			logger.warn(`Couldn't write the DB in announceResult.`)
+		})
+		// var dlv = displayLevel(p);
+		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
 
 	}
-	if (level < endLevel){
+	if (p.level < endLevel){
 		msg += " I wonder what your next image will look like...";
 	}
 
-	if (!win && level >=4 && level < endLevel) {
+	if (!win && p.level >=4 && p.level < endLevel) {
 		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
 
-	if (level >= endLevel) {
+	if (p.level >= endLevel) {
 		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
-		logger.info(`${username} is ready!`);
+		logger.info(`${p.name} is ready!`);
 	}
 
 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
-	var username = playersDB.players[userID].username;
-	logger.info("Sent lightshow to "+username+" (level "+level+" won:"+win+").")
+	logger.info(`Sent lightshow to ${p.name} (level ${p.level}, won: ${win}).`);
 }
 
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
@@ -435,28 +450,35 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 	}, delayInSeconds*1000)
 }
 
-function doLevelUp(userID) {
-	// Do the level up data modifications inside playersDB
-	playersDB.players[userID].level++;
-	playersDB.players[userID].win = false;
-	savePlayersDB(); // write playersDB to file playersDB.json
-}
+// function doLevelUp(userID) {
+// 	// Do the level up data modifications inside playersDB
+// 	playersDB.players[userID].level++;
+// 	playersDB.players[userID].win = false;
+// 	savePlayersDB(); // write playersDB to file playersDB.json
+// }
 
 function relight(userID, channelID, username) {
-	if (playersDB.players[userID]){ // if player is in DB
-		var lv = playersDB.players[userID].level;
-		if (lv >= endLevel) {
-			if (!playersDB.players[userID].relight) {
-				playersDB.players[userID].relight = 0;
-			}
-			playersDB.players[userID].relight++;
-			playersDB.players[userID].level = 1;
+	if (pm.exists(userID)) { // if player is in DB
+		var p = pm.getPlayer(userID);
+		// var lv = p.level;
+		if (p.level >= endLevel) { // if ready to relight
+			// if (!playersDB.players[userID].relight) { // if player never relit
+			// 	playersDB.players[userID].relight = 0;
+			// }
+			p.increaseRelightCount();
+			// playersDB.players[userID].relight++;
+			// playersDB.players[userID].level = 1;
 
-			var r = playersDB.players[userID].relight;
-			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time${r>1?"s":""}. You have jumped to level ${displayLevel(playersDB.players[userID])}.`
+			var r = p.relight;
+			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time${r>1?"s":""}. You have jumped to level ${displayLevel(p)}.`;
 			bot.sendMessage({to: channelID, message: txt});
-			logger.info(`Relight for ${username}: ${r} time(s) and level ${lv}.`);
-			savePlayersDB();
+			logger.info(`Relight for ${username}: ${r} time(s) and level ${p.level}.`);
+
+			pm.writeDBFile((err)=>{
+				if (err) {
+					logger.warn(`Could not write the DB in relight command.`);
+				}
+			})
 
 		} else { // player has not reached the correct level to relight
 			logger.info(username+" tried to relight but hasn't reached the level required.");
@@ -500,51 +522,50 @@ function sendImage(userID, channelID, filepath, won) {
 			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
 		});
 		bot.sendMessage({
-			to: playersDB.admin.narF,
+			to: pm.adminID,
 			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
 		});
 	}
 }
 
-function canPlay(userID) {
-	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
-
-	// logger.debug("Can "+userID+" play?");
-	if (userID !== undefined){
-		if (playersDB.players.hasOwnProperty(userID)){ //if player exists in DB
-			if (playersDB.players[userID].lastPlayed !== undefined){
-				var lastPlayed = playersDB.players[userID].lastPlayed;
-				// logger.debug("lastPlayed: "+lastPlayed);
-				var canPlay = Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
-				return canPlay;
-			}else {
-				logger.warn("lastPlayer is undefined for player "+userID);
-				return true;
-			}
-		}else {
-			logger.info("It seems that player "+userID+" has never played before.")
-			return true;
-		}
-	}else{
-		logger.error("Missing parameter function canPlay()");
-		return false;
-	}
-}
+// function canPlay(userID) {
+// 	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
+//
+// 	// logger.debug("Can "+userID+" play?");
+// 	if (userID !== undefined){
+// 		if (playersDB.players.hasOwnProperty(userID)){ //if player exists in DB
+// 			if (playersDB.players[userID].lastPlayed !== undefined){
+// 				var lastPlayed = playersDB.players[userID].lastPlayed;
+// 				// logger.debug("lastPlayed: "+lastPlayed);
+// 				var canPlay = Date.now() > lastPlayed + (5*60*1000); //5 minutes, in ms
+// 				return canPlay;
+// 			}else {
+// 				logger.warn("lastPlayer is undefined for player "+userID);
+// 				return true;
+// 			}
+// 		}else {
+// 			logger.info("It seems that player "+userID+" has never played before.")
+// 			return true;
+// 		}
+// 	}else{
+// 		logger.error("Missing parameter function canPlay()");
+// 		return false;
+// 	}
+// }
 
 function askLevel(userID, username, channelID) {
 	// Send a message to the user with their player level.
-	if (playersDB.players[userID]) {// userID exists in DB
-		var lv = playersDB.players[userID].level;
-		if (playersDB.players[userID].relight) { // user have relit at least once
-			var rel = playersDB.players[userID].relight;
-			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${displayLevel(playersDB.players[userID])}\` and have relit \`${rel}\` time.`});
+	if (pm.exists(userID)) {// userID exists in DB
+		var p = pm.getPlayer(userID);
+		if (p.relight) { // user have relit at least once
+			bot.sendMessage({to: channelID, message: `<@${userID}> You are level \`${displayLevel(p)}\` and have relit \`${p.relight}\` time.`});
 		} else {
 			bot.sendMessage({
 				to: channelID,
-				message: `<@${userID}> You are level \`${lv}\``
+				message: `<@${userID}> You are level \`${p.level}\``
 			});
 		}
-		logger.info(`${username} asked for their level: ${lv}`);
+		logger.info(`${username} asked for their level: ${p.level}`);
 	} else { // userID doesn't exist in DB
 		bot.sendMessage({
 			to: channelID,
