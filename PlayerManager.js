@@ -19,6 +19,7 @@ class PlayerManager {
       this.pathToDB = pathToDB;
 		this.players = this.readDBFile(pathToDB); // this is done in sync
       this.currentlyWriting = false;
+		this.writePile = [];
 
 		// this.writeDBFile();
 	}
@@ -73,14 +74,21 @@ class PlayerManager {
 				} else {
 					logger.debug(`Saved the DB to "${this.pathToDB}"`);
 				}
+
 				if (callback) {
 					callback(err);
 				}
+
+				// If there are more requests to save, we do them!
+				if (this.writePile.length > 0) {
+					// logger.debug(`writePile lenght: ${this.writePile.length}`);
+					var nextCallback = this.writePile.shift();
+					this.writeDBFile(nextCallback);
+				}
 			});
 		} else {
-			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing!`);
-			var err = `Trying to write to "${this.pathToDB}", but i'm actually already writing!`;
-			callback(err);
+			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing! Will try again when it's done.`);
+			this.writePile.push(callback);
 		}
 	}
 
