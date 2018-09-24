@@ -7,7 +7,7 @@ class Player {
    constructor(obj) {
       // logger.debug(`argument.length: ${arguments.length}`)
 
-      if (arguments.length == 2) {
+      if (arguments.length == 2) { // must create an actual new Player
          var id = arguments[0];
          var name = arguments[1];
          // logger.info(`Player constructor with 2 params: ${id}, ${name}`)
@@ -15,7 +15,7 @@ class Player {
          this.level = 1;
          this.lastPlayed = 0;
 
-      } else if (arguments.length == 1) {
+      } else if (arguments.length == 1) { // receives a fake Player and transforms it into a real Player.
          // logger.debug(`Player constructor with just 1 obj param: ${obj}`);
          // console.log(obj);
          this.name = obj.name || obj.username;
@@ -37,7 +37,7 @@ class Player {
       } else {
          this.relight++;
       }
-
+      this.level = 1;
    }
 
    allowedToPlay() {
