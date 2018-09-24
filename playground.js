@@ -84,16 +84,13 @@ function runTests() {
 
 
 	pm.writeDBFile((err)=>{
-		logger.info(`done writing the DB`)
 		if (err) {
 			logger.warn(err);
 		}
 	});
-	pm.writeDBFile((err)=>{ // this one should fail because it's already writing
+	pm.writeDBFile((err)=>{ // This second write is there to test if the writes are queued properly.
 		if (err) {
-			logger.debug(`It correctly got an error for double writing.`);
-		} else {
-			logger.warn(`It didn't fail but it should have!`);
+			logger.warn(err);
 		}
 	});
 
