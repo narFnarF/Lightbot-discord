@@ -79,7 +79,7 @@ bot.on('ready', function (event) {
 	logger.info('Connected');
 	logger.info('I am '+bot.username+'  ('+bot.id+')' );
 	// logger.debug(event);
-	console.log(); // blank line return, for pretty
+	// console.log(); // blank line return, for pretty
 
 	bot.setPresence({game: {name: "type !light or !help"}})
 
@@ -231,7 +231,10 @@ process.on("SIGINT", function () {
 	console.log(""); // a blank line so that the displayed interupt signal displays nicely (because I'm meticulous like that!)
 	logger.info("SIGINT received. Disconnecting bot...");
 	intentToExit = true;
+
 	bot.disconnect();
+	pm.exit();
+
 	setTimeout(function () {
 		logger.warn("Timout on disconnection. Let's quit anyway!");
 		process.exit(); // Quit the server
@@ -245,16 +248,10 @@ function lightCommand(userID, channelID, username) {
 		logger.info(`Player ${username} wants light.`);
 		bot.sendMessage({to: channelID, message: "<@"+userID+"> Enlightenment is coming (in about 5 seconds)"}, (err, res)=>{
 			if (!err){ // Do this after the call back, if there's no error
-				p.updateLastPlayed();
+				// p.updateLastPlayed();
 				deleteMsgAfterDelay(res.id, channelID, 5)
 
-				// pm.writeDBFile((err)=>{
-				// 	if (err) {
-				// 		logger.warn(`Could not write the DB inside lightCommand().`);
-				// 		logger.warn(err);
-				// 	}
-				// });
-				pm.writeDBFile();
+				// pm.writeDBFile();
 
 				var myFile = `light ${username} ${userID} ${Date.now()}.png`
 				var size = p.level + 1
@@ -267,7 +264,7 @@ function lightCommand(userID, channelID, username) {
 						sendImage(userID, channelID, res.path, res.won);
 					}
 				});
-			}else {
+			} else {
 				logger.warn(`Error while sending the "Enlightenment is coming" message to ${username} ${userID}.`)
 				logger.warn(err)
 			}
@@ -389,7 +386,7 @@ function renameBot(userID, channelID, newName) {
 // 	});
 // }
 
-function displayLevel(user) { // TODO : Move this inside Player.js
+function displayLevel(user) { // TODO : Move this inside Player.js... but would require Player to know about endLevel
 	// params:
 	// user: Player
 
@@ -405,18 +402,10 @@ function announceResult(userID, channelID, won){
 	var win = (won || fakeWin); // if fakeWin is activated, this is always true
 
 	var p = pm.getPlayer(userID);
-	// var level = p.level;
 	msg = `You are level ${displayLevel(p)}.`;
 	if (win) {
-		// doLevelUp(userID); // careful: this also set player.win to false, but it's ok because we have a local copy in "win"
-		// level++;
-		p.increaseLevel();
-		pm.writeDBFile(()=>{
-			logger.warn(`Couldn't write the DB in announceResult.`)
-		})
-		// var dlv = displayLevel(p);
+		pm.levelUpPlayer(userID);
 		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
-
 	}
 	if (p.level < endLevel){
 		msg += " I wonder what your next image will look like...";
@@ -425,7 +414,6 @@ function announceResult(userID, channelID, won){
 	if (!win && p.level >=4 && p.level < endLevel) {
 		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
-
 
 	if (p.level >= endLevel) {
 		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
@@ -459,26 +447,21 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 
 function relight(userID, channelID, username) {
 	if (pm.exists(userID)) { // if player is in DB
-		var p = pm.getPlayer(userID);
+		var pl = pm.getPlayer(userID);
 		// var lv = p.level;
-		if (p.level >= endLevel) { // if ready to relight
+		if (pl.level >= endLevel) { // if ready to relight
 			// if (!playersDB.players[userID].relight) { // if player never relit
 			// 	playersDB.players[userID].relight = 0;
 			// }
-			p.increaseRelightCount();
+			// pl.increaseRelightCount();
+			pm.relight(userID);
 			// playersDB.players[userID].relight++;
 			// playersDB.players[userID].level = 1;
 
-			var r = p.relight;
-			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${r} time${r>1?"s":""}. You have jumped to level ${displayLevel(p)}.`;
+			var rCount = pl.relight;
+			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${rCount} time${rCount>1?"s":""}. You have jumped to level ${displayLevel(pl)}.`;
 			bot.sendMessage({to: channelID, message: txt});
-			logger.info(`Relight for ${username}: ${r} time(s) and level ${p.level}.`);
-
-			pm.writeDBFile((err)=>{
-				if (err) {
-					logger.warn(`Could not write the DB in relight command.`);
-				}
-			})
+			logger.info(`Relight for ${username}: ${rCount} time(s) and level ${pl.level}.`);
 
 		} else { // player has not reached the correct level to relight
 			logger.info(username+" tried to relight but hasn't reached the level required.");
@@ -499,19 +482,23 @@ function sendImage(userID, channelID, filepath, won) {
 				file: filepath,
 				message: "<@"+userID+"> Here's your lightshow!"
 			}, (err, res) => {
+				// Rename the picture file.
 				fs.rename(filepath, "previous light.png", (err)=>{
 					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
 				});
 
-				if (err){
-					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`)
+				if (!err){
+					// Update the time last played now that the player actually received its picture.
+					pm.updateLastPlayed(userID);
+					announceResult(userID, channelID, won);
+
+				} else {
+					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`);
 					logger.warn(err);
 
 					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
 						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
-					})
-				} else { // no error
-					announceResult(userID, channelID, won);
+					});
 				}
 			}
 		);
