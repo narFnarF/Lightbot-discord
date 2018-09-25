@@ -19,7 +19,7 @@ class PlayerManager {
       this.pathToDB = pathToDB;
 		this.players = this.readDBFile(pathToDB); // this is done in sync
       this.currentlyWriting = false;
-		this.writePile = [];
+		this.writeQueue = [];
 
 		// this.writeDBFile();
 	}
@@ -41,19 +41,12 @@ class PlayerManager {
 		if (content.hasOwnProperty("players")) {
 			content = content.players;
 		}
-      // logger.debug(`Reading the DB file. I extracted this:`);
-      // console.log(content);
 
-      // var listOfActualPlayers = {};
-      for (var key in content) {
-         // logger.debug(key);
-         // console.log(content[key]);
-         // listOfActualPlayers[key] = 1 //new Player(content[i])
+		// convert untyped objects in Content into a Player type
+		for (var key in content) {
          content[key] = new Player(content[key]);
       }
-      // logger.debug(`Finished reading the DB file. The object I read is:`);
-      // console.log(content);
-		return content;
+      return content;
 	}
 
 	writeDBFile(callback) {
@@ -80,15 +73,15 @@ class PlayerManager {
 				}
 
 				// If there are more requests to save, we do them!
-				if (this.writePile.length > 0) {
-					// logger.debug(`writePile lenght: ${this.writePile.length}`);
-					var nextCallback = this.writePile.shift();
+				if (this.writeQueue.length > 0) {
+					// logger.debug(`writeQueue lenght: ${this.writeQueue.length}`);
+					var nextCallback = this.writeQueue.shift();
 					this.writeDBFile(nextCallback);
 				}
 			});
 		} else {
 			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing! Will try again when it's done.`);
-			this.writePile.push(callback);
+			this.writeQueue.push(callback);
 		}
 	}
 
