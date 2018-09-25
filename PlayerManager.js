@@ -31,8 +31,16 @@ class PlayerManager {
 	readDBFile(path) {
 		var content;
 		if (fs.existsSync(path)) {
-			var txt = fs.readFileSync(path);
-			content = JSON.parse(txt);
+			var txt = fs.readFileSync(path); // Read the file on disk
+
+			// Read the JSON in the file
+			try {
+				content = JSON.parse(txt);
+			} catch (err) {
+				logger.error(`The content of the JSON database at "${path}" is not formatted properly. Try to fix the JSON inside.`);
+				throw err;
+			}
+
 		} else {
 			content = {};
 		}
