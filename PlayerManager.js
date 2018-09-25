@@ -160,5 +160,11 @@ class PlayerManager {
 			if (err) { logger.warn(`Error when writing the DB in PlayerManager's updateLastPlayed().`); }
 		});
 	}
+
+	exit() {
+		this.writeDBFile((err)=>{
+			if (err) { logger.warn(`Error when writing the DB in exit.`); }
+		});
+	}
 }
 module.exports = PlayerManager;
