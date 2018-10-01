@@ -51,7 +51,8 @@ function runTests() {
 		logger.debug(`But we caught that!`);
 		test(emptyPM, undefined, 0.5);
 	}
-	const pm = new PlayerManager("playersDB copy.json", config.ownerAdmin.discordID);
+
+	const pm = new PlayerManager("playersDB copy.json", config.ownerAdmin.discordID); // this one is good
 
 
 	test(pm.exists(`doesn't exist ${Math.random()}`), false, 1);
