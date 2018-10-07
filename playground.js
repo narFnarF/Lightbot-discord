@@ -8,7 +8,7 @@ const config = require("./config.json")
 
 play();
 learning();
-runTests();
+// runTests();
 
 function play(){
 	logger.info("Hello! This is a test.");
@@ -17,7 +17,37 @@ function play(){
 }
 
 function learning() {
+	asyncAwait();
+}
 
+async function asyncAwait(){
+	var a = await doubleAfter2Seconds(3);
+	console.log(a);
+	var b = await doubleAfter2Seconds(4);
+	console.log(b);
+	var c = await doubleAfter2Seconds(a);
+	console.log(c);
+	var d = a + await doubleAfter2Seconds(b) + await doubleAfter2Seconds(c);
+	console.log(d);
+	console.log("result: ", a, b, c, d);
+}
+
+async function doubleAfter2Seconds(x) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(x * 2);
+    }, 2000);
+  });
+}
+
+function delay(duration) {
+	return new Promise(function(resolve, reject) {
+		setTimeout(()=>{
+			// console.log("resolve()");
+			// asdf = 3;
+			resolve();
+		}, duration);
+	});
 }
 
 
