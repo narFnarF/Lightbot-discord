@@ -8,7 +8,7 @@ const config = require("./config.json")
 
 play();
 learning();
-runTests();
+// runTests();
 
 function play(){
 	logger.info("Hello! This is a test.");
@@ -17,8 +17,34 @@ function play(){
 }
 
 function learning() {
-
+	maFonction(5);
 }
+
+function methodeAvecCB(param, callback) {
+	setTimeout(()=>{
+		callback(null, `The param is ${param}.`);
+	}, 1000);
+}
+
+function wrapMethodeDBWithPromise(param) {
+	return new Promise((resolve, reject) => {
+		methodeAvecCB(param, (err, res) => {
+			// console.log("in wrap", err, res, "ok");
+			return err ? reject(err) : resolve(res);
+		});
+	});
+}
+
+async function maFonction(nb) {
+	try {
+		console.log("avant");
+		var res = await wrapMethodeDBWithPromise(5);
+		console.log("après, in maFonction,", res);
+	} catch (e) {
+		console.log(e);
+	}
+}
+
 
 
 function test(left, right, nb) {
