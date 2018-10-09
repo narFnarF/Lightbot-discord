@@ -3,7 +3,10 @@
 // Dependencies
 const fs = require("fs");
 const Player = require('./Player.js');
-const logger = require("./logger.js")
+const logger = require("./logger.js");
+const {promisify} = require('util');
+
+writeFilePromisified = promisify(fs.writeFile);
 
 class PlayerManager {
 	constructor(pathToDB, adminID) {
@@ -57,7 +60,7 @@ class PlayerManager {
 		return content;
 	}
 
-	writeDBFile(callback) {
+	async writeDBFile(callback) {
 		//write the db in file
 		if (!this.currentlyWriting) { // It is unsafe to use fs.writeFile() multiple times on the same file without waiting for the callback. https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 			this.currentlyWriting = true;
@@ -71,11 +74,19 @@ class PlayerManager {
 			}
 
 			// write the json file
+			try {
+				await writeFilePromisified(this.pathToDB, beautifulPlayersDB, 'utf8')
+			} catch (e) {
+
+			}
+
+
+			// write the json file
 			fs.writeFile(this.pathToDB, beautifulPlayersDB, 'utf8', (err)=>{
 				this.currentlyWriting = false;
 				if (err) {
 					logger.warn(`Could not write "${this.pathToDB}" on disk.`);
-					logger.warn(e);
+					logger.warn(err);
 				} else {
 					logger.debug(`Saved the DB to "${this.pathToDB}"`);
 				}
@@ -87,7 +98,7 @@ class PlayerManager {
 				// If there are more requests to save, we do them!
 				if (this.writeQueue.length > 0) {
 					// logger.debug(`writeQueue lenght: ${this.writeQueue.length}`);
-					var nextCallback = this.writeQueue.shift();
+					var nextCallback = this.writeQueue.shift(); // get and remove the first in the queue
 					this.writeDBFile(nextCallback);
 				}
 			});
