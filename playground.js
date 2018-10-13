@@ -8,7 +8,7 @@ const config = require("./config.json")
 
 play();
 learning();
-// runTests();
+runTests();
 
 function play(){
 	logger.info("Hello! This is a test.");
