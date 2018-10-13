@@ -113,17 +113,9 @@ function runTests() {
 	test( pm.isAdmin("214590808727355393"), true, 13);
 
 
-	pm.writeDBFile((err)=>{
-		if (err) {
-			logger.warn(err);
-		}
-	});
+	pm.writeDBFile();
 	logger.debug(`Try to double write. Should display a warning:`)
-	pm.writeDBFile((err)=>{ // This second write is there to test if the writes are queued properly.
-		if (err) {
-			logger.warn(err);
-		}
-	});
-
+	pm.writeDBFile();
+	
 	logger.debug(`All tests completed. Est-ce que y'avait des warnings?`);
 }
