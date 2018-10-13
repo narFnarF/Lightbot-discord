@@ -7,7 +7,7 @@ const config = require("./config.json")
 // const Player = require("./Player.js")
 
 play();
-learning();
+// learning();
 runTests();
 
 function play(){
@@ -116,6 +116,7 @@ function runTests() {
 	pm.writeDBFile();
 	logger.debug(`Try to double write. Should display a warning:`)
 	pm.writeDBFile();
-	
+
 	logger.debug(`All tests completed. Est-ce que y'avait des warnings?`);
+	// pm.exit()
 }
