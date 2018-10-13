@@ -63,6 +63,7 @@ class PlayerManager {
 
 	async writeDBFile() {
 		//write the db in file
+
 		if (!this.currentlyWriting) { // It is unsafe to use fs.writeFile() multiple times on the same file without waiting for the callback. https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 			this.currentlyWriting = true;
 
@@ -77,10 +78,13 @@ class PlayerManager {
 			// write the json file
 			try {
 				await writeFilePromisified(this.pathToDB, beautifulPlayersDB, 'utf8')
+				this.currentlyWriting = false;
 				logger.debug(`Saved the DB to "${this.pathToDB}"`);
 				// If there are more requests to save, we do them!
 				if (this.needToWriteAgain) {
-					writeDBFile();
+					this.needToWriteAgain = false;
+					// logger.debug(`needToWriteAgain`);
+					this.writeDBFile();
 				}
 
 			} catch (e) {
