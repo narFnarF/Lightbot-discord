@@ -68,8 +68,11 @@ function runTests() {
 		test(emptyFile, undefined, 0.3);
 	}
 	new PlayerManager("playersDB doesn't exists.json", "adminid1234") // the file doesn't exists
+
+	logger.debug(`Test without the adminID parameter. There should be a warning:`)
 	new PlayerManager("playersDB copy.json") // missing the adminID
 	try {
+		logger.debug(`Test without the path param. Shoud normally crash but we catch that. Will display an error:`)
 		var emptyPM = new PlayerManager(); //missing the path parameter
 	} catch (err) {
 		// logger.info("All according to plan.")
@@ -115,6 +118,7 @@ function runTests() {
 			logger.warn(err);
 		}
 	});
+	logger.debug(`Try to double write. Should display a warning:`)
 	pm.writeDBFile((err)=>{ // This second write is there to test if the writes are queued properly.
 		if (err) {
 			logger.warn(err);
