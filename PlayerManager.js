@@ -77,6 +77,7 @@ class PlayerManager {
 
 			// write the json file
 			try {
+				// logger.debug(`starting to write...`)
 				await writeFilePromisified(this.pathToDB, beautifulPlayersDB, 'utf8')
 				this.currentlyWriting = false;
 				logger.debug(`Saved the DB to "${this.pathToDB}"`);
@@ -166,7 +167,9 @@ class PlayerManager {
 	}
 
 	async exit() {
+		logger.debug(`request exist`)
 		await this.writeDBFile();
+		logger.debug(`exiting...`)
 	}
 
 	// async writeDBFromContext(context) {
