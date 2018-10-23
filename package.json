@@ -6,7 +6,7 @@
 	"author": "narF",
 	"dependencies": {
 		"app-root-path": "^2.1.0",
-		"discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+		"discord.js-commando": "^0.10.0",
 		"jimp": "^0.2.28",
 		"onecolor": "^3.0.5",
 		"path": "^0.12.7",
