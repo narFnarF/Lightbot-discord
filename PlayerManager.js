@@ -12,7 +12,7 @@ class PlayerManager {
 	constructor(pathToDB, adminID) {
 		if (!pathToDB) {
 			logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
-			throw (`The pathToDB is missing.`);
+			throw (`The pathToDB is missing.`); // TODO: correct syntax is: throw new Error ("bla bla")
 		}
 		if (!adminID) {
 			logger.warn(`The adminID was missing when creating a new PlayerManager at "${pathToDB}"`);
