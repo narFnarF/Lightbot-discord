@@ -167,18 +167,9 @@ class PlayerManager {
 	}
 
 	async exit() {
-		logger.debug(`request exist`)
+		logger.debug(`PlayerManager was asked to exit. Saving the DB to disk...`)
 		await this.writeDBFile();
-		logger.debug(`exiting...`)
+		logger.debug(`The DB is saved. PlayerManager will now exit.`)
 	}
-
-	// async writeDBFromContext(context) {
-	// 	try {
-	// 		return await this.writeDBFile();
-	// 	} catch (err) {
-	// 		logger.warn(`Error when writing the DB in ${context}.`);
-	// 		logger.warn(err);
-	// 	}
-	// }
 }
 module.exports = PlayerManager;
