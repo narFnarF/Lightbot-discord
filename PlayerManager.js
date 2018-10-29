@@ -3,13 +3,16 @@
 // Dependencies
 const fs = require("fs");
 const Player = require('./Player.js');
-const logger = require("./logger.js")
+const logger = require("./logger.js");
+const {promisify} = require('util');
+
+const writeFilePromisified = promisify(fs.writeFile);
 
 class PlayerManager {
 	constructor(pathToDB, adminID) {
 		if (!pathToDB) {
 			logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
-			throw (`The pathToDB is missing.`);
+			throw (`The pathToDB is missing.`); // TODO: correct syntax is: throw new Error ("bla bla")
 		}
 		if (!adminID) {
 			logger.warn(`The adminID was missing when creating a new PlayerManager at "${pathToDB}"`);
@@ -20,6 +23,7 @@ class PlayerManager {
 		this.players = this.readDBFile(pathToDB); // this is done in sync
 		this.currentlyWriting = false;
 		this.writeQueue = [];
+		this.needToWriteAgain = false;
 
 		// this.writeDBFile();
 	}
@@ -57,8 +61,9 @@ class PlayerManager {
 		return content;
 	}
 
-	writeDBFile(callback) {
+	async writeDBFile() {
 		//write the db in file
+
 		if (!this.currentlyWriting) { // It is unsafe to use fs.writeFile() multiple times on the same file without waiting for the callback. https://nodejs.org/api/fs.html#fs_fs_writefile_file_data_options_callback
 			this.currentlyWriting = true;
 
@@ -71,29 +76,26 @@ class PlayerManager {
 			}
 
 			// write the json file
-			fs.writeFile(this.pathToDB, beautifulPlayersDB, 'utf8', (err)=>{
+			try {
+				// logger.debug(`starting to write...`)
+				await writeFilePromisified(this.pathToDB, beautifulPlayersDB, 'utf8')
 				this.currentlyWriting = false;
-				if (err) {
-					logger.warn(`Could not write "${this.pathToDB}" on disk.`);
-					logger.warn(e);
-				} else {
-					logger.debug(`Saved the DB to "${this.pathToDB}"`);
-				}
-
-				if (callback) {
-					callback(err);
-				}
-
+				logger.debug(`Saved the DB to "${this.pathToDB}"`);
 				// If there are more requests to save, we do them!
-				if (this.writeQueue.length > 0) {
-					// logger.debug(`writeQueue lenght: ${this.writeQueue.length}`);
-					var nextCallback = this.writeQueue.shift();
-					this.writeDBFile(nextCallback);
+				if (this.needToWriteAgain) {
+					this.needToWriteAgain = false;
+					// logger.debug(`needToWriteAgain`);
+					this.writeDBFile();
 				}
-			});
+
+			} catch (e) {
+				logger.warn(`Could not write "${this.pathToDB}" on disk.`);
+				logger.warn(e);
+			}
 		} else {
 			logger.warn(`Trying to write to "${this.pathToDB}", but i'm actually already writing! Will try again when it's done.`);
-			this.writeQueue.push(callback);
+			// this.writeQueue.push(callback);
+			this.needToWriteAgain = true;
 		}
 	}
 
@@ -122,7 +124,8 @@ class PlayerManager {
 			if (this.players[userID] instanceof Player) {
 				return this.players[userID];
 			} else {
-				logger.warn(`Found a fake object!`);
+				logger.warn(`Found a fake object! (It's not actually a member of class Player):`);
+				logger.warn(this.players[userID]);
 				return undefined;
 			}
 			// logger.info(`Found it. Is it a member of Player? ${this.players[userID] instanceof Player}`)
@@ -148,31 +151,25 @@ class PlayerManager {
 		return res;
 	}
 
-	levelUpPlayer(id) {
+	async levelUpPlayer(id) {
 		this.getPlayer(id).increaseLevel(); // do the level up
-		this.writeDBFile((err)=>{ // then save the DB
-			if (err) { logger.warn(`Error when writing the DB in levelUpPlayer.`); }
-		});
+		await this.writeDBFile();
 	}
 
-	relight(id) {
+	async relight(id) {
 		this.getPlayer(id).increaseRelightCount();
-		this.writeDBFile((err)=>{ // then save the DB
-			if (err) { logger.warn(`Error when writing the DB in PlayerManager's relight().`); }
-		});
+		await this.writeDBFile();
 	}
 
-	updateLastPlayed(id) {
+	async updateLastPlayed(id) {
 		this.getPlayer(id).updateLastPlayed();
-		this.writeDBFile((err)=>{ // then save the DB
-			if (err) { logger.warn(`Error when writing the DB in PlayerManager's updateLastPlayed().`); }
-		});
+		await this.writeDBFile();
 	}
 
-	exit() {
-		this.writeDBFile((err)=>{
-			if (err) { logger.warn(`Error when writing the DB in exit.`); }
-		});
+	async exit() {
+		logger.debug(`PlayerManager was asked to exit. Saving the DB to disk...`)
+		await this.writeDBFile();
+		logger.debug(`The DB is saved. PlayerManager will now exit.`)
 	}
 }
 module.exports = PlayerManager;

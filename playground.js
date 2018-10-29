@@ -7,7 +7,7 @@ const config = require("./config.json")
 // const Player = require("./Player.js")
 
 play();
-learning();
+// learning();
 runTests();
 
 function play(){
@@ -17,38 +17,34 @@ function play(){
 }
 
 function learning() {
-	asyncAwait();
+	maFonction(5);
 }
 
-async function asyncAwait(){
-	var a = await doubleAfter2Seconds(3);
-	console.log(a);
-	var b = await doubleAfter2Seconds(4);
-	console.log(b);
-	var c = await doubleAfter2Seconds(a);
-	console.log(c);
-	var d = a + await doubleAfter2Seconds(b) + await doubleAfter2Seconds(c);
-	console.log(d);
-	console.log("result: ", a, b, c, d);
+function methodeAvecCB(param, callback) {
+	setTimeout(()=>{
+		callback(null, `The param is ${param}.`);
+	}, 1000);
 }
 
-async function doubleAfter2Seconds(x) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(x * 2);
-    }, 2000);
-  });
-}
-
-function delay(duration) {
-	return new Promise(function(resolve, reject) {
-		setTimeout(()=>{
-			// console.log("resolve()");
-			// asdf = 3;
-			resolve();
-		}, duration);
+function wrapMethodeDBWithPromise(param) {
+	return new Promise((resolve, reject) => {
+		methodeAvecCB(param, (err, res) => {
+			// console.log("in wrap", err, res, "ok");
+			return err ? reject(err) : resolve(res);
+		});
 	});
 }
+
+async function maFonction(nb) {
+	try {
+		console.log("avant");
+		var res = await wrapMethodeDBWithPromise(5);
+		console.log("après, in maFonction,", res);
+	} catch (e) {
+		console.log(e);
+	}
+}
+
 
 
 function test(left, right, nb) {
@@ -117,17 +113,10 @@ function runTests() {
 	test( pm.isAdmin("214590808727355393"), true, 13);
 
 
-	pm.writeDBFile((err)=>{
-		if (err) {
-			logger.warn(err);
-		}
-	});
+	pm.writeDBFile();
 	logger.debug(`Try to double write. Should display a warning:`)
-	pm.writeDBFile((err)=>{ // This second write is there to test if the writes are queued properly.
-		if (err) {
-			logger.warn(err);
-		}
-	});
+	pm.writeDBFile();
 
 	logger.debug(`All tests completed. Est-ce que y'avait des warnings?`);
+	// pm.exit()
 }
