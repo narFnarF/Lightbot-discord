@@ -4,7 +4,7 @@ A small game rewarding patience.
 
 *Take a deep breath and look into the lights.*
 
-*Lightbot* is a **Discord bot** that generate images for you. Like a desk plant, your image is persistant and evolves over time.
+*Lightbot* is a **Discord bot** that generate images for you. Like a desk plant, your image is persistent and evolves over time.
 
 ### Play
 You can join the Discord server to play with the bot here: https://discord.gg/ysDXzdu
