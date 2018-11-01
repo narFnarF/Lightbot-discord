@@ -118,21 +118,21 @@ bot.on('message', function (username, userID, channelID, message, event) {
 		args = args.splice(1); //removes the first parameter from the list of parameters
 
 		switch(cmd) {
-			case 'ping':
-				bot.sendMessage({
-					to: channelID,
-					message: 'Pong!'
-				});
-				logger.info('Ping pong with '+username+'!');
-			break;
-
-			case 'prout':
-				bot.sendMessage({
-					to: channelID,
-					message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
-				});
-				logger.info(username+' a pété! 💩 ');
-			break;
+			// case 'ping':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: 'Pong!'
+			// 	});
+			// 	logger.info('Ping pong with '+username+'!');
+			// break;
+			//
+			// case 'prout':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: 'Attention tout le monde! <@'+userID+'> a pété! Ça va sentir! 💩 '
+			// 	});
+			// 	logger.info(username+' a pété! 💩 ');
+			// break;
 
 			case 'rename':
 				var name = args.join(" ");
@@ -171,13 +171,13 @@ bot.on('message', function (username, userID, channelID, message, event) {
 				logger.info("Admin help requested by "+username);
 			break;
 
-			case 'link':
-				logger.info(username+" requested link.");
-				bot.sendMessage({
-					to: channelID,
-					message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
-				});
-			break;
+			// case 'link':
+			// 	logger.info(username+" requested link.");
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: "<@"+userID+"> You can play the original Light Game here: https://narf.itch.io/light-game "
+			// 	});
+			// break;
 
 			case 'light':
 				lightCommand(userID, channelID, username);
@@ -205,22 +205,22 @@ bot.on('message', function (username, userID, channelID, message, event) {
 				askLevel(userID, username, channelID);
 			break;
 
-			case 'invite':
-				bot.sendMessage({
-					to: channelID,
-					message: `<@${userID}> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \nhttps://discordapp.com/api/oauth2/authorize?client_id=411618329673990157&permissions=52224&scope=bot`
-				});
-				logger.info(username+" requested the invite link.");
-			break;
+			// case 'invite':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: `<@${userID}> Here's the link to invite Light Bot to your own server. The bot keeps your progression saved between Discord servers. If you're not the server's admin, you can't invite the bot. In that case, you should give the link to the server owner so that they can invite it. \nhttps://discordapp.com/api/oauth2/authorize?client_id=411618329673990157&permissions=52224&scope=bot`
+			// 	});
+			// 	logger.info(username+" requested the invite link.");
+			// break;
 
-			case 'join':
-			case 'discord':
-				bot.sendMessage({
-					to: channelID,
-					message: `<@${userID}> Here's the link to join the discord community server around Light Bot. That's a good place to ask question and get support. \nhttps://discord.gg/ysDXzdu`
-				});
-				logger.info(username+" requested the link to the community discord.");
-			break;
+			// case 'join':
+			// case 'discord':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: `<@${userID}> Here's the link to join the discord community server around Light Bot. That's a good place to ask question and get support. \nhttps://discord.gg/ysDXzdu`
+			// 	});
+			// 	logger.info(username+" requested the link to the community discord.");
+			// break;
 		}
 	}
 });

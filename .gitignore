@@ -82,3 +82,4 @@ logs/
 previous light.png
 LightPicture/output/
 config.json
+settings.sqlite3
