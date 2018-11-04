@@ -3,11 +3,9 @@
 // Dependencies
 var Discord = require('discord.io');
 var fs = require('fs'); // to write files
-var appRoot = require('app-root-path')
-var pathModule = require('path')
 var logger = require('./logger.js');
 var LightPicture = require("./LightPicture/LightPicture.js");
-const PlayerManager = require("./PlayerManager.js");
+const pm = require("./PlayerManager.js");
 
 // Config files
 var auth = require('./auth.json');
@@ -19,9 +17,6 @@ const endLevel = 20 // Careful changing this: it'll probably break the color tin
 
 // Instance variables
 var bot // the discord bot itself
-const playersDBPath = pathModule.join(`${appRoot}`, config.playersDBPath);
-// var playersDB // the playersDB
-var pm = new PlayerManager("./playersDB copy.json", config.ownerAdmin.discordID);
 
 var intentToExit // If true, the app will exit on disconnections. Otherwise, it will try to reconnect.
 

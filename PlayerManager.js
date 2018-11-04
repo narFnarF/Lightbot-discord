@@ -5,6 +5,9 @@ const fs = require("fs");
 const Player = require('./Player.js');
 const logger = require("./logger.js");
 const {promisify} = require('util');
+const config = require("./config.json");
+const appRoot = require('app-root-path')
+const pathModule = require('path')
 
 const writeFilePromisified = promisify(fs.writeFile);
 
@@ -100,10 +103,15 @@ class PlayerManager {
 	}
 
 	createPlayer(userID, name) {
-		var player = new Player(userID, name);
-		this.players[userID] = player;
-		// console.log(player);
-		return player;
+		if (this.exists(userID)) { // If it already exists
+			logger.warn(`Trying to create a player that already exists: ${name} (${userID})`)
+			return this.players[userID];
+		} else {
+			var player = new Player(userID, name);
+			this.players[userID] = player;
+			// console.log(player);
+			return player;
+		}
 	}
 
 	exists(userID) {
@@ -181,4 +189,7 @@ class PlayerManager {
 	// 	}
 	// }
 }
-module.exports = PlayerManager;
+
+const playersDBPath = pathModule.join(`${appRoot}`, config.playersDBPath);
+const pm = new PlayerManager(playersDBPath, config.ownerAdmin.discordID);
+module.exports = pm;
