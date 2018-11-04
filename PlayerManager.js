@@ -6,7 +6,7 @@ const Player = require('./Player.js');
 const logger = require("./logger.js");
 const {promisify} = require('util');
 const config = require("./config.json");
-const appRoot = require('app-root-path')
+const appRoot = require('app-root-path').toString()
 const pathModule = require('path')
 
 const writeFilePromisified = promisify(fs.writeFile);
@@ -181,6 +181,6 @@ class PlayerManager {
 	}
 }
 
-const playersDBPath = pathModule.join(`${appRoot}`, config.playersDBPath);
+const playersDBPath = pathModule.join(appRoot, config.playersDBPath);
 const pm = new PlayerManager(playersDBPath, config.ownerAdmin.discordID);
 module.exports = pm;
