@@ -15,7 +15,7 @@ class PlayerManager {
 	constructor(pathToDB, adminID) {
 		if (!pathToDB) {
 			logger.error(`The pathToDB was missing (set to ${pathToDB}). That's bad!`)
-			throw (`The pathToDB is missing.`);
+			throw (`The pathToDB is missing.`); // TODO: correct syntax is: throw new Error ("bla bla")
 		}
 		if (!adminID) {
 			logger.warn(`The adminID was missing when creating a new PlayerManager at "${pathToDB}"`);
@@ -175,19 +175,10 @@ class PlayerManager {
 	}
 
 	async exit() {
-		logger.debug(`request exist`)
+		logger.debug(`PlayerManager was asked to exit. Saving the DB to disk...`)
 		await this.writeDBFile();
-		logger.debug(`exiting...`)
+		logger.debug(`The DB is saved. PlayerManager will now exit.`)
 	}
-
-	// async writeDBFromContext(context) {
-	// 	try {
-	// 		return await this.writeDBFile();
-	// 	} catch (err) {
-	// 		logger.warn(`Error when writing the DB in ${context}.`);
-	// 		logger.warn(err);
-	// 	}
-	// }
 }
 
 const playersDBPath = pathModule.join(`${appRoot}`, config.playersDBPath);
