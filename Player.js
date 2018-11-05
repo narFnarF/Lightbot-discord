@@ -1,10 +1,16 @@
 "use strict";
 const logger = require("./logger.js");
 
-// Dependencies
+// Class variables
+var _endLevel;
 
 class Player {
    constructor(obj) {
+      /*
+      2 ways:
+      1) userID, username
+      2) an object {name, level, lastPlayed}
+      */
       // logger.debug(`argument.length: ${arguments.length}`)
 
       if (arguments.length == 2) { // must create an actual new Player
@@ -26,6 +32,19 @@ class Player {
       // logger.debug(`Created a new Player:`);
       // console.log(this);
    }
+
+   static get endLevel() {
+      if (_endLevel == undefined) {
+         throw new Error(`Player.endLevel is undefined. Set it like this: Player.endLevel = 20.`);
+      } else {
+         return _endLevel;
+      }
+   }
+   static set endLevel(lv) {_endLevel = lv;}
+   get endLevel() {return Player.endLevel;}
+   set endLevel(lv) {throw new Error("Can't set endLevel in an instance of Player.");}
+
+   setEndLevelForAllPlayers(lv) {Player.endLevel = lv; }
 
    increaseLevel() {
       this.level++;
@@ -50,5 +69,13 @@ class Player {
       this.lastPlayed = Date.now();
    }
 
+   get displayLevel() {
+      if (this.relight) {
+         return this.level + (this.relight * Player.endLevel);
+      } else {
+         return this.level;
+      }
+
+   }
 }
 module.exports = Player;

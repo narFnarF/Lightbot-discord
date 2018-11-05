@@ -381,15 +381,13 @@ function renameBot(userID, channelID, newName) {
 // 	});
 // }
 
-function displayLevel(user) { // TODO : Move this inside Player.js... but would require Player to know about endLevel
+function displayLevel(player) {
 	// params:
-	// user: Player
+	// player: Player
+	// returns the displayLevel of the player
 
-	if (user.relight) {
-		return user.level+(user.relight*endLevel);
-	} else {
-		return user.level;
-	}
+	player.setEndLevelForAllPlayers = endLevel;
+	return player.displayLevel;
 }
 
 function announceResult(userID, channelID, won){
