@@ -29,6 +29,9 @@ class PlayerManager {
 		this.needToWriteAgain = false;
 
 		// this.writeDBFile();
+
+		this.endLevel = 20 // Careful changing this: it'll probably break the color tint. The tint formula would need to be adjusted.
+		Player.endLevel = this.endLevel;
 	}
 
 	// get pathToDB() {

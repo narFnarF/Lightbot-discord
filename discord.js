@@ -8,11 +8,7 @@ const path = require('path');
 const sqlite = require('sqlite');
 const oneLine = require('common-tags').oneLine;
 
-play();
 
-function play(){
-
-}
 
 
 

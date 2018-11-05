@@ -1,6 +1,8 @@
+const appRoot = require('app-root-path').toString();
+const path = require('path')
 const commando = require('discord.js-commando');
-// const stripIndents = require('common-tags').stripIndents;
-// const oneLine = require('common-tags').oneLine;
+const pm = require(path.join(appRoot, 'PlayerManager.js'));
+const logger = require(path.join(appRoot, 'logger.js'));
 
 module.exports = class CommandAskLevel extends commando.Command {
 	constructor(client) {
@@ -18,6 +20,31 @@ module.exports = class CommandAskLevel extends commando.Command {
 	async run(msg, args) {
 		// logger.info(username+" requested the link to Light Game.");
 
-		return msg.reply(`You can play the original Light Game here: https://narf.itch.io/light-game `);
+
+		var returnedPromise;
+		const userID = msg.author.id;
+
+		if (pm.exists(userID)) {
+			const player = pm.getPlayer(userID);
+
+			if (player.relight) { //player has relit at least once
+				var plural = player.relight > 1;
+
+				returnedPromise = msg.reply(`You are level \`${player.displayLevel}\` and have relit \`${player.relight}\` ${plural?"times":"time"}.`);
+
+				logger.info(`${msg.author.username} asked for their level: ${player.level}, relight: ${player.relight} (displayLevel: ${player.displayLevel}).`);
+
+
+			} else { // player has never relit
+				returnedPromise = msg.reply(`You are level \`${player.level}\``);
+				logger.info(`${msg.author.username} asked for their level: ${player.level}`);
+			}
+
+
+		} else { //player doesn't exist in the DB
+			logger.info(`${msg.author.username} (${msg.author.id}) asked for their level but they never played before.`);
+			returnedPromise = msg.reply(`It seems you never played with me before, so you're level **1**. You can type \`!light\` to play.`)
+		}
+		return returnedPromise;
 	}
 };
