@@ -57,8 +57,9 @@ module.exports = class CommandLight extends commando.Command {
 
 
 		} else {
-			logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.")
-			bot.sendMessage({to: channelID, message: `<@${userID}> Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again.`})
+			logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.");
+			replyPromise = msg.reply(`Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again.`);
+
 		}
 
 
