@@ -6,7 +6,7 @@ module.exports = class CommandJoinLightbot extends commando.Command {
 	constructor(client) {
 		super(client, {
 			name: 'join-lightbot',
-			aliases: ['join', 'join-light', 'discord'],
+			aliases: ['join', 'join-light', 'discord', 'join-discord'],
 			group: 'light',
 			memberName: 'join-lightbot',
 			description: "To get an invite to Lightbot's discord community server and get support.",
