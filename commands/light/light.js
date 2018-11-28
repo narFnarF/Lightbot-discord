@@ -49,15 +49,14 @@ module.exports = class CommandLight extends commando.Command {
 				if (err) {
 					logger.warn(err);
 				} else {
-					logger.debug(`Created a picture: ${myFile}`);
-					// sendImage(userID, channelID, res.path, res.won);
-					replyPromise = await sendImage(msg.author, msg.channel, res.path);
-					// deleteMsg(firstReply);
-					// logger.debug(`replyPromise: ${replyPromise}`);
+					logger.debug(`Created a picture: ${res.path}`);
+					replyPromise = await sendImage(userID, msg.channel, res.path);
 					fs.rename(res.path, "previous light.png", (err)=>{
 						// logger.debug(`rename`);
-						if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
+						if ( err ) logger.warn(`Could not rename the screenshot ${res.path}: ${err}`);
 					});
+					pm.updateLastPlayed(userID);
+					announceResult(userID, msg.channel, res.won);
 				}
 			});
 
@@ -79,16 +78,14 @@ module.exports = class CommandLight extends commando.Command {
 async function sendImage(author, channel, path) {
 	var retProm;
 	try {
-		retProm = await channel.send(`${author} My message with the attachment.`, { files: [{attachment: path /*, name: 'file.jpg'*/}] });
+		retProm = await channel.send(`${author} Here's your lightshow!`, { files: [{attachment: path /*, name: 'file.jpg'*/}] });
+		logger.debug(`File sent.`);
+		return retProm;
 	} catch (err) {
 		logger.error(err);
+		// TODO: Reply to user: I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?
+		return Promise.reject(err); // This is probably not the right syntax at all.
 	}
-	logger.debug(`File sent.`);
-	return retProm;
-}
-
-function deleteImage() {
-
 }
 
 function sendImageOLD(userID, channelID, filepath, won) {
@@ -115,7 +112,7 @@ function sendImageOLD(userID, channelID, filepath, won) {
 					logger.warn(err);
 
 					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
-						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
+						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`) //TODO: Add if (err) because this currently runs all the time.
 					});
 				}
 			}
@@ -131,4 +128,31 @@ function sendImageOLD(userID, channelID, filepath, won) {
 			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
 		});
 	}
+}
+
+function announceResult(userID, channelID, won){
+	var msg;
+	var win = (won || fakeWin); // if fakeWin is activated, this is always true
+
+	var p = pm.getPlayer(userID);
+	msg = `You are level ${displayLevel(p)}.`;
+	if (win) {
+		pm.levelUpPlayer(userID);
+		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
+	}
+	if (p.level < endLevel){
+		msg += " I wonder what your next image will look like...";
+	}
+
+	if (!win && p.level >=4 && p.level < endLevel) {
+		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
+	}
+
+	if (p.level >= endLevel) {
+		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+		logger.info(`${p.name} is ready!`);
+	}
+
+	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
+	logger.info(`Sent lightshow to ${p.name} (level ${p.level}, won: ${win}).`);
 }
