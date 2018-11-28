@@ -3,6 +3,8 @@ const path = require('path');
 const appRoot = require('app-root-path').toString();
 const pm = require(path.join(appRoot, 'PlayerManager.js'));
 const logger = require(path.join(appRoot, 'logger.js'));
+const LightPicture = require(path.join(appRoot, 'LightPicture', 'LightPicture.js'));
+const fs = require('fs');
 // const stripIndents = require('common-tags').stripIndents;
 // const oneLine = require('common-tags').oneLine;
 
@@ -21,7 +23,7 @@ module.exports = class CommandLight extends commando.Command {
 
 	async run(msg, args) {
 		var replyPromise;
-		var userID = msg.authos.id;
+		var userID = msg.author.id;
 		var username = msg.author.username;
 		var pl = pm.getOrCreatePlayer(userID, username);
 
@@ -40,16 +42,22 @@ module.exports = class CommandLight extends commando.Command {
 
 			// pm.writeDBFile();
 
-			var myFile = `light ${username} ${userID} ${Date.now()}.png`
-			var size = pl.level + 1
+			var myFile = `light ${username} ${userID} ${Date.now()}.png`;
+			var size = pl.level + 1;
 
-			var pic = new LightPicture(size, myFile, (err, res)=>{
+			var pic = new LightPicture(size, myFile, async (err, res)=>{ // TODO: Promisify this?
 				if (err) {
 					logger.warn(err);
 				} else {
-					// logger.info(`Created a picture: ${myFile}`);
-					sendImage(userID, channelID, res.path, res.won);
-					deleteMsg(firstReply);
+					logger.debug(`Created a picture: ${myFile}`);
+					// sendImage(userID, channelID, res.path, res.won);
+					replyPromise = await sendImage(msg.author, msg.channel, res.path);
+					// deleteMsg(firstReply);
+					// logger.debug(`replyPromise: ${replyPromise}`);
+					fs.rename(res.path, "previous light.png", (err)=>{
+						// logger.debug(`rename`);
+						if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
+					});
 				}
 			});
 
@@ -63,14 +71,64 @@ module.exports = class CommandLight extends commando.Command {
 		}
 
 
-		replyPromise = msg.reply(`blabla `)
+		// replyPromise = msg.reply(`blabla `)
 		return replyPromise;
 	}
 };
 
+async function sendImage(author, channel, path) {
+	var retProm;
+	try {
+		retProm = await channel.send(`${author} My message with the attachment.`, { files: [{attachment: path /*, name: 'file.jpg'*/}] });
+	} catch (err) {
+		logger.error(err);
+	}
+	logger.debug(`File sent.`);
+	return retProm;
+}
 
-function lightCommand(userID, channelID, username) {
+function deleteImage() {
 
+}
 
+function sendImageOLD(userID, channelID, filepath, won) {
+	// logger.info("sendImage")
+	if (fs.existsSync(filepath)) { //if the file exists on disk
+		bot.uploadFile(
+			{
+				to: channelID,
+				file: filepath,
+				message: "<@"+userID+"> Here's your lightshow!"
+			}, (err, res) => {
+				// Rename the picture file.
+				fs.rename(filepath, "previous light.png", (err)=>{
+					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
+				});
 
+				if (!err){
+					// Update the time last played now that the player actually received its picture.
+					pm.updateLastPlayed(userID);
+					announceResult(userID, channelID, won);
+
+				} else {
+					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`);
+					logger.warn(err);
+
+					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
+						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
+					});
+				}
+			}
+		);
+	}else{
+		logger.error("The screenshot isn't there?!");
+		bot.sendMessage({
+			to: channelID,
+			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
+		});
+		bot.sendMessage({
+			to: pm.adminID,
+			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
+		});
+	}
 }
