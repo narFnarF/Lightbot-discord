@@ -35,7 +35,7 @@ class Player {
 
    static get endLevel() {
       if (_endLevel == undefined) {
-         throw new Error(`Player.endLevel is undefined. Set it like this: Player.endLevel = 20.`);
+         throw new Error(`Player.endLevel is undefined. Set it for the class like this: Player.endLevel = 20.`);
       } else {
          return _endLevel;
       }
