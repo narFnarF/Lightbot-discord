@@ -26,8 +26,9 @@ module.exports = class CommandLight extends commando.Command {
 		var userID = msg.author.id;
 		var username = msg.author.username;
 		var pl = pm.getOrCreatePlayer(userID, username);
+		const noWaitingCheat = false; // If true, you don't have to wait 5 minutes.
 
-		if (pl.allowedToPlay() /*|| testingMode*/) {
+		if (pl.allowedToPlay() || noWaitingCheat) {
 			logger.info(`Player ${username} wants light.`);
 
 			try {
@@ -50,13 +51,13 @@ module.exports = class CommandLight extends commando.Command {
 					logger.warn(err);
 				} else {
 					logger.debug(`Created a picture: ${res.path}`);
-					replyPromise = await sendImage(userID, msg.channel, res.path);
+					replyPromise = await sendImage(msg.author, msg.channel, res.path);
 					fs.rename(res.path, "previous light.png", (err)=>{
 						// logger.debug(`rename`);
 						if ( err ) logger.warn(`Could not rename the screenshot ${res.path}: ${err}`);
 					});
 					pm.updateLastPlayed(userID);
-					announceResult(userID, msg.channel, res.won);
+					await announceResult(msg.author, msg.channel, res.won);
 				}
 			});
 
@@ -130,9 +131,9 @@ function sendImageOLD(userID, channelID, filepath, won) {
 	}
 }
 
-function announceResult(userID, channelID, won){
+async function announceResult(author, channel, win){
 	var msg;
-	var win = (won || fakeWin); // if fakeWin is activated, this is always true
+	var userID = author.id;
 
 	var pl = pm.getPlayer(userID);
 	msg = `You are level ${pl.displayLevel}.`;
@@ -140,19 +141,21 @@ function announceResult(userID, channelID, won){
 		pm.levelUpPlayer(userID);
 		msg += `\n🎇 Enlighted! You've reached **level ${pl.displayLevel}**. 🎇`;
 	}
-	if (pl.level < endLevel){
+	if (pl.level < pl.endLevel){
 		msg += " I wonder what your next image will look like...";
 	}
 
-	if (!win && pl.level >=4 && pl.level < endLevel) {
+	if (!win && pl.level >=4 && pl.level < pl.endLevel) {
 		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
-	if (pl.level >= endLevel) {
+	if (pl.level >= pl.endLevel) {
 		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
 		logger.info(`${pl.name} is ready!`);
 	}
 
-	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
+	await channel.send(`${author} ${msg}`);
+	// bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
+
 	logger.info(`Sent lightshow to ${pl.name} (level ${pl.level}, won: ${win}).`);
 }
