@@ -134,25 +134,25 @@ function announceResult(userID, channelID, won){
 	var msg;
 	var win = (won || fakeWin); // if fakeWin is activated, this is always true
 
-	var p = pm.getPlayer(userID);
-	msg = `You are level ${displayLevel(p)}.`;
+	var pl = pm.getPlayer(userID);
+	msg = `You are level ${pl.displayLevel}.`;
 	if (win) {
 		pm.levelUpPlayer(userID);
-		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
+		msg += `\n🎇 Enlighted! You've reached **level ${pl.displayLevel}**. 🎇`;
 	}
-	if (p.level < endLevel){
+	if (pl.level < endLevel){
 		msg += " I wonder what your next image will look like...";
 	}
 
-	if (!win && p.level >=4 && p.level < endLevel) {
+	if (!win && pl.level >=4 && pl.level < endLevel) {
 		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
 	}
 
-	if (p.level >= endLevel) {
+	if (pl.level >= endLevel) {
 		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
-		logger.info(`${p.name} is ready!`);
+		logger.info(`${pl.name} is ready!`);
 	}
 
 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
-	logger.info(`Sent lightshow to ${p.name} (level ${p.level}, won: ${win}).`);
+	logger.info(`Sent lightshow to ${pl.name} (level ${pl.level}, won: ${win}).`);
 }
