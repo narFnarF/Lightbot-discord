@@ -16,7 +16,7 @@ module.exports = class CommandLight extends commando.Command {
 			group: 'light',
 			memberName: 'light',
 			description: "The main command. Receive your personalized image that evolves over time.",
-			details: `Hello! I'm **Light Bot**. Request an image by typing \`!light\` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type \`!helpmore\` for additional details. Embrace \`!light\` in your days and reach enlightenment!`,
+			details: `Hello! I'm **Light Bot**. Request an image by typing \`!light\` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type \`!helpmore\` for additional details. Embrace \`!light\` in your days and reach enlightenment!`, // TODO: add !helpmore command or remove this sentence.
 			// examples: ['join-lightbot']
 		});
 	}
@@ -38,11 +38,7 @@ module.exports = class CommandLight extends commando.Command {
 				logger.warn(err);
 			}
 
-			// pl.updateLastPlayed();
-
-
-			// pm.writeDBFile();
-
+			
 			var myFile = `light ${username} ${userID} ${Date.now()}.png`;
 			var size = pl.level + 1;
 
@@ -51,27 +47,33 @@ module.exports = class CommandLight extends commando.Command {
 					logger.warn(err);
 				} else {
 					logger.debug(`Created a picture: ${res.path}`);
-					replyPromise = await sendImage(msg.author, msg.channel, res.path);
+
+					var errorHappened = false;
+					try {
+						replyPromise = await sendImage(msg.author, msg.channel, res.path);
+					} catch (err) {
+						errorHappened = true;
+					}
+
 					fs.rename(res.path, "previous light.png", (err)=>{
 						// logger.debug(`rename`);
 						if ( err ) logger.warn(`Could not rename the screenshot ${res.path}: ${err}`);
 					});
-					pm.updateLastPlayed(userID);
-					await announceResult(msg.author, msg.channel, res.won);
+
+					if (!errorHappened) {
+						pm.updateLastPlayed(userID);
+						await announceResult(msg.author, msg.channel, res.won); // The level up and save happens here.
+					} else {
+						logger.error(`There was an error, so i'll skip the leveling up and saving.`);
+					}
 				}
 			});
-
-
-
 
 		} else {
 			logger.info("Player "+username+" "+userID+" is not allowed to play at the moment.");
 			replyPromise = msg.reply(`Life is too short to be in a state of rush. Your image evolves only every **5 minutes**. Close your eyes, take a deep breath, then try again.`);
 
 		}
-
-
-		// replyPromise = msg.reply(`blabla `)
 		return replyPromise;
 	}
 };
@@ -83,51 +85,9 @@ async function sendImage(author, channel, path) {
 		logger.debug(`File sent.`);
 		return retProm;
 	} catch (err) {
-		logger.error(err);
-		// TODO: Reply to user: I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?
-		return Promise.reject(err); // This is probably not the right syntax at all.
-	}
-}
-
-function sendImageOLD(userID, channelID, filepath, won) {
-	// logger.info("sendImage")
-	if (fs.existsSync(filepath)) { //if the file exists on disk
-		bot.uploadFile(
-			{
-				to: channelID,
-				file: filepath,
-				message: "<@"+userID+"> Here's your lightshow!"
-			}, (err, res) => {
-				// Rename the picture file.
-				fs.rename(filepath, "previous light.png", (err)=>{
-					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
-				});
-
-				if (!err){
-					// Update the time last played now that the player actually received its picture.
-					pm.updateLastPlayed(userID);
-					announceResult(userID, channelID, won);
-
-				} else {
-					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`);
-					logger.warn(err);
-
-					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
-						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`) //TODO: Add if (err) because this currently runs all the time.
-					});
-				}
-			}
-		);
-	}else{
-		logger.error("The screenshot isn't there?!");
-		bot.sendMessage({
-			to: channelID,
-			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
-		});
-		bot.sendMessage({
-			to: pm.adminID,
-			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
-		});
+		logger.error(`Error while sending the attached picture to ${author.username}.`);
+		channel.send(`${author} Oups! I could not send you your picture. I'm not sure why. This could be a permission issue in this group or a problem with Discord's servers themselves. Maybe try again in a few minutes?`)
+		throw new Error(`Error while sending the attached picture.`);
 	}
 }
 
