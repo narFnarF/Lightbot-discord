@@ -33,12 +33,12 @@ module.exports = class CommandLight extends commando.Command {
 
 			try {
 				var firstReply = await msg.reply(`Enlightenment is coming (in about 5 seconds)`);
+				firstReply.delete(5000);
 			} catch (err) {
 				logger.warn(`Error while sending the "Enlightenment is coming" message to ${username} (${userID}).`);
 				logger.warn(err);
 			}
 
-			
 			var myFile = `light ${username} ${userID} ${Date.now()}.png`;
 			var size = pl.level + 1;
 
