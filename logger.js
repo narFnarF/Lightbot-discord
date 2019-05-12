@@ -4,6 +4,12 @@ var appRoot = require('app-root-path')
 const winston = require('winston')
 const config = require('./config.json')
 const { format, createLogger, transports } = winston
+const fs = require('fs')
+
+// If the logs folder doesn't exist, create it.
+if (!fs.existsSync(`${appRoot}/logs/`)) {
+    fs.mkdirSync(`${appRoot}/logs/`);
+}
 
 // define the custom settings for each transport (file, console)
 const options = {
