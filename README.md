@@ -24,8 +24,8 @@ You can install Lightbot on your own server, computer or Raspberry Pi. It is rec
 * Get the repo (TODO: write how!)
 * npm install (On a Raspberry Pi, this can take 20-30 minutes and sometime look stuck for long durations. Leave it running until it's done.)
 * Setup your auth key
-* * rename auth_example.json to auth.json
-* * Get your bot authorization key from Discord and copy it at the appropriate place in auth.json
+  * rename auth_example.json to auth.json
+  * Get your bot authorization key from Discord and copy it at the appropriate place in auth.json
 * Setup your config
-* * Rename config_example.json to config.json
-* * Edit config.json
+  * Rename config_example.json to config.json
+  * Edit config.json
