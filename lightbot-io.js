@@ -158,13 +158,13 @@ bot.on('message', function (username, userID, channelID, message, event) {
 				logger.info(`More help requested by ${username}`);
 			break;
 
-			case 'helpadmin':
-				bot.sendMessage({
-					to: channelID,
-					message: "<@"+userID+"> Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
-				});
-				logger.info("Admin help requested by "+username);
-			break;
+			// case 'helpadmin':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: "<@"+userID+"> Admin commands are: `!log`, `!rename <new name>`, `!ping`, `!prout`."
+			// 	});
+			// 	logger.info("Admin help requested by "+username);
+			// break;
 
 			// case 'link':
 			// 	logger.info(username+" requested link.");

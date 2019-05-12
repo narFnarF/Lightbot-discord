@@ -29,6 +29,7 @@ client.registry
       ['learning', "Learning (Example commands to learn from which won't be in the final bot)"]
    ])
    .registerGroup('light', 'Light')
+   .registerGroup("light-admin", "light-admin (commands for the admin to use)")
 
    // Registers all built-in groups, commands, and argument types
    .registerDefaults()
