@@ -1,6 +1,7 @@
 const commando = require('discord.js-commando');
 // const stripIndents = require('common-tags').stripIndents;
 // const oneLine = require('common-tags').oneLine;
+const logger = require("../../logger.js");
 
 module.exports = class CommandLinkOriginal extends commando.Command {
 	constructor(client) {
@@ -16,7 +17,7 @@ module.exports = class CommandLinkOriginal extends commando.Command {
 	}
 
 	async run(msg, args) {
-		// logger.info(username+" requested the link to Light Game.");
+		logger.info(`${msg.author.username} requested the link to Light Game (in server "${msg.guild.name}").`);
 
 		return msg.reply(`You can play the original Light Game here: https://narf.itch.io/light-game `);
 	}

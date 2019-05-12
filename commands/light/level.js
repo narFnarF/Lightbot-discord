@@ -1,8 +1,8 @@
-const appRoot = require('app-root-path').toString();
-const path = require('path')
+// const appRoot = require('app-root-path').toString();
+// const path = require('path')
 const commando = require('discord.js-commando');
-const pm = require(path.join(appRoot, 'PlayerManager.js'));
-const logger = require(path.join(appRoot, 'logger.js'));
+const pm = require("../../PlayerManager.js");
+const logger = require("../../logger.js");
 
 module.exports = class CommandAskLevel extends commando.Command {
 	constructor(client) {
@@ -18,9 +18,6 @@ module.exports = class CommandAskLevel extends commando.Command {
 	}
 
 	async run(msg, args) {
-		// logger.info(username+" requested the link to Light Game.");
-
-
 		var returnedPromise;
 		const userID = msg.author.id;
 
