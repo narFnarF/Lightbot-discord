@@ -12,6 +12,7 @@ module.exports = class CommandHi extends commando.Command {
 			memberName: 'hi',
 			description: "See welcome message. Let Lightbot introduce itself.",
 			details: `Let Lightbot introduce itself.`,
+			// unknown: true, //requires commando 0.11 which is not on npm yet
 			// examples: ['join-lightbot']
 		});
 	}
