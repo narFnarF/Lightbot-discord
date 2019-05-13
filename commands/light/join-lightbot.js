@@ -17,7 +17,7 @@ module.exports = class CommandJoinLightbot extends commando.Command {
 	}
 
 	async run(msg, args) {
-		logger.info(`${msg.author.username} requested the link to the community discord (from server "${msg.guild.name}").`);
+		logger.info(`${msg.author.username} requested the link to the community discord (from server "${msg.guild}").`);
 
 		return msg.reply(stripIndents`Here's the link to join the discord community server around Light Bot. That's a good place to ask questions and get support.
 			https://discord.gg/ysDXzdu`);

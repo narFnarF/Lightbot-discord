@@ -17,7 +17,7 @@ module.exports = class CommandHi extends commando.Command {
 	}
 
 	async run(msg, args) {
-		logger.info(`${msg.author.username} said !hi in server "${msg.guild.name}".`);
+		logger.info(`${msg.author.username} said !hi in server "${msg.guild}".`);
 
 		return msg.reply(`Hello! I'm **Light Bot**. Request an image by typing \`!light\` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type \`!helpmore\` for additional details. Embrace \`!light\` in your days and reach enlightenment!`);
 	}

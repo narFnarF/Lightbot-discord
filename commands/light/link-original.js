@@ -17,7 +17,7 @@ module.exports = class CommandLinkOriginal extends commando.Command {
 	}
 
 	async run(msg, args) {
-		logger.info(`${msg.author.username} requested the link to Light Game (in server "${msg.guild.name}").`);
+		logger.info(`${msg.author.username} requested the link to Light Game (in server "${msg.guild}").`);
 
 		return msg.reply(`You can play the original Light Game here: https://narf.itch.io/light-game `);
 	}
