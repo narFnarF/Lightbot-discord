@@ -129,34 +129,34 @@ bot.on('message', function (username, userID, channelID, message, event) {
 			// 	logger.info(username+' a pété! 💩 ');
 			// break;
 
-			case 'rename':
-				var name = args.join(" ");
-				renameBot(userID, channelID, name)
-			break;
+			// case 'rename':
+			// 	var name = args.join(" ");
+			// 	renameBot(userID, channelID, name)
+			// break;
 
-			case 'help':
-				bot.sendMessage({
-					to: channelID,
-					message: "Hello <@"+userID+">. I'm **Light Bot**. Request an image by typing `!light` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type `!helpmore` for additional details. Embrace `!light` in your days and reach enlightenment!"
-				});
-				logger.info("Help requested by "+username);
-			break;
+			// case 'help':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: "Hello <@"+userID+">. I'm **Light Bot**. Request an image by typing `!light` in the chat. Like a desk plant, your image is persistant and evolves over time. You can type `!helpmore` for additional details. Embrace `!light` in your days and reach enlightenment!"
+			// 	});
+			// 	logger.info("Help requested by "+username);
+			// break;
 
-			case 'helpmore':
-				bot.sendMessage({
-					to: channelID,
-					message: `<@${userID}> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the \`!light\` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image.\n`+
-					"**Commands:**\n"+
-					"`!light` Request your image. Watch it grow!\n"+
-					"`!level` Tell you your current level.\n"+
-					"`!relight` For when you've reached the end.\n"+
-					"`!link` To get the URL link to the original version of this game.\n"+
-					"`!discord` To get an invite to Lightbot's discord community server and get support.\n"+
-					"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
-					"`!helpadmin` Help about admin commands.\n"
-				});
-				logger.info(`More help requested by ${username}`);
-			break;
+			// case 'helpmore':
+			// 	bot.sendMessage({
+			// 		to: channelID,
+			// 		message: `<@${userID}> Light bot will enlight your day by generating pretty images that are unique to you. Every time you call it with the \`!light\` command, your image will evolve. You can (and should!) call it every 5 minutes, which is how long it takes to generate your new image.\n`+
+			// 		"**Commands:**\n"+
+			// 		"`!light` Request your image. Watch it grow!\n"+
+			// 		"`!level` Tell you your current level.\n"+
+			// 		"`!relight` For when you've reached the end.\n"+
+			// 		"`!link` To get the URL link to the original version of this game.\n"+
+			// 		"`!discord` To get an invite to Lightbot's discord community server and get support.\n"+
+			// 		"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
+			// 		"`!helpadmin` Help about admin commands.\n"
+			// 	});
+			// 	logger.info(`More help requested by ${username}`);
+			// break;
 
 			// case 'helpadmin':
 			// 	bot.sendMessage({
@@ -270,33 +270,33 @@ function lightCommand(userID, channelID, username) {
 	}
 }
 
-function renameBot(userID, channelID, newName) {
-	if (pm.isAdmin(userID)) {
-		logger.info(`Renaming the bot to: ${newName}`);
-		bot.editUserInfo({"username": newName}, (error, response)=>{
-			if (error) {
-				logger.warn(error);
-				bot.sendMessage({
-					to: channelID,
-					message: "<@"+userID+"> Rename unsuccessful for some reasons... Maybe try again later? Sometime that works."
-				});
-			}else{
-				//TODO send success
-				bot.sendMessage({
-					to: channelID,
-					message: `<@${userID}> Rename successful to ${newName}`
-				});
-				logger.info("Success.")
-			}
-		});
-	}else {
-		logger.info(`${username} tried to change the bot name, but I stopped them.`)
-		bot.sendMessage({
-			to: channelID,
-			message: "<@"+userID+"> You're not my admin. You cannot change my name."
-		})
-	}
-}
+// function renameBot(userID, channelID, newName) {
+// 	if (pm.isAdmin(userID)) {
+// 		logger.info(`Renaming the bot to: ${newName}`);
+// 		bot.editUserInfo({"username": newName}, (error, response)=>{
+// 			if (error) {
+// 				logger.warn(error);
+// 				bot.sendMessage({
+// 					to: channelID,
+// 					message: "<@"+userID+"> Rename unsuccessful for some reasons... Maybe try again later? Sometime that works."
+// 				});
+// 			}else{
+// 				//TODO send success
+// 				bot.sendMessage({
+// 					to: channelID,
+// 					message: `<@${userID}> Rename successful to ${newName}`
+// 				});
+// 				logger.info("Success.")
+// 			}
+// 		});
+// 	}else {
+// 		logger.info(`${username} tried to change the bot name, but I stopped them.`)
+// 		bot.sendMessage({
+// 			to: channelID,
+// 			message: "<@"+userID+"> You're not my admin. You cannot change my name."
+// 		})
+// 	}
+// }
 
 // function readPlayerDBJson(){
 // 	//returns an object: the entire playersDB!
