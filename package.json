@@ -21,7 +21,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/narFnarF/bot-discord.git"
+		"url": "git+https://github.com/narFnarF/lightbot.git"
 	},
 	"license": "ISC",
 	"bugs": {
