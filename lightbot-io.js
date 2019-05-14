@@ -390,32 +390,32 @@ function displayLevel(player) {
 	return player.displayLevel;
 }
 
-function announceResult(userID, channelID, won){
-	var msg;
-	var win = (won || fakeWin); // if fakeWin is activated, this is always true
-
-	var p = pm.getPlayer(userID);
-	msg = `You are level ${displayLevel(p)}.`;
-	if (win) {
-		pm.levelUpPlayer(userID);
-		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
-	}
-	if (p.level < endLevel){
-		msg += " I wonder what your next image will look like...";
-	}
-
-	if (!win && p.level >=4 && p.level < endLevel) {
-		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
-	}
-
-	if (p.level >= endLevel) {
-		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
-		logger.info(`${p.name} is ready!`);
-	}
-
-	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
-	logger.info(`Sent lightshow to ${p.name} (level ${p.level}, won: ${win}).`);
-}
+// function announceResult(userID, channelID, won){
+// 	var msg;
+// 	var win = (won || fakeWin); // if fakeWin is activated, this is always true
+//
+// 	var p = pm.getPlayer(userID);
+// 	msg = `You are level ${displayLevel(p)}.`;
+// 	if (win) {
+// 		pm.levelUpPlayer(userID);
+// 		msg += `\n🎇 Enlighted! You've reached **level ${displayLevel(p)}**. 🎇`;
+// 	}
+// 	if (p.level < endLevel){
+// 		msg += " I wonder what your next image will look like...";
+// 	}
+//
+// 	if (!win && p.level >=4 && p.level < endLevel) {
+// 		msg += "\nYou're getting good at this. Can you tell us what you see in this picture?"
+// 	}
+//
+// 	if (p.level >= endLevel) {
+// 		msg += "\nYou are ready! _You aaaarrrreeee reaaaaddyyyyyy!_ :new_moon: :waning_crescent_moon: :last_quarter_moon: :waning_gibbous_moon: :full_moon: :star2: :full_moon: :star2: :full_moon: `!relight`!!!"
+// 		logger.info(`${p.name} is ready!`);
+// 	}
+//
+// 	bot.sendMessage({to: channelID, message: "<@"+userID+"> "+msg});
+// 	logger.info(`Sent lightshow to ${p.name} (level ${p.level}, won: ${win}).`);
+// }
 
 function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 	// logger.debug("msgID"+msgID+" channel"+chID+" delayInSeconds"+delayInSeconds)
@@ -438,75 +438,75 @@ function deleteMsgAfterDelay(msgID, chID, delayInSeconds) {
 // 	savePlayersDB(); // write playersDB to file playersDB.json
 // }
 
-function relight(userID, channelID, username) {
-	if (pm.exists(userID)) { // if player is in DB
-		var pl = pm.getPlayer(userID);
-		// var lv = p.level;
-		if (pl.level >= endLevel) { // if ready to relight
-			// if (!playersDB.players[userID].relight) { // if player never relit
-			// 	playersDB.players[userID].relight = 0;
-			// }
-			// pl.increaseRelightCount();
-			pm.relight(userID);
-			// playersDB.players[userID].relight++;
-			// playersDB.players[userID].level = 1;
+// function relight(userID, channelID, username) {
+// 	if (pm.exists(userID)) { // if player is in DB
+// 		var pl = pm.getPlayer(userID);
+// 		// var lv = p.level;
+// 		if (pl.level >= endLevel) { // if ready to relight
+// 			// if (!playersDB.players[userID].relight) { // if player never relit
+// 			// 	playersDB.players[userID].relight = 0;
+// 			// }
+// 			// pl.increaseRelightCount();
+// 			pm.relight(userID);
+// 			// playersDB.players[userID].relight++;
+// 			// playersDB.players[userID].level = 1;
+//
+// 			var rCount = pl.relight;
+// 			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${rCount} time${rCount>1?"s":""}. You have jumped to level ${displayLevel(pl)}.`;
+// 			bot.sendMessage({to: channelID, message: txt});
+// 			logger.info(`Relight for ${username}: ${rCount} time(s) and level ${pl.level}.`);
+//
+// 		} else { // player has not reached the correct level to relight
+// 			logger.info(username+" tried to relight but hasn't reached the level required.");
+// 			bot.sendMessage({to: channelID, message: `<@${userID}> You are not ready. :waning_crescent_moon: `});
+// 		}
+// 	} else { // players doesn't exist in DB
+// 		bot.sendMessage({to: channelID, message: `<@${userID}> It seems you never played. Type \`!light\` to start.`});
+// 		logger.info(username+" tried to relight but is not in playersDB.");
+// 	}
+// }
 
-			var rCount = pl.relight;
-			var txt = `<@${userID}> :heart: :sparkle: :sparkle: :sparkle: Relight! :sparkle: :sparkle: :sparkle: :heart: \nYou have relit ${rCount} time${rCount>1?"s":""}. You have jumped to level ${displayLevel(pl)}.`;
-			bot.sendMessage({to: channelID, message: txt});
-			logger.info(`Relight for ${username}: ${rCount} time(s) and level ${pl.level}.`);
-
-		} else { // player has not reached the correct level to relight
-			logger.info(username+" tried to relight but hasn't reached the level required.");
-			bot.sendMessage({to: channelID, message: `<@${userID}> You are not ready. :waning_crescent_moon: `});
-		}
-	} else { // players doesn't exist in DB
-		bot.sendMessage({to: channelID, message: `<@${userID}> It seems you never played. Type \`!light\` to start.`});
-		logger.info(username+" tried to relight but is not in playersDB.");
-	}
-}
-
-function sendImage(userID, channelID, filepath, won) {
-	// logger.info("sendImage")
-	if (fs.existsSync(filepath)) { //if the file exists on disk
-		bot.uploadFile(
-			{
-				to: channelID,
-				file: filepath,
-				message: "<@"+userID+"> Here's your lightshow!"
-			}, (err, res) => {
-				// Rename the picture file.
-				fs.rename(filepath, "previous light.png", (err)=>{
-					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
-				});
-
-				if (!err){
-					// Update the time last played now that the player actually received its picture.
-					pm.updateLastPlayed(userID);
-					announceResult(userID, channelID, won);
-
-				} else {
-					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`);
-					logger.warn(err);
-
-					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
-						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
-					});
-				}
-			}
-		);
-	}else{
-		logger.error("The screenshot isn't there?!");
-		bot.sendMessage({
-			to: channelID,
-			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
-		});
-		bot.sendMessage({
-			to: pm.adminID,
-			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
-		});
-	}
-}
+// function sendImage(userID, channelID, filepath, won) {
+// 	// logger.info("sendImage")
+// 	if (fs.existsSync(filepath)) { //if the file exists on disk
+// 		bot.uploadFile(
+// 			{
+// 				to: channelID,
+// 				file: filepath,
+// 				message: "<@"+userID+"> Here's your lightshow!"
+// 			}, (err, res) => {
+// 				// Rename the picture file.
+// 				fs.rename(filepath, "previous light.png", (err)=>{
+// 					if ( err ) logger.warn(`Could not rename the screenshot ${filepath}: ${err}`);
+// 				});
+//
+// 				if (!err){
+// 					// Update the time last played now that the player actually received its picture.
+// 					pm.updateLastPlayed(userID);
+// 					announceResult(userID, channelID, won);
+//
+// 				} else {
+// 					logger.warn(`I couldn't upload the file to ${userID}. Maybe because of Discord error?`);
+// 					logger.warn(err);
+//
+// 					bot.sendMessage({to: channelID, message:`<@${userID}> I'm sorry. I couldn't send you the file. I'm not sure why. Maybe a permission issue? Maybe try again in a few minutes?`}, ()=>{
+// 						logger.warn(`Wow... I couldn't even send the sorry message to the player ${userID}! I surrender!`)
+// 					});
+// 				}
+// 			}
+// 		);
+// 	}else{
+// 		logger.error("The screenshot isn't there?!");
+// 		bot.sendMessage({
+// 			to: channelID,
+// 			message: `<@${userID}> Err... sorry, i messed up. Maybe try again in a couple minutes?`
+// 		});
+// 		bot.sendMessage({
+// 			to: pm.adminID,
+// 			message: `Yo! I tried to send their !light picture to ${username} but the picture was missing after creating it. Maybe take a look at the !log?`
+// 		});
+// 	}
+// }
 
 // function canPlay(userID) {
 // 	//Boolean. Is the player alloyed to play? (true if it's been more than 5 minutes)
