@@ -62,7 +62,7 @@ module.exports = class CommandLight extends commando.Command {
 
 					if (!errorHappened) {
 						pm.updateLastPlayed(userID);
-						await announceResult(msg.author, msg.channel, res.won); // The level up and save happens here.
+						await announceResult(msg.author, msg.channel, res.won); // The level up and save happens in here.
 					} else {
 						logger.error(`There was an error, so i'll skip the leveling up and saving.`);
 					}
@@ -79,7 +79,7 @@ module.exports = class CommandLight extends commando.Command {
 };
 
 async function sendImage(author, channel, path) {
-	var retProm;
+	var retProm; //returned promise
 	try {
 		retProm = await channel.send(`${author} Here's your lightshow!`, { files: [{attachment: path /*, name: 'file.jpg'*/}] });
 		logger.debug(`File sent.`);
