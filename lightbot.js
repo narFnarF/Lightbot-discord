@@ -46,8 +46,8 @@ client.on('error', console.error)
 client.on('warn', console.warn)
 client.on('debug', console.log)
 client.on('ready', () => {
-		console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
-      client.user.setActivity("Type !help");
+    console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
+    client.user.setActivity("Type !help");
 })
 client.on('disconnect', () => { console.warn('Disconnected!'); })
 client.on('reconnecting', () => { console.warn('Reconnecting...'); })
