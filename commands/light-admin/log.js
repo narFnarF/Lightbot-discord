@@ -25,17 +25,17 @@ module.exports = class CommandHelpadmin extends commando.Command {
 
 	sendLog() {
 		// logger.debug("I entered in sendLog().")
-		var path = pathModule.join(appRoot.toString(), "logs", config.logErrorName)
+		var path = pathModule.join(appRoot.toString(), "logs", config.logErrorName);
 		bot.uploadFile({
 			to: config.backupChannel,
 			file: path,
 			message: "**The Node log:**"
 		}, (err, res)=>{
 			if (err){
-				logger.warn("I had trouble sending the logs to the backup channel.")
-				logger.warn(`Error returned: ${err}`)
+				logger.warn("I had trouble sending the logs to the backup channel.");
+				logger.warn(`Error returned: ${err}`);
 			}
-		})
+		});
 
 		bot.uploadFile({
 			to: config.backupChannel,
@@ -43,9 +43,9 @@ module.exports = class CommandHelpadmin extends commando.Command {
 			message: "**The PlayersDB**"
 		}, (err, res) => {
 			if (err){
-				logger.warn("I had trouble sending the playersDB to the backup channel.")
-				logger.warn(`Error returned: ${err}`)
+				logger.warn("I had trouble sending the playersDB to the backup channel.");
+				logger.warn(`Error returned: ${err}`);
 			}
-		})
+		});
 	}
 };
