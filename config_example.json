@@ -10,6 +10,7 @@
    "backupChannel" : "A_CHANNEL_ID_HERE", "_Comment": "The id of a channel where the playersDB.json backup will be sent every <intervalLogBackup> hours",
 
 
-   "logName" : "lightbot.log", "Comment": "Which file winston will use for logs.",
-   "logErrorName": "lightbot-errors.log"
+   "logName" : "lightbot.log", "_Comment": "Which file winston will use for logs.",
+   "logErrorName": "lightbot-errors.log",
+   "logLevel": "info", "_Comment": "Can be set to 'debug' or 'info'. Info produces less verbage in the log files."
 }
