@@ -42,15 +42,15 @@ client.login(auth.token);
 
 
 // client
-client.on('error', console.error)
-client.on('warn', console.warn)
-client.on('debug', console.log)
+client.on('error', logger.error)
+client.on('warn', logger.warn)
+client.on('debug', logger.debug)
 client.on('ready', () => {
-    console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
+    logger.info(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
     client.user.setActivity("Type !help");
 })
-client.on('disconnect', () => { console.warn('Disconnected!'); })
-client.on('reconnecting', () => { console.warn('Reconnecting...'); })
+client.on('disconnect', () => { logger.warn('Disconnected!'); })
+client.on('reconnecting', () => { logger.warn('Reconnecting...'); })
 client.on('commandError', (cmd, err) => {
 		if(err instanceof Commando.FriendlyError) return;
 		console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
@@ -62,7 +62,7 @@ client.on('commandBlocked', (msg, reason) => {
 		`);
 })
 client.on('commandPrefixChange', (guild, prefix) => {
-		console.log(oneLine`
+		logger.info(oneLine`
 			Prefix ${prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`}
 			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
 		`);
