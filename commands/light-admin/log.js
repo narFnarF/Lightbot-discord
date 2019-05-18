@@ -34,38 +34,7 @@ module.exports = class CommandHelpadmin extends commando.Command {
 			logger.error("I had trouble sending the logs to the backup channel.");
 			logger.error(`Error returned: ${err}`);
 		}
-
-		// bot.uploadFile({
-		// 	to: config.backupChannel,
-		// 	file: path,
-		// 	message: "**The Node log:**"
-		// }, (err, res)=>{
-		// 	if (err){
-		// 		logger.warn("I had trouble sending the logs to the backup channel.")
-		// 		logger.warn(`Error returned: ${err}`)
-		// 	}
-		// })
-		//
-		// bot.uploadFile({
-		// 	to: config.backupChannel,
-		// 	file: playersDBPath,
-		// 	message: "**The PlayersDB**"
-		// }, (err, res) => {
-		// 	if (err){
-		// 		logger.warn("I had trouble sending the playersDB to the backup channel.")
-		// 		logger.warn(`Error returned: ${err}`)
-		// 	}
-		// })
 	}
 
-	//reference on how to send attachments. TODO: delete this!
-	// async sendImage(author, channel, path) {
-	// 	try {
-	// 		await channel.send(`${author} Here's your lightshow!`, { files: [{attachment: path}] });
-	// 		logger.debug(`File sent.`);
-	// 	} catch (err) {
-	// 		logger.error(`Error while sending the attached picture to ${author.username}.`);
-	// 		channel.send(`${author} Oups! I could not send you your picture.`)
-	// 	}
-	// }
+	
 };
