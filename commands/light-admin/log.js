@@ -1,5 +1,6 @@
 const commando = require('discord.js-commando');
 const logger = require("../../logger.js");
+const logSender = require("../../LogSender.js");
 
 
 module.exports = class CommandHelpadmin extends commando.Command {
@@ -9,8 +10,8 @@ module.exports = class CommandHelpadmin extends commando.Command {
 			aliases: ['log'],
 			group: 'light-admin',
 			memberName: 'logs',
-			description: "List all the admin commands.",
-			details: `List all the admin commands.`,
+			description: "Sends a copy of the logs and DB to the usual channel.",
+			details: `Sends a copy of the logs and DB to the channel specified in the config.json file ("backupChannel").`,
 			// examples: ['join-lightbot']
 		});
 	}
@@ -18,23 +19,20 @@ module.exports = class CommandHelpadmin extends commando.Command {
 	async run(msg, args) {
 		logger.info(`Log requested by ${msg.author.username} ${msg.author} (in server "${msg.guild.name}")`);
 
-		// sendLog()
+		msg.reply(`Acknowledge! Sending you the files...`);
+		// try {
+			await logSender.sendErrorLogs();
+			await logSender.sendInfoLogs();
+			await logSender.sendPlayerDB();
 
-		return msg.reply(`Placeholder reply.`); //TODO
+			return msg.reply(`I sent you the files in the usual place.`);
+
+		// } catch(err){
+		// 	logger.error(`Error in !log command. Could not send the files.`);
+		// 	throw err;
+		// }
+
 	}
 
-	async sendLog(channel, path) {
-		var path = pathModule.join(appRoot.toString(), "logs", config.logErrorName);
-		try {
-			logger.debug(`sending files`);
-			await channel.send(`**The Node log:**`, {files: [{attachment: path}] });
-			await channel.send(`**The PlayersDB**`, {files: [{attachment: playersDBPath}] });
-			logger.debug(`File sent.`);
-		} catch (err) {
-			logger.error("I had trouble sending the logs to the backup channel.");
-			logger.error(`Error returned: ${err}`);
-		}
-	}
 
-	
 };

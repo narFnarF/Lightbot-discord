@@ -7,9 +7,7 @@ const auth = require('./auth.json');
 const path = require('path');
 const sqlite = require('sqlite');
 const oneLine = require('common-tags').oneLine;
-
-
-
+const logSender = require("./LogSender.js");
 
 
 const client = new Commando.Client({
@@ -38,7 +36,7 @@ client.registry
 
 
 client.login(auth.token);
-
+logSender.useThisClient(client);
 
 
 // client
