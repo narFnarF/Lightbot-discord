@@ -54,29 +54,46 @@ class LogSender {
    setupAutoBackups() {
       // This setups the daily auto backups. These backups are sent to the admin every <12> hours.
       logger.info(`Setting up the automated backup to every ${config.intervalLogBackup} hours.`);
-      setInterval(this.sendAutoBackup,
-         // config.intervalLogBackup*60*60*1000 // hours to milliseconds
-         5*1000 // 5 seconds, for debugging purpose
+      setInterval( async ()=>{
+         await this.sendAutoBackup()
+      },
+         config.intervalLogBackup*60*60*1000 // hours to milliseconds
+         // 5*1000 // 5 seconds, for debugging purpose
       );
+      // setInterval(async ()=>{
+      //    logger.info(`It's time for the automated backup every ${config.intervalLogBackup} hours.`);
+      //    logger.info(`1Here's the client: ${this.client}`);
+      //    try{
+      //       await this.sendPlayerDB();
+      //
+      //    } catch(err){
+      //       logger.error(`Could not send the auto backups.`);
+      //       logger.info(`2Here's the client: ${this.client}`);
+      //       logger.info(`2Here's "this": ${this}`);
+      //       this.client.users.get(config.ownerAdmin.discordID).send(`Yo! I'm in trouble. I can't send the backup of the DB. You might want to look into this! Here's the error: \`\`\`${err.stack}\`\`\``);
+      //       // TODO: Je pense que ça crash ici parce que c'est une question de variable statique? Genre que la variable client est perdue quelque part parce qu'elle n'est pas statique?
+      //    }
+      // }, 5*1000);
    }
 
    async sendAutoBackup(){
       logger.info(`It's time for the automated backup every ${config.intervalLogBackup} hours.`);
-      logger.info(`1Here's the client: ${this.client}`);
       try{
          await this.sendPlayerDB();
 
       } catch(err){
          logger.error(`Could not send the auto backups.`);
-         logger.info(`2Here's the client: ${this.client}`);
-         this.client.users.get(config.ownerAdmin.discordID).send(`Yo! I'm in trouble. I can't send the backup of the DB. You might want to look into this! Here's the error: \`\`\`${err.stack}\`\`\``);
-         // TODO: Je pense que ça crash ici parce que c'est une question de variable statique? Genre que la variable client est perdue quelque part parce qu'elle n'est pas statique?
+         const user = this.client.users.get(config.ownerAdmin.discordID);
+         if (user !== undefined) {
+            user.send(`Yo! I'm in trouble. I can't send the backup of the DB. You might want to look into this! Here's the error: \`\`\`${err.stack}\`\`\``);
+         } else {
+            logger.error(`Could not send the warning to the admin because the admin id is not setup properly in config.json.`)
+         }
       }
    }
 
    useThisClient(cl) {
       this.client = cl;
-      logger.info(`3Here's the client: ${this.client}`);
    }
 }
 const ls = new LogSender();
