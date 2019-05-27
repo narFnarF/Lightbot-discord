@@ -11,25 +11,25 @@ class LogSender {
       // this.client;
    }
 
-   async sendErrorLogs() {
-      await this.sendFile("**The Node error log:**", `./logs/${config.logErrorName}`);
+   async sendErrorLogs(client) {
+      return await this.sendFile("**The Node error log:**", `./logs/${config.logErrorName}`, client);
    }
 
-   async sendInfoLogs() {
-      await this.sendFile("**The Node info log:**", `./logs/${config.logName}`);
+   async sendInfoLogs(client) {
+      return await this.sendFile("**The Node info log:**", `./logs/${config.logName}`, client);
    }
 
-   async sendPlayerDB(){
-      await this.sendFile("**The PlayersDB**", `./playersDB.json`);
+   async sendPlayerDB(client){
+      return await this.sendFile("**The PlayersDB**", `./playersDB.json`, client);
    }
 
-   async sendFile(msg, filePath){
-      if (this.client === undefined) {
+   async sendFile(msg, filePath, client){
+      if (client === undefined) {
          logger.error(`The client variable was not initialized in LogSender.js. You need to do something like this: logSender.useThisClient(client);`);
          throw new Error(`The client variable is not configured in LogSender.js.`);
       }
 
-      var channel = this.client.channels.get(config.backupChannel);
+      var channel = client.channels.get(config.backupChannel);
       if (channel===undefined) {
          logger.error(`Error in LogSenders.sendFile(). It looks like there was en error in the backupChannel property in the config.json file.`);
          throw new Error(`Incorrect backupChannel id in config.json.`);
@@ -42,7 +42,9 @@ class LogSender {
       };
 
       try {
-         await channel.send(msg, attach);
+         var res;
+         res = await channel.send(msg, attach);
+         return res;
       } catch (err) {
          logger.error(`There was an error while trying to send logs (${msg}) with file "${filePath}".`);
          logger.error(err);
@@ -60,26 +62,12 @@ class LogSender {
          config.intervalLogBackup*60*60*1000 // hours to milliseconds
          // 5*1000 // 5 seconds, for debugging purpose
       );
-      // setInterval(async ()=>{
-      //    logger.info(`It's time for the automated backup every ${config.intervalLogBackup} hours.`);
-      //    logger.info(`1Here's the client: ${this.client}`);
-      //    try{
-      //       await this.sendPlayerDB();
-      //
-      //    } catch(err){
-      //       logger.error(`Could not send the auto backups.`);
-      //       logger.info(`2Here's the client: ${this.client}`);
-      //       logger.info(`2Here's "this": ${this}`);
-      //       this.client.users.get(config.ownerAdmin.discordID).send(`Yo! I'm in trouble. I can't send the backup of the DB. You might want to look into this! Here's the error: \`\`\`${err.stack}\`\`\``);
-      //       // TODO: Je pense que ça crash ici parce que c'est une question de variable statique? Genre que la variable client est perdue quelque part parce qu'elle n'est pas statique?
-      //    }
-      // }, 5*1000);
    }
 
    async sendAutoBackup(){
       logger.info(`It's time for the automated backup every ${config.intervalLogBackup} hours.`);
       try{
-         await this.sendPlayerDB();
+         await this.sendPlayerDB(this.client);
 
       } catch(err){
          logger.error(`Could not send the auto backups.`);

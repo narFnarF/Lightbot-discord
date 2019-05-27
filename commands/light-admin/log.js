@@ -17,13 +17,19 @@ module.exports = class CommandHelpadmin extends commando.Command {
 	}
 
 	async run(msg, args) {
-		logger.info(`Log requested by ${msg.author.username} ${msg.author} (in server "${msg.guild.name}")`);
+		var ending;
+		if (msg.guild) {
+			ending = `(in server "${msg.guild.name}")`;
+		} else {
+			ending = `(in DM)`
+		}
+		logger.info(`Log requested by ${msg.author.username} ${ending}.`);
 
 		msg.reply(`Acknowledge! Sending you the files...`);
 		// try {
-			await logSender.sendErrorLogs();
-			await logSender.sendInfoLogs();
-			await logSender.sendPlayerDB();
+			await logSender.sendErrorLogs(msg.client);
+			await logSender.sendInfoLogs(msg.client);
+			await logSender.sendPlayerDB(msg.client);
 
 			return msg.reply(`I sent you the files in the usual place.`);
 
