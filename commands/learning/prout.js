@@ -21,7 +21,13 @@ module.exports = class ProutCommand extends commando.Command {
 	}
 
 	async run(msg, args) {
-		logger.info(`${msg.author.username} a pété! 💩 (in server "${msg.guild.name}").`);
+		var ending;
+		if (msg.guild) {
+			ending = `(in server "${msg.guild.name}")`;
+		} else {
+			ending = `(in DM)`
+		}
+		logger.info(`${msg.author.username} a pété! 💩 ${ending}.`);
 		// const total = args.numbers.reduce((prev, arg) => prev + parseFloat(arg), 0);
 		// return msg.reply(`${args.numbers.join(' + ')} = **${total}**`);
 		// console.log(`yo ${msg.author}`);
