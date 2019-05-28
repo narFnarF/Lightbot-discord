@@ -10,6 +10,11 @@ const fs = require('fs')
 if (!fs.existsSync(`${appRoot}/logs/`)) {
     fs.mkdirSync(`${appRoot}/logs/`);
 }
+if (config.logName === undefined) {
+   throw new Error(`The property config.logName is not set in config.json.`);
+} else if (config.logErrorName === undefined) {
+   throw new Error(`The property config.logErrorName is not set in config.json.`);
+}
 
 // define the custom settings for each transport (file, console)
 const options = {
