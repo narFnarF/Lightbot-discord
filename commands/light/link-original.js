@@ -7,7 +7,7 @@ module.exports = class CommandLinkOriginal extends commando.Command {
 	constructor(client) {
 		super(client, {
 			name: 'link-original',
-			aliases: ['link', 'original', 'game'],
+			aliases: ['link', 'original', 'game', 'original-game'],
 			group: 'light',
 			memberName: 'link-original',
 			description: "To get the URL link to the original version of this game.",

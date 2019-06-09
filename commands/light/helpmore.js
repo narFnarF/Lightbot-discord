@@ -1,5 +1,5 @@
 const commando = require('discord.js-commando');
-const stripIndents = require('common-tags').stripIndents;
+// const stripIndents = require('common-tags').stripIndents;
 // const oneLine = require('common-tags').oneLine;
 // const path = require('path');
 // const appRoot = require('app-root-path').toString();

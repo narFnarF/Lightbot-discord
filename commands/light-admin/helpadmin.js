@@ -18,6 +18,6 @@ module.exports = class CommandHelpadmin extends commando.Command {
 	async run(msg, args) {
 		logger.info(`List of admin commands requested by ${msg.author.username} (in server "${msg.guild}").`);
 
-		return msg.reply(`Admin commands are: \`!log\`, \`!ping\`, \`!prout\`.`);
+		return msg.reply(`Admin commands are: \`!log\`, \`!ping\`.`);
 	}
 };

@@ -23,16 +23,25 @@ client.setProvider(
 
 client.registry
    // Registers your custom command groups
+   // Register GROUPS
+   .registerDefaultGroups()
    .registerGroups([
-      ['learning', "Learning (Example commands to learn from which won't be in the final bot)"]
+      ['learning', "Learning (Example commands to learn from which won't be in the final bot)"],
+      ['light', 'Light'],
+      ["light-admin", "light-admin (commands for the admin to use)"]
    ])
-   .registerGroup('light', 'Light')
-   .registerGroup("light-admin", "light-admin (commands for the admin to use)")
 
-   // Registers all built-in groups, commands, and argument types
-   .registerDefaults()
+   // Register TYPES
+   .registerDefaultTypes()
 	.registerTypesIn(path.join(__dirname, 'types'))
-   .registerCommandsIn(path.join(__dirname, 'commands'));
+
+   // Register COMMANDS
+   .registerCommandsIn(path.join(__dirname, 'commands'))
+   .registerDefaultCommands({
+      help: false,
+      eval_: false,
+      commandState: false
+   });
 
 
 client.login(auth.token);
