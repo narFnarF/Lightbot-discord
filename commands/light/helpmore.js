@@ -28,9 +28,9 @@ module.exports = class CommandHelpmore extends commando.Command {
 		"`!light` Request your image. Watch it grow!\n"+
 		"`!level` Tell you your current level.\n"+
 		"`!relight` For when you've reached the end.\n"+
-		"`!link` To get the URL link to the original version of this game.\n"+
+		"`!original` To get the URL link to the original version of this game.\n"+
 		"`!discord` To get an invite to Lightbot's discord community server and get support.\n"+
-		"`!invite` To get an URL to invite Light Bot to your own Discord server.\n"+
+		"`!invite-bot` To get an URL to invite Light Bot to your own Discord server.\n"+
 		"`!helpadmin` Help about admin commands.\n"
 		);
 	}
