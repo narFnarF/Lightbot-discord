@@ -33,7 +33,7 @@ client.registry
 
    // Register TYPES
    .registerDefaultTypes()
-	.registerTypesIn(path.join(__dirname, 'types'))
+	// .registerTypesIn(path.join(__dirname, 'types')) //Uncomment this line if we have custom types in the future.
 
    // Register COMMANDS
    .registerCommandsIn(path.join(__dirname, 'commands'))
