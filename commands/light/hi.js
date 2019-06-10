@@ -7,7 +7,7 @@ module.exports = class CommandHi extends commando.Command {
 	constructor(client) {
 		super(client, {
 			name: 'hi',
-			aliases: ['hello', 'salut', 'bonjour', 'test'],
+			aliases: ['hello', 'salut', 'bonjour', 'test', 'help', 'asdf'],
 			group: 'light',
 			memberName: 'hi',
 			description: "See welcome message. Let Lightbot introduce itself.",
