@@ -1,4 +1,4 @@
-# Lightbot
+# Lightbot for Discord
 
 A small game rewarding patience.
 
@@ -21,14 +21,25 @@ Lightbot is a port of Light Game.
 * Github: https://github.com/narFnarF/light-game
 
 
+
+### Mastodon versions:
+
+You can Play with Lightbot on **Mastodon**:
+
+* Link to the bot : *(TODO: Add the link!)*
+* Source code: https://github.com/narFnarF/lightbot-mastodon
+
+
+
+
 ### How to install on your own machine
 You can install Lightbot on your own server, computer or Raspberry Pi. It is recommended to use a machine that will stay online 24/7 but you can really install it on whatever computer you want.
 * Get the repo
    * (TODO: write how!)
-* npm install (On a Raspberry Pi, this can take 20-30 minutes and sometime look stuck for long durations. Leave it running until it's done.)
-* Setup your auth key
-   * rename auth_example.json to auth.json
-   * Get your bot authorization key from Discord and copy it at the appropriate place in auth.json
-* Setup your config
-   * Rename config_example.json to config.json
-   * Edit config.json
+* `npm install` (On a Raspberry Pi, this can take 20-30 minutes and sometime look stuck for long durations. Leave it running until it's done.)
+* Setup your auth key:
+   * rename `auth_example.json` to `auth.json`
+   * Get your bot authorization key from Discord and copy it at the appropriate place in `auth.json`
+* Setup your config:
+   * Rename `config_example.json` to `config.json`
+   * Edit `config.json` following the instructions in the comments
