@@ -4,7 +4,7 @@ var LightPicture = require("./LightPicture.js");
 // var logger = require("winston")
 
 
-const startLevel = 1; // How many pictures to ouput
+const startLevel = 1;
 const endLevel = 20;
 
 for (var i = startLevel; i <= endLevel; i++){
